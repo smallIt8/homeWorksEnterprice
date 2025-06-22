@@ -2,61 +2,48 @@ name: Conditional Auto Merge and Reviewer Assignment
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - main
+      - content-updates
+
+permissions:
+  pull-requests: write
+  contents: write
 
 jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      only_docs: ${{ steps.check.outputs.only_docs }}
-
+      docs: ${{ steps.filter.outputs.docs }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - id: check
-        name: Check changed files for docs-only changes
-        shell: bash
-        run: |
-          git fetch origin main
-
-          changed_files=$(git diff --name-only origin/main...HEAD)
-
-          echo "Changed files:"
-          echo "$changed_files"
-
-          only_docs=true
-
-          while IFS= read -r file; do
-            if ! echo "$file" | grep -Eq '^(\.github/|docs/|README\.md)'; then
-              only_docs=false
-              break
-            fi
-          done <<< "$changed_files"
-
-          echo "only_docs=$only_docs" >> $GITHUB_OUTPUT
-
-  auto-merge-docs:
-    needs: check-changes
-    runs-on: ubuntu-latest
-    if: needs.check-changes.outputs.only_docs == 'true'
-    steps:
-      - name: Automerge docs/.github/README.md PRs
-        uses: pascalgn/automerge-action@v0.15.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          mergeMethod: squash
-          requiredApprovals: 0
-          strict: true
+          filters: |
+            docs:
+              - 'docs/**'
+              - '**.md'
 
   assign-reviewer-hw:
-    needs: check-changes
+    if: ${{ needs.check-changes.outputs.docs == 'true' }}
     runs-on: ubuntu-latest
-    if: needs.check-changes.outputs.only_docs != 'true'
+    needs: check-changes
     steps:
-      - name: Assign reviewer @AleksandrMSK for HW PRs
-        uses: kentaro-m/auto-assign-action@v1
+      - name: Assign reviewers
+        uses: ahmadnassri/action-auto-assign@v2
         with:
-          reviewers: 'AleksandrMSK'
+          reviewers: AleksandrMSK
+          skip-draft: true
+
+  auto-merge-docs:
+    if: ${{ needs.check-changes.outputs.docs == 'true' }}
+    needs: [check-changes, assign-reviewer-hw]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable Auto-Merge
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
