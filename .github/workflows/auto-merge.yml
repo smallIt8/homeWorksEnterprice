@@ -1,30 +1,88 @@
-name: Auto Merge HW PRs
+name: Conditional Auto Merge and Reviewer Assignment
 
 on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'HW-*/**'
 
 jobs:
-  assign-reviewer:
+  check-changes:
     runs-on: ubuntu-latest
-    steps:
-      - name: Assign reviewer
-        uses: kentaro-m/auto-assign-action@v1
-        with:
-          reviewers: 'AleksandrMSK'
+    outputs:
+      only-docs: ${{ steps.check.outputs.only_docs }}
 
-  auto-merge:
-    needs: assign-reviewer
-    runs-on: ubuntu-latest
     steps:
-      - name: Auto merge after review and CI success
+      - name: Checkout PR
+        uses: actions/checkout@v3
+
+      - name: Check changed files
+        id: check
+        run: |
+          # Получаем список измененных файлов
+          files=$(jq -r '.pull_request.files[].filename' < "$GITHUB_EVENT_PATH")
+
+          # Функция для проверки, есть ли файлы вне .github/, docs/, README.md
+          contains_hw=false
+          contains_other=false
+
+          # Список измененных файлов через git diff (альтернативно)
+          git fetch origin main
+          changed_files=$(git diff --name-only origin/main...HEAD)
+
+          for file in $changed_files; do
+            if [[ "$file" == HW-*/* ]]; then
+              contains_hw=true
+            fi
+            if [[ ! ( "$file" == .github/* || "$file" == docs/* || "$file" == README.md ) ]]; then
+              contains_other=true
+            fi
+          done
+
+          if $contains_hw; then
+            echo "contains_hw=true" >> $GITHUB_OUTPUT
+          else
+            echo "contains_hw=false" >> $GITHUB_OUTPUT
+          fi
+
+          if $contains_other; then
+            echo "contains_other=true" >> $GITHUB_OUTPUT
+          else
+            echo "contains_other=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Output only-docs
+        id: check
+        run: |
+          # Проверим изменены ли только файлы из .github/, docs/, README.md
+          changed_files=$(git diff --name-only origin/main...HEAD)
+          for file in $changed_files; do
+            if [[ ! ( "$file" == .github/* || "$file" == docs/* || "$file" == README.md ) ]]; then
+              echo "only_docs=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+          echo "only_docs=true" >> $GITHUB_OUTPUT
+
+  assign-reviewer-and-merge:
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: needs.check-changes.outputs.only_docs == 'true'
+    steps:
+      - name: Auto merge docs/.github/README.md PR
         uses: pascalgn/automerge-action@v0.15.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           mergeMethod: squash
-          requiredApprovals: 1
+          requiredApprovals: 0
           strict: true
+
+  assign-reviewer-for-hw:
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: needs.check-changes.outputs.only_docs != 'true'
+    steps:
+      - name: Assign reviewer @AleksandrMSK for HW PRs
+        uses: kentaro-m/auto-assign-action@v1
+        with:
+          reviewers: 'AleksandrMSK'
