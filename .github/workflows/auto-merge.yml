@@ -1,106 +1,66 @@
 name: Conditional Auto Merge and Reviewer Assignment
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches:
-      - content-updates
+      - main
 
 jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      auto_merge: ${{ steps.filter.outputs.auto_merge }}
-      requires_review: ${{ steps.filter.outputs.requires_review }}
+      only_docs: ${{ steps.filter.outputs.only_docs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Get list of changed files
-        id: diff
+      - id: filter
+        name: Check changed files
         run: |
-          git fetch origin main
-          echo "::set-output name=files::$(git diff --name-only origin/main...HEAD | tr '\n' ',')"
-
-      - name: Filter changes
-        id: filter
-        run: |
-          changed="${{ steps.diff.outputs.files }}"
-          echo "Changed files: $changed"
-
-          if echo "$changed" | grep -qE '(^|,)(docs/|\.github/|README\.md)(,|$)'; then
-            echo "Auto-mergeable changes detected"
-            echo "::set-output name=auto_merge::true"
-          else
-            echo "::set-output name=auto_merge::false"
-          fi
-
-          if echo "$changed" | grep -qE '(HW-[0-9]{3}/)'; then
-            echo "Homework changes require review"
-            echo "::set-output name=requires_review::true"
-          else
-            echo "::set-output name=requires_review::false"
-          fi
+          echo "::group::Detecting changes..."
+          FILES=$(git diff --name-only origin/main)
+          echo "$FILES"
+          echo "::endgroup::"
+          
+          ONLY_DOCS=true
+          for file in $FILES; do
+            if [[ "$file" =~ ^(\.github/|docs/|README\.md)$ || "$file" =~ ^(\.github/|docs/|README\.md)/.* ]]; then
+              continue
+            else
+              ONLY_DOCS=false
+              break
+            fi
+          done
+          echo "only_docs=$ONLY_DOCS" >> "$GITHUB_OUTPUT"
 
   assign-reviewer-hw:
     needs: check-changes
-    if: ${{ needs.check-changes.outputs.requires_review == 'true' }}
+    if: needs.check-changes.outputs.only_docs == 'false'
     runs-on: ubuntu-latest
     steps:
-      - name: Request review
+      - name: Assign reviewer
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const reviewers = ['AleksandrMSK']; // Замените на нужных ревьюеров
-            const pr = await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              head: 'content-updates',
-              base: 'main',
-              title: 'Homework update – review required',
-              body: 'Изменения затрагивают домашки, требуется ревью.'
-            });
             await github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: pr.data.number,
-              reviewers: reviewers
+              pull_number: context.payload.pull_request.number,
+              reviewers: ['AleksandrMSK']
             });
 
   auto-merge-docs:
     needs: check-changes
-    if: ${{ needs.check-changes.outputs.auto_merge == 'true' && needs.check-changes.outputs.requires_review != 'true' }}
+    if: needs.check-changes.outputs.only_docs == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+      - name: Enable auto-merge
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Auto-merge content update"
-          branch: content-updates
-          base: main
-          title: "Auto-merge: content update"
-          body: "Автоматическое обновление документации и служебных файлов"
-          delete-branch: false
-
-      - name: Enable auto-merge
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prs = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              head: `${context.repo.owner}:content-updates`,
-              base: 'main',
-              state: 'open'
-            });
-
-            if (prs.data.length > 0) {
-              const pr = prs.data[0];
-              await github.rest.pulls.enableAutoMerge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pr.number,
-                merge_method: 'squash'
-              });
-            }
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
