@@ -17,24 +17,23 @@ jobs:
 
       - id: check
         name: Check changed files for docs-only changes
+        shell: bash
         run: |
           git fetch origin main
 
-          # Получаем список измененных файлов между PR и main
           changed_files=$(git diff --name-only origin/main...HEAD)
 
           echo "Changed files:"
           echo "$changed_files"
 
-          # Флаг для определения, изменены ли только нужные папки и файлы
           only_docs=true
 
-          for file in $changed_files; do
-            if [[ ! "$file" =~ ^(\.github/|docs/|README\.md) ]]; then
+          while IFS= read -r file; do
+            if ! echo "$file" | grep -Eq '^(\.github/|docs/|README\.md)'; then
               only_docs=false
               break
             fi
-          done
+          done <<< "$changed_files"
 
           echo "only_docs=$only_docs" >> $GITHUB_OUTPUT
 
