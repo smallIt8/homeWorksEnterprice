@@ -10,14 +10,29 @@ permissions:
   pull-requests: write
 
 jobs:
-  create-pull-request:
+  filter:
     runs-on: ubuntu-latest
+    outputs:
+      docs_changed: ${{ steps.filter.outputs.docs }}
     steps:
-      - name: Checkout content-updates branch
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - 'README.md'
+              - '.github/**'
+
+  create-pull-request:
+    needs: filter
+    runs-on: ubuntu-latest
+    if: needs.filter.outputs.docs_changed == 'true'
+    steps:
+      - uses: actions/checkout@v3
         with:
           ref: content-updates
-
       - name: Create or update Pull Request to main
         uses: peter-evans/create-pull-request@v5
         with:
@@ -30,8 +45,3 @@ jobs:
             Этот PR автоматически создаётся/обновляется для синхронизации изменений в папках docs, README.md и .github из content-updates в main.
           labels: docs, auto-generated
           draft: false
-          # optional: чтобы PR создавался только при изменениях в нужных файлах
-          paths: |
-            docs/**
-            README.md
-            .github/**
