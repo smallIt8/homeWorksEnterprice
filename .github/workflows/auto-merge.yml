@@ -1,35 +1,30 @@
-name: Auto merge content updates
+name: Auto Merge HW PRs
 
 on:
-  push:
+  pull_request:
     branches:
-      - content-updates
+      - main
+    paths:
+      - 'HW-*/**'
 
 jobs:
-  auto-merge:
+  assign-reviewer:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create Pull Request
-        id: create-pr
-        uses: peter-evans/create-pull-request@v5
+      - name: Assign reviewer
+        uses: kentaro-m/auto-assign-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: content-updates
-          title: "Automated Content Update"
-          body: "This PR was automatically generated."
+          reviewers: 'AleksandrMSK'
 
-      - name: Approve Pull Request
-        uses: hmarr/auto-approve-action@v2.1.0
+  auto-merge:
+    needs: assign-reviewer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto merge after review and CI success
+        uses: pascalgn/automerge-action@v0.15.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable Auto-Merge
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-          merge-method: squash
-          token: ${{ secrets.GITHUB_TOKEN }}
+          mergeMethod: squash
+          requiredApprovals: 1
+          strict: true
