@@ -3,7 +3,7 @@ name: Create PR for docs and README updates
 on:
   push:
     branches:
-      - content-updates
+      - content-update
 
 permissions:
   contents: write
