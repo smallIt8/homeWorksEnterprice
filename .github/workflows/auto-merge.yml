@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create Pull Request
-        id: create-pr          # <-- добавьте этот id
+        id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
