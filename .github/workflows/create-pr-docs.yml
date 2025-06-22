@@ -39,10 +39,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update docs and README.md'
-          branch: content-update         # Здесь указываем ту же ветку, из которой пушите
-          base: main                    # Целевая ветка для PR
+          # Не указываем branch - будет использовать ветку, на которой checkout
+          base: main
           title: 'Auto-update docs and README.md'
           body: |
-            Этот PR автоматически создаётся/обновляется для синхронизации изменений в папках docs, README.md и .github из content-update в main.
+            Этот PR автоматически создаётся/обновляется для синхронизации изменений из content-update в main.
           labels: docs, auto-generated
           draft: false
