@@ -31,7 +31,7 @@ jobs:
               - 'README.md'
               - '.github/**'
 
-  create-pull-request:
+   create-pull-request:
     needs: filter
     runs-on: ubuntu-latest
     if: needs.filter.outputs.docs_changed == 'true'
@@ -39,13 +39,21 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: content-update
-          fetch-depth: 0
+          fetch-depth: 0  # нужно обязательно!
+      
+      - name: Fetch main branch
+        run: git fetch origin main
+
+      - name: Debug changed files
+        run: git diff --name-status origin/main..HEAD
+      
       - name: Create or update Pull Request to main
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update docs and README.md'
           base: main
+          branch: content-update  # <----- ВАЖНО: используем существующую ветку!
           title: 'Auto-update docs and README.md'
           body: |
             Этот PR автоматически создаётся/обновляется для синхронизации изменений из content-update в main.
