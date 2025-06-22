@@ -39,7 +39,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update docs and README.md'
-          # Не указываем branch - будет использовать ветку, на которой checkout
           base: main
           title: 'Auto-update docs and README.md'
           body: |
