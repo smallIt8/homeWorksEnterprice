@@ -33,12 +33,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: content-update
+
       - name: Create or update Pull Request to main
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update docs and README.md'
-          branch: content-update
+          branch: auto/docs-update  # 🟢 новая ветка для PR
           base: main
           title: 'Auto-update docs and README.md'
           body: |
