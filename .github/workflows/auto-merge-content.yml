@@ -8,42 +8,20 @@ on:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Check changed files
-        id: changes
-        run: |
-          files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
-
-          echo "Changed files:"
-          echo "$files"
-
-          for file in $files; do
-            if [[ ! "$file" =~ ^(README\.md|docs/|\.github/) ]]; then
-              echo "File $file is not allowed for auto merge"
-              echo "allowed=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          done
-
-          echo "allowed=true" >> $GITHUB_OUTPUT
-
-      - name: Create or update PR to main
-        if: steps.changes.outputs.allowed == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: content-update
-          title: "Auto PR: Update docs and README"
-          body: "Автоматически созданный PR для обновления README.md, docs и .github"
-          draft: false
-
-      - name: Merge PR automatically
-        if: steps.changes.outputs.allowed == 'true'
-        uses: actions-ecosystem/action-auto-merge@v1
+      - name: Create PR or Auto-Merge
+        uses: devops-infra/action-pull-request@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          merge_method: squash
+          target_branch: main
+          title: "Auto update: docs and README"
+          body: "Automated content update."
+          allow_no_diff: false
+          label: auto-merge
+          reviewers: ""
