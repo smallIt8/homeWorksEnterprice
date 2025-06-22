@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create Pull Request
+        id: create-pr          # <-- добавьте этот id
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -20,6 +21,11 @@ jobs:
           branch: content-updates
           title: "Automated Content Update"
           body: "This PR was automatically generated."
+
+      - name: Approve Pull Request
+        uses: hmarr/auto-approve-action@v2.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable Auto-Merge
         uses: peter-evans/enable-pull-request-automerge@v3
