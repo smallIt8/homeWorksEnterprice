@@ -1,0 +1,37 @@
+name: Create PR for docs and README updates
+
+on:
+  push:
+    branches:
+      - content-updates
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout content-updates branch
+        uses: actions/checkout@v3
+        with:
+          ref: content-updates
+
+      - name: Create or update Pull Request to main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update docs and README.md'
+          branch: content-updates
+          base: main
+          title: 'Auto-update docs and README.md'
+          body: |
+            Этот PR автоматически создаётся/обновляется для синхронизации изменений в папках docs, README.md и .github из content-updates в main.
+          labels: docs, auto-generated
+          draft: false
+          # optional: чтобы PR создавался только при изменениях в нужных файлах
+          paths: |
+            docs/**
+            README.md
+            .github/**
