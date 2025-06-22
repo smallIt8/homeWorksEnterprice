@@ -1,4 +1,4 @@
-name: Create PR for docs and README updates
+name: Create PR for docs and README update
 
 on:
   push:
@@ -32,13 +32,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: content-updates
+          ref: content-update
       - name: Create or update Pull Request to main
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update docs and README.md'
-          branch: content-updates
+          branch: content-update
           base: main
           title: 'Auto-update docs and README.md'
           body: |
