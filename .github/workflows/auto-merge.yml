@@ -1,0 +1,29 @@
+name: Auto merge content updates
+
+on:
+  push:
+    branches:
+      - content-updates
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: content-updates
+          title: "Automated Content Update"
+          body: "This PR was automatically generated."
+
+      - name: Enable Auto-Merge
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
+          merge-method: squash
+          token: ${{ secrets.GITHUB_TOKEN }}
