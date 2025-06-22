@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       docs: ${{ steps.filter.outputs.docs }}
+      hw: ${{ steps.filter.outputs.hw }}
     steps:
       - uses: actions/checkout@v3
 
@@ -24,36 +25,39 @@ jobs:
           filters: |
             docs:
               - 'docs/**'
-              - '**.md'
+              - 'README.md'
+            hw:
+              - 'HW-*/**'
 
   assign-reviewer-hw:
-    if: ${{ needs.check-changes.outputs.docs == 'true' }}
+    if: ${{ needs.check-changes.outputs.hw == 'true' }}
     runs-on: ubuntu-latest
     needs: check-changes
     steps:
-      - name: Assign reviewers
+      - name: Assign reviewers for HW changes
         uses: ahmadnassri/action-auto-assign@v2
         with:
           reviewers: AleksandrMSK
           skip-draft: true
 
-  auto-merge-docs:
-    if: ${{ needs.check-changes.outputs.docs == 'true' }}
-    needs: [check-changes, assign-reviewer-hw]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Enable Auto-Merge
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          merge-method: squash
-  
   auto-approve-docs:
     if: ${{ needs.check-changes.outputs.docs == 'true' && needs.check-changes.outputs.hw != 'true' }}
     runs-on: ubuntu-latest
-    needs: [check-changes]
+    needs: check-changes
     steps:
       - name: Auto approve docs PR
         uses: hmarr/auto-approve-action@v2.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  auto-merge-docs:
+    if: ${{ needs.check-changes.outputs.docs == 'true' && needs.check-changes.outputs.hw != 'true' }}
+    needs: [check-changes, auto-approve-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable Auto-Merge for docs PR
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
