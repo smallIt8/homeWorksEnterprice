@@ -1,20 +1,20 @@
 package org.example.util;
 
-import org.example.controller.PersonControllerImpl;
+import lombok.experimental.UtilityClass;
+import org.example.controller.PersonController;
 import org.example.repository.PersonRepository;
 import org.example.repository.PersonRepositoryImpl;
 import org.example.service.PersonService;
 import org.example.service.PersonServiceImpl;
 
-public final class Menu {
+@UtilityClass
 
-    public static void start() {
+public class Menu {
+
+    public void start() {
         PersonRepository personRepository = new PersonRepositoryImpl();
         PersonService personService = new PersonServiceImpl(personRepository);
-        PersonControllerImpl personControllerImpl = new PersonControllerImpl(personService);
-        personControllerImpl.WelcomePerson();
-    }
-
-    private Menu() {
+        PersonController personController = new PersonController(personService);
+        personController.welcomePerson();
     }
 }

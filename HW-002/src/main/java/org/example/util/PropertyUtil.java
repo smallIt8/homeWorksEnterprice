@@ -1,25 +1,29 @@
 package org.example.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public final class PropertyUtil {
-    public static final Properties PROPERTIES = new Properties();
+@UtilityClass
+
+public class PropertyUtil {
+    public final Properties PROPERTIES = new Properties();
 
     static {
         loadProperties();
     }
 
-    public static String get(String key) {
+    public String get(String key) {
         return PROPERTIES.getProperty(key);
     }
 
-    private static void loadProperties() {
-        try (InputStream stream = PropertyUtil.class.getClassLoader().getResourceAsStream("application.properties")){
+    private void loadProperties() {
+        try (InputStream stream = PropertyUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
             PROPERTIES.load(stream);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

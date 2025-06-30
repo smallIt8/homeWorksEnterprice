@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.model.Person;
 import org.example.util.ConnectionManager;
 
@@ -15,6 +16,8 @@ import java.util.UUID;
 
 import static org.example.util.constant.SqlConstant.*;
 
+@Slf4j
+
 public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public void create(Person person) {
@@ -28,6 +31,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setString(6, person.getDepartment());
             statement.execute();
         } catch (SQLException e) {
+            log.error("Ошибка при создании сотрудника: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -50,6 +54,7 @@ public class PersonRepositoryImpl implements PersonRepository {
                 }
             }
         } catch (SQLException e) {
+            log.error("Ошибка при получении данных всех сотрудников: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
         return people;
@@ -73,6 +78,7 @@ public class PersonRepositoryImpl implements PersonRepository {
                 }
             }
         } catch (SQLException e) {
+            log.error("Ошибка при получении данных сотрудника: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
         return Optional.empty();
@@ -90,6 +96,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setObject(6, person.getPersonId());
             statement.executeUpdate();
         } catch (SQLException e) {
+            log.error("Ошибка при обновлении данных сотрудника: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -101,6 +108,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setObject(1, personId);
             statement.executeUpdate();
         } catch (SQLException e) {
+            log.error("Ошибка при удалении данных сотрудника: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -111,9 +119,12 @@ public class PersonRepositoryImpl implements PersonRepository {
              PreparedStatement statement = connection.prepareStatement(CHECK_EMAIL_PERSON)) {
             statement.setString(1, email.toLowerCase());
             ResultSet query = statement.executeQuery();
-            query.next();
-            return query.getInt(1) > 0;
+            if (query.next()) {
+                return query.getInt(1) > 0;
+            }
+            return false;
         } catch (SQLException e) {
+            log.error("Ошибка при проверки введенного email: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -125,8 +136,10 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setString(1, email.toLowerCase());
             statement.setObject(2, excludeId);
             ResultSet query = statement.executeQuery();
-            query.next();
-            return query.getInt(1) > 0;
+            if (query.next()) {
+                return query.getInt(1) > 0;
+            }
+            return false;
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
