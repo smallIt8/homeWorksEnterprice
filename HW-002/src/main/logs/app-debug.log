@@ -1,0 +1,38 @@
+2025-07-01 00:19:15 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 6
+2025-07-01 00:19:56 DEBUG [main] o.e.controller.PersonController - Попытка 1: введена фамилия сотрудника для поиска 'lukYanov'
+2025-07-01 00:20:11 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 0
+2025-07-01 01:07:29 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 1
+2025-07-01 01:07:47 DEBUG [main] o.example.service.PersonServiceImpl - Ввод имени: sergei
+2025-07-01 01:07:53 DEBUG [main] o.example.service.PersonServiceImpl - Ввод фамилии: sergeev
+2025-07-01 01:08:04 DEBUG [main] o.example.service.PersonServiceImpl - Ввод email: s_sergeev@tut.by
+2025-07-01 01:08:20 DEBUG [main] o.example.service.PersonServiceImpl - Ввод зарплаты: 1500
+2025-07-01 01:08:30 DEBUG [main] o.example.service.PersonServiceImpl - Ввод отдела: Product
+2025-07-01 01:08:45 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 3
+2025-07-01 01:09:14 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 4
+2025-07-01 01:09:23 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 0
+2025-07-01 01:40:15 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 2
+2025-07-01 01:41:05 DEBUG [main] o.example.service.PersonServiceImpl - Ввод имени: alexander
+2025-07-01 01:41:13 DEBUG [main] o.example.service.PersonServiceImpl - Ввод фамилии: alexandrov
+2025-07-01 01:41:28 DEBUG [main] o.example.service.PersonServiceImpl - Ввод email: a_alexandrov@tut.by
+2025-07-01 01:41:32 DEBUG [main] o.example.service.PersonServiceImpl - Ввод зарплаты: 1800
+2025-07-01 01:41:40 DEBUG [main] o.example.service.PersonServiceImpl - Ввод отдела: Product
+2025-07-01 01:41:40 DEBUG [main] o.example.service.PersonServiceImpl - Добавлен сотрудник в пакет: Имя: [38;5;33mALEXANDER[0m
+Фамилия: [38;5;33mALEXANDROV[0m
+Эмейл: [38;5;33ma_alexandrov@tut.by[0m
+Зарплата: [38;5;33m1800[0m
+Отдел: [38;5;33mProduct[0m
+
+2025-07-01 01:44:44 DEBUG [main] o.example.service.PersonServiceImpl - Ввод имени: denis
+2025-07-01 01:44:50 DEBUG [main] o.example.service.PersonServiceImpl - Ввод фамилии: denisov
+2025-07-01 01:45:00 DEBUG [main] o.example.service.PersonServiceImpl - Ввод email: d_denisov@tut.by
+2025-07-01 01:45:03 DEBUG [main] o.example.service.PersonServiceImpl - Ввод зарплаты: 2000
+2025-07-01 01:45:08 DEBUG [main] o.example.service.PersonServiceImpl - Ввод отдела: Product
+2025-07-01 01:45:08 DEBUG [main] o.example.service.PersonServiceImpl - Добавлен сотрудник в пакет: Имя: [38;5;33mDENIS[0m
+Фамилия: [38;5;33mDENISOV[0m
+Эмейл: [38;5;33md_denisov@tut.by[0m
+Зарплата: [38;5;33m2000[0m
+Отдел: [38;5;33mProduct[0m
+
+2025-07-01 01:45:41 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 3
+2025-07-01 01:45:56 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 4
+2025-07-01 01:46:07 DEBUG [main] o.e.controller.PersonController - Пользователь ввёл шаг меню: 0

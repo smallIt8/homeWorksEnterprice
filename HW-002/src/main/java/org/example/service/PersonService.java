@@ -5,5 +5,11 @@ import org.example.model.Person;
 import java.util.UUID;
 
 public interface PersonService extends Service<Person, UUID> {
+    void createBatch();
 
+    void getByLastName(String lastName);
+
+    void getAllBySalary();
+
+    void getAllByCreateDate();
 }

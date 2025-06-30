@@ -9,17 +9,17 @@ import java.util.Properties;
 @UtilityClass
 
 public class PropertyUtil {
-    public final Properties PROPERTIES = new Properties();
+    public static final Properties PROPERTIES = new Properties();
 
     static {
         loadProperties();
     }
 
-    public String get(String key) {
+    public static String get(String key) {
         return PROPERTIES.getProperty(key);
     }
 
-    private void loadProperties() {
+    private static void loadProperties() {
         try (InputStream stream = PropertyUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
             PROPERTIES.load(stream);
         } catch (IOException e) {

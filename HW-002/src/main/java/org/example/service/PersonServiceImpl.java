@@ -8,10 +8,7 @@ import org.example.util.AppUtil;
 import org.example.util.constant.RegexConstant;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 import static org.example.util.constant.ExceptionMessageConstant.*;
 import static org.example.util.constant.MenuPersonConstant.*;
@@ -54,6 +51,44 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
+    @Override
+    public void createBatch() {
+        log.info("Запуск пакетного добавления сотрудников");
+        System.out.println(ADDING_BATCH_MESSAGE);
+        List<Person> persons = new ArrayList<>();
+        while (true) {
+            System.out.println(ADDING_MESSAGE + (persons.size() + 1));
+            createFirstName();
+            createLastName();
+            createEmail();
+            createSalary();
+            createDepartment();
+            Person person = new Person(
+                    UUID.randomUUID(),
+                    firstName.toUpperCase(),
+                    lastName.toUpperCase(),
+                    email.toLowerCase(),
+                    salary,
+                    department
+            );
+            persons.add(person);
+            log.debug("Добавлен сотрудник в пакет: {}", person);
+            System.out.print(ADDING_PERSON);
+            String answer = SCANNER.nextLine().trim().toLowerCase();
+            if (!answer.equals("y")) {
+                break;
+            }
+        }
+        try {
+            personRepository.createBatch(persons);
+            log.info("Пакет сотрудников успешно добавлен. Всего: {}", persons.size());
+            System.out.println(ADDED_PERSONS_MESSAGE);
+        } catch (RuntimeException e) {
+            log.error("Ошибка при пакетном добавлении сотрудников: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+    
     private void createFirstName() {
         for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
             System.out.print(ENTER_FIRST_NAME);
@@ -124,41 +159,6 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
-    private void createEmail(UUID currentPersonId) {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_EMAIL);
-            email = SCANNER.nextLine();
-            log.debug("Ввод email для обновления: {}", email);
-
-            if (email.matches(RegexConstant.EMAIL_REGEX)) {
-                try {
-                    if (personRepository.checkEmail(email, currentPersonId)) {
-                        if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                            System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
-                            log.warn("Email уже назначен другому пользователю: {}", email);
-                        } else {
-                            log.error("Превышено количество попыток ввода email при обновлении");
-                            AppUtil.exitByFromAttempt();
-                        }
-                    } else {
-                        return;
-                    }
-                } catch (RuntimeException e) {
-                    log.error("Ошибка при проверке email в базе: {}", e.getMessage(), e);
-                    throw e;
-                }
-            } else {
-                if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                    System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
-                    log.warn("Неверный формат email при обновлении: {}", email);
-                } else {
-                    log.error("Превышено количество попыток ввода email при обновлении по формату");
-                    AppUtil.exitByFromAttempt();
-                }
-            }
-        }
-    }
-
     private void createSalary() {
         for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
             System.out.print(ENTER_SALARY);
@@ -215,6 +215,57 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    public void getAllBySalary() {
+        List<Person> persons = personRepository.getAllBySalary();
+        if (persons.isEmpty()) {
+            log.warn("Список сотрудников пуст (сортировка по зарплате)");
+            System.out.println(EMPTY_LIST_PERSON_MESSAGE);
+        } else {
+            log.info("Получено {} сотрудников, отсортированных по зарплате", persons.size());
+            System.out.println(LIST_PERSON_BY_SALARY_MESSAGE);
+            for (int i = 0; i < persons.size(); i++) {
+                Person person = persons.get(i);
+                String numberOfPerson = AppUtil.colorizeNumber(person.toString(), i + 1);
+                System.out.println(numberOfPerson);
+            }
+        }
+    }
+
+    @Override
+    public void getAllByCreateDate() {
+        List<Person> persons = personRepository.getAllByCreateDate();
+        if (persons.isEmpty()) {
+            log.warn("Список сотрудников пуст (сортировка по дате приёма)");
+            System.out.println(EMPTY_LIST_PERSON_MESSAGE);
+        } else {
+            log.info("Получено {} сотрудников, отсортированных по дате приёма", persons.size());
+            System.out.println(LIST_PERSON_BY_CREATE_DATE_MESSAGE);
+            for (int i = 0; i < persons.size(); i++) {
+                Person person = persons.get(i);
+                String numberOfPerson = AppUtil.colorizeNumber(person.toString(), i + 1);
+                System.out.println(numberOfPerson);
+            }
+        }
+    }
+
+    @Override
+    public void getByLastName(String lastName) {
+        List<Person> persons = personRepository.getByLastName(lastName);
+        if (persons.isEmpty()) {
+            log.warn("Сотрудники с такой фамилией не найдены");
+            System.out.println(EMPTY_LIST_LAST_NAME_SEARCH_PERSON_MESSAGE);
+        } else {
+            log.info("Получено {} сотрудников с введенной фамилией {}", persons.size(), lastName);
+            System.out.println(LIST_PERSON_LAST_NAME_SEARCH_MESSAGE + lastName);
+            for (int i = 0; i < persons.size(); i++) {
+                Person person = persons.get(i);
+                String numberOfPerson = AppUtil.colorizeNumber(person.toString(), i + 1);
+                System.out.println(numberOfPerson);
+            }
+        }
+    }
+
+    @Override
     public Optional<Person> getById(UUID personId) {
         log.info("Получение данных сотрудника по ID: {}", personId);
         Optional<Person> person = personRepository.getById(personId);
@@ -254,6 +305,41 @@ public class PersonServiceImpl implements PersonService {
             throw e;
         }
         return Optional.of(personUpdate);
+    }
+
+    private void createEmail(UUID currentPersonId) {
+        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
+            System.out.print(ENTER_EMAIL);
+            email = SCANNER.nextLine();
+            log.debug("Ввод email для обновления: {}", email);
+
+            if (email.matches(RegexConstant.EMAIL_REGEX)) {
+                try {
+                    if (personRepository.checkEmail(email, currentPersonId)) {
+                        if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
+                            System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
+                            log.warn("Email уже назначен другому пользователю: {}", email);
+                        } else {
+                            log.error("Превышено количество попыток ввода email при обновлении");
+                            AppUtil.exitByFromAttempt();
+                        }
+                    } else {
+                        return;
+                    }
+                } catch (RuntimeException e) {
+                    log.error("Ошибка при проверке email в базе: {}", e.getMessage(), e);
+                    throw e;
+                }
+            } else {
+                if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
+                    System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
+                    log.warn("Неверный формат email при обновлении: {}", email);
+                } else {
+                    log.error("Превышено количество попыток ввода email при обновлении по формату");
+                    AppUtil.exitByFromAttempt();
+                }
+            }
+        }
     }
 
     @Override

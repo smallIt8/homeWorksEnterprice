@@ -11,7 +11,7 @@ import org.example.service.PersonServiceImpl;
 
 public class Menu {
 
-    public void start() {
+    public static void start() {
         PersonRepository personRepository = new PersonRepositoryImpl();
         PersonService personService = new PersonServiceImpl(personRepository);
         PersonController personController = new PersonController(personService);

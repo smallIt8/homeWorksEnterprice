@@ -11,9 +11,9 @@ import java.sql.SQLException;
 @UtilityClass
 
 public class ConnectionManager {
-    private final String URL_KEY = "db.url";
-    private final String USERNAME_KEY = "db.username";
-    private final String PASSWORD_KEY = "db.password";
+    private static final String URL_KEY = "db.url";
+    private static final String USERNAME_KEY = "db.username";
+    private static final String PASSWORD_KEY = "db.password";
 
     public Connection open() {
         try {

@@ -2,20 +2,16 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.Person;
 import org.example.service.PersonService;
 import org.example.util.AppUtil;
 import org.example.util.constant.RegexConstant;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 
-import static org.example.util.constant.ExceptionMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.ExceptionMessageConstant.ERROR_ENTER_UUID_MESSAGE;
-import static org.example.util.constant.MenuPersonConstant.ENTER_ID;
-import static org.example.util.constant.MenuPersonConstant.MAIN_MENU;
+import static org.example.util.constant.ExceptionMessageConstant.*;
+import static org.example.util.constant.MenuPersonConstant.*;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -34,21 +30,14 @@ public class PersonController {
                 log.debug("Пользователь ввёл шаг меню: {}", step);
                 switch (step) {
                     case STEP_ONE -> personService.create();
-                    case STEP_TWO -> {
-                        // A preparation for the possibility of sorting the list in the future
-                        List<Person> persons = personService.getAll();
-                    }
-                    case STEP_THREE -> checkValidUUID().ifPresent(personId -> {
-                        // Preparation for the possibility of updating and deleting a person in the future
-                        Optional<Person> person = personService
-                                .getById(personId);
-                    });
-                    case STEP_FOUR -> checkValidUUID().ifPresent(personId -> {
-                        // Preparation for the possibility of updating and deleting a person in the future
-                        Optional<Person> person = personService
-                                .updateById(personId);
-                    });
-                    case STEP_FIVE -> checkValidUUID().ifPresent(personService::delete);
+                    case STEP_TWO -> personService.createBatch();
+                    case STEP_THREE -> personService.getAll();
+                    case STEP_FOUR -> personService.getAllBySalary();
+                    case STEP_FIVE -> personService.getAllByCreateDate();
+                    case STEP_SIX -> checkValidLastNameSearch().ifPresent(personService::getByLastName);
+                    case STEP_SEVEN -> checkValidUUID().ifPresent(personService::getById);
+                    case STEP_EIGHT -> checkValidUUID().ifPresent(personService::updateById);
+                    case STEP_NINE -> checkValidUUID().ifPresent(personService::delete);
                     case STEP_ZERO -> {
                         log.info("Выход из приложения");
                         AppUtil.exit();
@@ -78,7 +67,27 @@ public class PersonController {
                 if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
                     System.out.println(ERROR_ENTER_UUID_MESSAGE);
                 } else {
-                    log.error("Превышено количество попыток ввода UUID. Завершение работы.");
+                    log.error("Превышено количество попыток ввода UUID");
+                    AppUtil.exitByFromAttempt();
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<String> checkValidLastNameSearch() {
+        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
+            System.out.print(ENTER_LAST_NAME_SEARCH);
+            String input = SCANNER.nextLine().trim();
+            log.debug("Попытка {}: введена фамилия сотрудника для поиска '{}'", i + 1, input);
+            if (input.matches(RegexConstant.FIRS_AND_LAST_NAME_REGEX)) {
+                return Optional.of(input);
+            } else {
+                log.warn("Введена некорректная фамилия: {}", input);
+                if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
+                    System.out.println(ERROR_ENTER_LAST_NAME_MESSAGE);
+                } else {
+                    log.error("Превышено количество попыток ввода фамилии");
                     AppUtil.exitByFromAttempt();
                 }
             }
