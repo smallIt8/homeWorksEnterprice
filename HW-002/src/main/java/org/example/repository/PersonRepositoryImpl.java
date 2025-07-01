@@ -29,7 +29,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setString(4, person.getEmail());
             statement.setBigDecimal(5, person.getSalary());
             statement.setString(6, person.getDepartment());
-            statement.execute();
+            statement.executeUpdate();
         } catch (SQLException e) {
             log.error("Ошибка при создании сотрудника: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
@@ -56,7 +56,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    
+
     @Override
     public boolean checkEmail(String email) {
         try (Connection connection = ConnectionManager.open();

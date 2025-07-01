@@ -10,7 +10,7 @@ import org.example.util.constant.RegexConstant;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.example.util.constant.ExceptionMessageConstant.*;
+import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.MenuPersonConstant.*;
 
 @Slf4j
@@ -73,22 +73,38 @@ public class PersonServiceImpl implements PersonService {
             );
             persons.add(person);
             log.debug("Добавлен сотрудник в пакет: {}", person);
-            System.out.print(ADDING_PERSON);
-            String answer = SCANNER.nextLine().trim().toLowerCase();
-            if (!answer.equals("y")) {
-                break;
+
+            for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
+                System.out.print(ADDING_PERSON);
+                String answer = SCANNER.nextLine().toUpperCase();
+                log.debug("Ввод для продолжения пакетного добавления: '{}'", answer);
+                if (answer.matches(RegexConstant.YES_OR_NO_REGEX)) {
+                    if (answer.equals("Y")) {
+                        log.info("Выбран ввод следующего сотрудников");
+                        break;
+                    } else if (answer.equals("N")) {
+                        log.info("Не выбран ввод следующего сотрудника");
+                        try {
+                            personRepository.createBatch(persons);
+                            log.info("Пакет сотрудников успешно добавлен. Всего: {}", persons.size());
+                            System.out.println(ADDED_PERSONS_MESSAGE);
+                        } catch (RuntimeException e) {
+                            log.error("Ошибка при пакетном добавлении сотрудников: {}", e.getMessage(), e);
+                            throw e;
+                        }
+                        return;
+                    }
+                } else if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
+                    System.out.println(ERROR_ENTER_YES_OR_NO_MESSAGE);
+                    log.warn("Неверный ввод ответа: {}", answer);
+                } else {
+                    log.error("Превышено количество попыток ввода Y/N");
+                    AppUtil.exitByFromAttempt();
+                }
             }
         }
-        try {
-            personRepository.createBatch(persons);
-            log.info("Пакет сотрудников успешно добавлен. Всего: {}", persons.size());
-            System.out.println(ADDED_PERSONS_MESSAGE);
-        } catch (RuntimeException e) {
-            log.error("Ошибка при пакетном добавлении сотрудников: {}", e.getMessage(), e);
-            throw e;
-        }
     }
-    
+
     private void createFirstName() {
         for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
             System.out.print(ENTER_FIRST_NAME);

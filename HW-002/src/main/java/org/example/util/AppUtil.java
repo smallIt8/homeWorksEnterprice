@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.util.function.IntConsumer;
 
 import static org.example.util.constant.ColorsConstant.*;
-import static org.example.util.constant.ExceptionMessageConstant.ERROR_ENTER_MAX_ATTEMPTS_MESSAGE;
+import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MAX_ATTEMPTS_MESSAGE;
 import static org.example.util.constant.MenuPersonConstant.FINISHING_MESSAGE;
 
 @UtilityClass

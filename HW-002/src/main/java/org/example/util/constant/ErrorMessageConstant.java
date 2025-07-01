@@ -5,9 +5,9 @@ import org.example.util.AppUtil;
 
 @UtilityClass
 
-public class ExceptionMessageConstant {
+public class ErrorMessageConstant {
     // ========== Сообщения об ошибках создания ==========
-    public static final String ERROR_CREATION_EMAIL_MESSAGE = AppUtil.colorizeRedText("Пользователь с таким email уже существует.");
+    public static final String ERROR_CREATION_EMAIL_MESSAGE = AppUtil.colorizeRedText("Сотрудник с таким email уже существует.");
 
     // ========== Сообщения об ошибках ввода ==========
     public static final String ERROR_ENTER_MESSAGE = AppUtil.colorizeRedText("Неверный ввод.\nповторите ввод: ");
@@ -56,5 +56,9 @@ public class ExceptionMessageConstant {
             содержать 4 символа между третьим и четвертым дефисом,
             содержать 12 символов после четвертого дефиса
             и состоять только из латинских букв от A до F в верхнем и нижнем регистре и цифр 0–9.
+            """);
+    public static final String ERROR_ENTER_YES_OR_NO_MESSAGE = AppUtil.colorizeRedText("""
+            Неверный ввод.
+            Ответ должен быть только Y(Да) или N(Нет)
             """);
 }

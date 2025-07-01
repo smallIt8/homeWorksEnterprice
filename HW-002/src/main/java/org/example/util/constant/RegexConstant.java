@@ -10,4 +10,5 @@ public class RegexConstant {
     public static final String SALARY_REGEX = "^[0-9]{1,10}(\\.[0-9]{1,2})?$";
     public static final String DEPARTMENT_REGEX = "^[a-zA-Zа-яА-Я0-9][a-zA-Zа-яА-Я0-9 '\\.,_:-]{1,49}$";
     public static final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+    public static final String YES_OR_NO_REGEX = "^[yYnN]$";
 }

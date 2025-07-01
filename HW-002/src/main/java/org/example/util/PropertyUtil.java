@@ -9,7 +9,7 @@ import java.util.Properties;
 @UtilityClass
 
 public class PropertyUtil {
-    public static final Properties PROPERTIES = new Properties();
+    private static final Properties PROPERTIES = new Properties();
 
     static {
         loadProperties();

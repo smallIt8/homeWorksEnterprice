@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 
-import static org.example.util.constant.ExceptionMessageConstant.*;
+import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.MenuPersonConstant.*;
 import static org.example.util.constant.StepConstant.*;
 

@@ -15,7 +15,7 @@ public class ConnectionManager {
     private static final String USERNAME_KEY = "db.username";
     private static final String PASSWORD_KEY = "db.password";
 
-    public Connection open() {
+    public static Connection open() {
         try {
             return DriverManager.getConnection(
                     PropertyUtil.get(URL_KEY),

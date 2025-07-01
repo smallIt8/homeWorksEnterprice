@@ -16,7 +16,7 @@ public class MenuPersonConstant {
     public static final String LIST_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников:");
     public static final String LIST_PERSON_BY_SALARY_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по зарплате:");
     public static final String LIST_PERSON_BY_CREATE_DATE_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по дате приема:");
-    public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников с введенной фамилией:");
+    public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников с фамилией:");
     public static final String EMPTY_LIST_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников пуст");
     public static final String EMPTY_LIST_LAST_NAME_SEARCH_PERSON_MESSAGE = AppUtil.colorizeGreenText("Сотрудники с такой фамилией не найдены");
     public static final String PERSON_NOT_FOUND_MESSAGE = AppUtil.colorizeGreenText("Сотрудник с таким ID не найден");
@@ -24,7 +24,7 @@ public class MenuPersonConstant {
 
     // ========== Сообщения о выполненных действиях ==========
     public static final String ADDED_MESSAGE = AppUtil.colorizeGreenText("Вы добавили сотрудника.");
-    public static final String ADDED_PERSONS_MESSAGE = AppUtil.colorizeGreenText("Все сотрудники добавлены.");
+    public static final String ADDED_PERSONS_MESSAGE = AppUtil.colorizeGreenText("Пакетный ввод сотрудников завершен.");
     public static final String UPDATED_MESSAGE = AppUtil.colorizeGreenText("Вы обновили данные сотрудника. ");
     public static final String DELETED_MESSAGE = AppUtil.colorizeGreenText("Вы удалили данные сотрудника с ID: ");
 
@@ -36,7 +36,7 @@ public class MenuPersonConstant {
     public static final String ENTER_SALARY = AppUtil.colorizeOrangeText("введите зарплату: ");
     public static final String ENTER_DEPARTMENT = AppUtil.colorizeOrangeText("введите департамент: ");
     public static final String ENTER_ID = AppUtil.colorizeOrangeText("введите ID сотрудника: ");
-    public static final String ADDING_PERSON = AppUtil.colorizeOrangeText("добавить ещё одного сотрудника? (y/n): ");
+    public static final String ADDING_PERSON = AppUtil.colorizeOrangeText("добавить ещё одного сотрудника? Введите Y(Да) или N(Нет): ");
 
     // ========== Меню MAIN ==========
     public static final String MAIN_MENU = """

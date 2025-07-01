@@ -15,6 +15,4 @@ public class SqlConstant {
     public static final String CHECK_UPDATE_EMAIL_PERSON = "SELECT COUNT(*) FROM person WHERE email = ? AND person_id <> ?";
     public static final String GET_ALL_PERSON_BY_SALARY = "SELECT * FROM person ORDER BY salary";
     public static final String GET_ALL_PERSON_BY_DATE = "SELECT * FROM person ORDER BY create_date"; // если есть колонка hire_date
-
-
 }
