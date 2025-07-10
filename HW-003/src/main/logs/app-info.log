@@ -1,0 +1,8 @@
+2025-07-11 00:31:15 INFO  [main] o.e.controller.PersonController - Запуск главного меню приложения
+2025-07-11 00:31:22 INFO  [main] o.example.service.PersonServiceImpl - Получено данных 6 сотрудников
+2025-07-11 00:31:50 INFO  [main] o.example.service.PersonServiceImpl - Получено 6 сотрудников, отсортированных по зарплате
+2025-07-11 00:32:12 INFO  [main] o.example.service.PersonServiceImpl - Получено 6 сотрудников, отсортированных по дате приёма
+2025-07-11 00:32:19 INFO  [main] o.e.controller.PersonController - Выход из приложения
+2025-07-11 00:34:50 INFO  [main] o.e.controller.PersonController - Запуск главного меню приложения
+2025-07-11 00:34:53 INFO  [main] o.example.service.PersonServiceImpl - Получено данных 6 сотрудников
+2025-07-11 00:35:06 INFO  [main] o.e.controller.PersonController - Выход из приложения
