@@ -1,16 +1,19 @@
 package org.example.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 
 public enum TransactionType {
-    INCOME("Приход"),
-    EXPENSE("Расход");
+	INCOME("Приход"),
+	EXPENSE("Расход");
 
-    private final String typeName;
+	private final String typeName;
 
-    TransactionType(String typeName) {
-        this.typeName = typeName;
-    }
+	@Override
+	public String toString() {
+		return typeName;
+	}
 }

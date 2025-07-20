@@ -1,22 +1,22 @@
 package org.example.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class Category {
-    private UUID categoryId;
-    private String categoryName;
-    private TransactionType type;
+	private UUID categoryId;
+	private String categoryName;
+	private CategoryType type;
 
-    public Category(String categoryName, TransactionType type) {
-        this.categoryName = categoryName;
-        this.type = type;
-    }
+	@Override
+	public String toString() {
+		return categoryName;
+	}
 }

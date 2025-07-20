@@ -22,6 +22,7 @@
         <postgresql.version>42.7.7</postgresql.version>
         <lombok.version>1.18.38</lombok.version>
         <logback.version>1.5.18</logback.version>
+        <jbcrypto.version>0.4</jbcrypto.version>
     </properties>
 
     <dependencies>
@@ -46,5 +47,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypto.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        
     </dependencies>
 </project>

@@ -2,14 +2,16 @@ package org.example.service;
 
 import org.example.model.Budget;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
-public interface BudgetService extends Service<Budget, UUID> {
+public interface BudgetService extends ComponentService<Budget, UUID> {
 
-    void getByCategory(String category);
+	List<Budget> getAllSortByDate(UUID currentPerson);
 
-    void getByStartDate(LocalDate startDate); //DateID?
+	List<Budget> getAllSortByCategory(String category, UUID currentPerson);
 
-    void getByPerson(String person); //PersonID?
+	List<Budget> getAllSortByCategoryAndDate(String category, UUID currentPerson);
+
+	List<Budget> getAllSortByCreateDate();
 }

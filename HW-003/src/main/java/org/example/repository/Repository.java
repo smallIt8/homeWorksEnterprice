@@ -1,16 +1,14 @@
 package org.example.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface Repository<T, ID> {
-    void create(T value);
 
-    List<T> getAll();
+	void create(T value);
 
-    Optional<T> getById(ID value);
+	Optional<T> getById(ID value);
 
-    void updateById(T value);
+	void update(T value);
 
-    void delete(ID value);
+	void delete(ID value);
 }

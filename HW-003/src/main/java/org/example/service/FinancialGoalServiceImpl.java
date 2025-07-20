@@ -1,55 +1,52 @@
 package org.example.service;
 
-import org.example.model.Budget;
+import lombok.RequiredArgsConstructor;
+import org.example.model.FinancialGoal;
+import org.example.model.Person;
+import org.example.repository.FinancialGoalRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FinancialGoalServiceImpl implements BudgetService {
-    @Override
-    public void create() {
+@RequiredArgsConstructor
 
-    }
+public class FinancialGoalServiceImpl implements FinancialGoalService {
+	private final FinancialGoalRepository financialGoalRepository;
 
-    @Override
-    public void createBatch() {
+	@Override
+	public void create() {
 
-    }
+	}
 
-    @Override
-    public List<Budget> getAll() {
-        return List.of();
-    }
+	@Override
+	public void createBatch() {
 
-    @Override
-    public void getByCategory(String category) {
+	}
 
-    }
+	@Override
+	public Optional<FinancialGoal> update(UUID value) {
+		return Optional.empty();
+	}
 
-    @Override
-    public void getByStartDate(LocalDate startDate) {
+	@Override
+	public List<FinancialGoal> getAll() {
+		return List.of();
+	}
 
-    }
+	@Override
+	public List<FinancialGoal> getAllSortByEndDate(LocalDate endDate) {
+		return List.of();
+	}
 
-    @Override
-    public void getByPerson(String person) {
+	@Override
+	public List<FinancialGoal> getAllByPerson(Person person) {
+		return List.of();
+	}
 
-    }
+	@Override
+	public void delete(UUID value) {
 
-    @Override
-    public Optional<Budget> getById(UUID value) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Budget> updateById(UUID value) {
-        return Optional.empty();
-    }
-
-    @Override
-    public void delete(UUID value) {
-
-    }
+	}
 }
