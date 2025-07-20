@@ -2,362 +2,318 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.model.Family;
 import org.example.model.Person;
 import org.example.repository.PersonRepository;
 import org.example.util.AppUtil;
+import org.example.util.PasswordUtil;
 import org.example.util.constant.RegexConstant;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.UUID;
 
 import static org.example.util.constant.ErrorMessageConstant.*;
-import static org.example.util.constant.MenuPersonConstant.*;
+import static org.example.util.constant.MenuConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
 
 public class PersonServiceImpl implements PersonService {
-    private final PersonRepository personRepository;
-    private static final Scanner SCANNER = new Scanner(System.in);
-    private String firstName;
-    private String lastName;
-    private String email;
-    private BigDecimal salary;
-    private String department;
+	private final PersonRepository personRepository;
+	private static final Scanner SCANNER = new Scanner(System.in);
+	private String userName;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String family;
 
-    @Override
-    public void entry() {
-    }
+	@Override
+	public Optional<Person> entry() {
+		return AppUtil.loopIterationWithReturnAndExit((count) -> {
+			log.info("Авторизация пользователя");
+			System.out.print(ENTER_USERNAME);
+			String userName = SCANNER.nextLine().toLowerCase();
+			System.out.print(ENTER_PASSWORD);
+			String inputPassword = SCANNER.nextLine();
+			Optional<Person> person = personRepository.entry(userName);
+			if (person.isPresent()) {
+				Person p = person.get();
+				if (PasswordUtil.checkPassword(inputPassword, p.getPassword())) {
+					log.info("Пользователь '{}' успешно вошёл в систему", userName);
+					System.out.println(WELCOME_MESSAGE + userName);
+					return Optional.of(new Person(p.getPersonId()));
+				}
+			}
+			if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+				System.out.println(ERROR_ENTER_USER_NAME_OR_PASSWORD_MESSAGE);
+			} else {
+				log.error("Ошибка входа пользователя '{}' - неверное имя пользователя или пароль для", userName);
+			}
+			return Optional.empty();
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    @Override
-    public void create() {
-        log.info("Добавление нового сотрудника");
-        System.out.println(ADDING_MESSAGE);
-        createFirstName();
-        createLastName();
-        createEmail();
-        createSalary();
-        createDepartment();
-        Person person = new Person(
-                UUID.randomUUID(),
-                firstName.toUpperCase(),
-                lastName.toUpperCase(),
-                email.toLowerCase(),
-                salary,
-                department);
-        try {
-            personRepository.create(person);
-            log.info("Сотрудник успешно создан с ID: {}", person.getPersonId());
-            System.out.println(ADDED_MESSAGE);
-        } catch (RuntimeException e) {
-            log.error("Ошибка при создании сотрудника: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
+	@Override
+	public void create() {
+		log.info("Регистрация нового пользователя");
+		System.out.println(REGISTRATION_MESSAGE);
+		createUserName();
+		createPassword();
+		createFirstName();
+		createLastName();
+		createEmail();
+		Person person = new Person(
+				UUID.randomUUID(),
+				userName.toLowerCase(),
+				password,
+				firstName.toUpperCase(),
+				lastName.toUpperCase(),
+				email.toLowerCase()
+		);
+		try {
+			personRepository.create(person);
+			log.info("Пользователь с ID: '{}' успешно создан", person.getPersonId());
+			System.out.println(REGISTERED_MESSAGE);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при создании пользователя: '{}'", e.getMessage(), e);
+			throw e;
+		}
+	}
 
-    @Override
-    public void createBatch() {
-        log.info("Запуск пакетного добавления сотрудников");
-        System.out.println(ADDING_BATCH_MESSAGE);
-        List<Person> persons = new ArrayList<>();
-        while (true) {
-            System.out.println(ADDING_MESSAGE + (persons.size() + 1));
-            createFirstName();
-            createLastName();
-            createEmail();
-            createSalary();
-            createDepartment();
-            Person person = new Person(
-                    UUID.randomUUID(),
-                    firstName.toUpperCase(),
-                    lastName.toUpperCase(),
-                    email.toLowerCase(),
-                    salary,
-                    department
-            );
-            persons.add(person);
-            log.debug("Добавлен сотрудник в пакет: {}", person);
+	private void createUserName() {
+		AppUtil.loopIterationAndExit((count) -> {
+			log.info("Создание логина пользователя");
+			System.out.print(ENTER_USERNAME);
+			userName = SCANNER.nextLine();
+			if (userName.matches(RegexConstant.USERNAME_REGEX)) {
+				if (!personRepository.checkUserName(userName)) {
+					log.info("Логин пользователя '{}' успешно создан", userName);
+					return true;
+				} else {
+					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+						System.out.println(ERROR_CREATION_USER_NAME_MESSAGE);
+						log.warn("Пользователь с таким логином уже существует: '{}'", userName);
+					} else {
+						log.error("Ошибка при проверке логина: '{}'", userName);
+					}
+				}
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_USER_NAME_MESSAGE);
+				} else {
+					log.error("Ошибка при создании логина пользователя: '{}'", userName);
+				}
+			}
+			return false;
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-            for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-                System.out.print(ADDING_PERSON);
-                String answer = SCANNER.nextLine().toUpperCase();
-                log.debug("Ввод для продолжения пакетного добавления: '{}'", answer);
-                if (answer.matches(RegexConstant.YES_OR_NO_REGEX)) {
-                    if (answer.equals("Y")) {
-                        log.info("Выбран ввод следующего сотрудников");
-                        break;
-                    } else if (answer.equals("N")) {
-                        log.info("Не выбран ввод следующего сотрудника");
-                        try {
-                            personRepository.createBatch(persons);
-                            log.info("Пакет сотрудников успешно добавлен. Всего: {}", persons.size());
-                            System.out.println(ADDED_PERSONS_MESSAGE);
-                        } catch (RuntimeException e) {
-                            log.error("Ошибка при пакетном добавлении сотрудников: {}", e.getMessage(), e);
-                            throw e;
-                        }
-                        return;
-                    }
-                } else if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                    System.out.println(ERROR_ENTER_YES_OR_NO_MESSAGE);
-                    log.warn("Неверный ввод ответа: {}", answer);
-                } else {
-                    log.error("Превышено количество попыток ввода Y/N");
-                    AppUtil.exitByFromAttempt();
-                }
-            }
-        }
-    }
+	private void createPassword() {
+		AppUtil.loopIterationAndExit((count) -> {
+			log.info("Создание пароля пользователя");
+			System.out.print(ENTER_PASSWORD);
+			String inputPassword = SCANNER.nextLine();
+			if (inputPassword.matches(RegexConstant.PASSWORD_REGEX)) {
+				password = PasswordUtil.hashPassword(inputPassword);
+				log.info("Пароль пользователя успешно создан и хэширован");
+				return true;
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_PASSWORD_MESSAGE);
+				} else {
+					log.error("Ошибка при создании пароля пользователя");
+				}
+				return false;
+			}
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    private void createFirstName() {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_FIRST_NAME);
-            firstName = SCANNER.nextLine();
-            log.debug("Ввод имени: {}", firstName);
-            if (firstName.matches(RegexConstant.FIRS_AND_LAST_NAME_REGEX)) {
-                break;
-            }
-            if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                System.out.println(ERROR_ENTER_FIRST_NAME_MESSAGE);
-                log.warn("Неверный ввод имени: {}", firstName);
-            } else {
-                log.error("Превышено количество попыток ввода имени");
-                AppUtil.exitByFromAttempt();
-            }
-        }
-    }
+	private void createFirstName() {
+		AppUtil.loopIterationAndExit(count -> {
+			log.info("Создание имени пользователя");
+			System.out.print(ENTER_FIRST_NAME);
+			firstName = SCANNER.nextLine();
+			if (firstName.matches(RegexConstant.FIRS_AND_LAST_NAME_REGEX)) {
+				log.info("Имя пользователя успешно создано");
+				return true;
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_FIRST_NAME_MESSAGE);
+				} else {
+					log.error("Ошибка при создании имени пользователя: '{}'", firstName);
+				}
+				return false;
+			}
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    private void createLastName() {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_LAST_NAME);
-            lastName = SCANNER.nextLine();
-            log.debug("Ввод фамилии: {}", lastName);
-            if (lastName.matches(RegexConstant.FIRS_AND_LAST_NAME_REGEX)) {
-                break;
-            }
-            if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                System.out.println(ERROR_ENTER_LAST_NAME_MESSAGE);
-                log.warn("Неверный ввод фамилии: {}", lastName);
-            } else {
-                log.error("Превышено количество попыток ввода фамилии");
-                AppUtil.exitByFromAttempt();
-            }
-        }
-    }
+	private void createLastName() {
+		AppUtil.loopIterationAndExit(count -> {
+			log.info("Создание фамилии пользователя");
+			System.out.print(ENTER_LAST_NAME);
+			lastName = SCANNER.nextLine();
+			if (lastName.matches(RegexConstant.FIRS_AND_LAST_NAME_REGEX)) {
+				log.info("Фамилия пользователя успешно создана");
+				return true;
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_LAST_NAME_MESSAGE);
+				} else {
+					log.error("Ошибка при создании фамилии пользователя: '{}'", lastName);
+				}
+				return false;
+			}
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    private void createEmail() {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_EMAIL);
-            email = SCANNER.nextLine();
-            log.debug("Ввод email: {}", email);
-            if (email.matches(RegexConstant.EMAIL_REGEX)) {
-                try {
-                    if (personRepository.checkEmail(email)) {
-                        if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                            System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
-                            log.warn("Email уже существует: {}", email);
-                        } else {
-                            log.error("Превышено количество попыток ввода email");
-                            AppUtil.exitByFromAttempt();
-                        }
-                    } else {
-                        return;
-                    }
-                } catch (RuntimeException e) {
-                    log.error("Ошибка при проверке email в базе: {}", e.getMessage(), e);
-                    throw e;
-                }
-            } else {
-                if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                    System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
-                    log.warn("Неверный формат email: {}", email);
-                } else {
-                    log.error("Превышено количество попыток ввода email по формату");
-                    AppUtil.exitByFromAttempt();
-                }
-            }
-        }
-    }
+	private void createEmail() {
+		AppUtil.loopIterationAndExit(count -> {
+			log.info("Создание эмейл пользователя");
+			System.out.print(ENTER_EMAIL);
+			email = SCANNER.nextLine();
+			if (email.matches(RegexConstant.EMAIL_REGEX)) {
+				if (!personRepository.checkEmail(email)) {
+					log.info("Эмейл '{}' пользователя успешно создан", email);
+					return true;
+				} else {
+					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+						System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
+						log.warn("Пользователь с таким эмейл уже существует: '{}'", email);
+					} else {
+						log.error("Ошибка при проверке эмейл: '{}'", email);
+					}
+				}
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
+				} else {
+					log.error("Ошибка при создании эмейл: '{}'", email);
+				}
+			}
+			return false;
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    private void createSalary() {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_SALARY);
-            String input = SCANNER.nextLine();
-            log.debug("Ввод зарплаты: {}", input);
-            if (input.matches(RegexConstant.SALARY_REGEX)) {
-                salary = new BigDecimal(input);
-                break;
-            }
-            if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                System.out.println(ERROR_ENTER_SALARY_MESSAGE);
-                log.warn("Неверный формат зарплаты: {}", input);
-            } else {
-                log.error("Превышено количество попыток ввода зарплаты");
-                AppUtil.exitByFromAttempt();
-            }
-        }
-    }
+	@Override
+	public Optional<Person> getById(UUID currentPerson) {
+		try {
+			log.info("Получение данных сотрудника по ID: '{}'", currentPerson);
+			Optional<Person> person = personRepository.getById(currentPerson);
+			person.ifPresentOrElse(
+					System.out::println,
+					() -> {
+						log.warn("Пользователь с ID: '{}' не найден", currentPerson);
+						System.out.println(PERSON_NOT_FOUND_MESSAGE);
+					}
+			);
+			return person;
+		} catch (RuntimeException e) {
+			log.error("Ошибка при получении данных пользователя по ID '{}': '{}'", currentPerson, e.getMessage(), e);
+			throw e;
+		}
+	}
 
-    private void createDepartment() {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_DEPARTMENT);
-            department = SCANNER.nextLine();
-            log.debug("Ввод отдела: {}", department);
-            if (department.matches(RegexConstant.DEPARTMENT_REGEX)) {
-                break;
-            }
-            if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                System.out.println(ERROR_ENTER_DEPARTMENT_MESSAGE);
-                log.warn("Неверный ввод отдела: {}", department);
-            } else {
-                log.error("Превышено количество попыток ввода отдела");
-                AppUtil.exitByFromAttempt();
-            }
-        }
-    }
+	@Override
+	public Optional<Person> update(UUID currentPerson) {
+		log.info("Обновление данных текущего пользователя по ID: '{}'", currentPerson);
+		Optional<Person> person = getById(currentPerson);
+		if (person.isEmpty()) {
+			log.warn("Не удалось обновить данные - пользователь с ID: '{}' не найден", currentPerson);
+			return Optional.empty();
+		}
+		Person personUpdate = person.get();
+		System.out.println(UPDATE_PERSON_MESSAGE + personUpdate.getFirstName() + " " + personUpdate.getLastName());
+		createFirstName();
+		createLastName();
+		updateEmail(currentPerson);
+		personUpdate.setFirstName(firstName.toUpperCase());
+		personUpdate.setLastName(lastName.toUpperCase());
+		personUpdate.setEmail(email.toLowerCase());
+		try {
+			personRepository.update(personUpdate);
+			log.info("Данные текущего пользователя по ID '{}' успешно обновлены", personUpdate.getPersonId());
+			System.out.println(UPDATED_MESSAGE);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при обновлении данных текущего пользователя по ID '{}': '{}'", personUpdate.getPersonId(), e.getMessage(), e);
+			throw e;
+		}
+		return Optional.of(personUpdate);
+	}
 
-    @Override
-    public List<Person> getAll() {
-        List<Person> persons = personRepository.getAll();
-        if (persons.isEmpty()) {
-            log.warn("Список сотрудников пуст");
-            System.out.println(EMPTY_LIST_PERSON_MESSAGE);
-        } else {
-            log.info("Получено данных {} сотрудников", persons.size());
-            System.out.println(LIST_PERSON_MESSAGE);
-            AppUtil.printNumberedList(persons);
-        }
-        return persons;
-    }
+	private void updateEmail(UUID currentPerson) {
+		AppUtil.loopIterationAndExit(count -> {
+			log.info("Обновление email текущего пользователя");
+			System.out.print(ENTER_EMAIL);
+			email = SCANNER.nextLine();
+			if (email.matches(RegexConstant.EMAIL_REGEX)) {
+				if (!personRepository.checkUpdateEmail(email, currentPerson)) {
+					log.info("Эмейл '{}' пользователя успешно обновлен", email);
+					return true;
+				} else {
+					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+						System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
+						log.warn("Email уже назначен другому пользователю: {}", email);
+					} else {
+						log.error("Ошибка при проверке обновляемого эмейл: '{}'", email);
+					}
+				}
+			} else {
+				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
+				} else {
+					log.error("Ошибка при обновлении эмейл: '{}'", email);
+				}
+			}
+			return false;
+		}, AppUtil.MAX_ITERATION_LOOP);
+	}
 
-    @Override
-    public void getAllByCreateDate() {
-        List<Person> persons = personRepository.getAllByCreateDate();
-        if (persons.isEmpty()) {
-            log.warn("Список сотрудников пуст (сортировка по дате приёма)");
-            System.out.println(EMPTY_LIST_PERSON_MESSAGE);
-        } else {
-            log.info("Получено {} сотрудников, отсортированных по дате приёма", persons.size());
-            System.out.println(LIST_PERSON_BY_CREATE_DATE_MESSAGE);
-            AppUtil.printNumberedList(persons);
-        }
-    }
+	@Override
+	public Optional<Person> updatePassword(UUID currentPerson) {
+		log.info("Обновление пароля текущего пользователя ");
+		Optional<Person> person = getById(currentPerson);
+		if (person.isEmpty()) {
+			log.warn("Не удалось обновить пароль — пользователь с ID: '{}' не найден", currentPerson);
+			return Optional.empty();
+		}
+		Person personUpdate = person.get();
+		System.out.println(
+				UPDATE_PERSON_PASSWORD_MESSAGE + personUpdate.getFirstName() + " " + personUpdate.getLastName());
+		createPassword();
+		personUpdate.setPassword(password);
+		try {
+			personRepository.updatePassword(personUpdate);
+			log.info("Пароль текущего пользователя по ID '{}' успешно обновлен", personUpdate.getPersonId());
+			System.out.println(UPDATED_PASSWORD_MESSAGE);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при обновлении пароля текущего пользователя по ID '{}': '{}'", personUpdate.getPersonId(), e.getMessage(), e);
+			throw e;
+		}
+		return Optional.of(personUpdate);
+	}
 
-    @Override
-    public void getByLastName(String lastName) {
-        List<Person> persons = personRepository.getByLastName(lastName);
-        if (persons.isEmpty()) {
-            log.warn("Сотрудники с такой фамилией не найдены");
-            System.out.println(EMPTY_LIST_LAST_NAME_SEARCH_PERSON_MESSAGE);
-        } else {
-            log.info("Получено {} сотрудников с введенной фамилией {}", persons.size(), lastName);
-            System.out.println(LIST_PERSON_LAST_NAME_SEARCH_MESSAGE + lastName);
-            AppUtil.printNumberedList(persons);
-        }
-    }
+	@Override
+	public void updateFamily(Person person, Family family) {
 
-    @Override
-    public void getAllBySalary() {
-        List<Person> persons = personRepository.getAllBySalary();
-        if (persons.isEmpty()) {
-            log.warn("Список сотрудников пуст (сортировка по зарплате)");
-            System.out.println(EMPTY_LIST_PERSON_MESSAGE);
-        } else {
-            log.info("Получено {} сотрудников, отсортированных по зарплате", persons.size());
-            System.out.println(LIST_PERSON_BY_SALARY_MESSAGE);
-            AppUtil.printNumberedList(persons);
-        }
-    }
+	}
 
-    @Override
-    public Optional<Person> getById(UUID personId) {
-        log.info("Получение данных сотрудника по ID: {}", personId);
-        Optional<Person> person = personRepository.getById(personId);
-        person.ifPresentOrElse(
-                System.out::println,
-                () -> System.out.println(PERSON_NOT_FOUND_MESSAGE)
-        );
-        return person;
-    }
-
-    @Override
-    public Optional<Person> updateById(UUID personId) {
-        log.info("Обновление данных сотрудника с ID: {}", personId);
-        Optional<Person> person = getById(personId);
-        if (person.isEmpty()) {
-            log.warn("Сотрудник для обновления не найден с ID: {}", personId);
-            return Optional.empty();
-        }
-        Person personUpdate = person.get();
-        System.out.println(UPDATE_PERSON_MESSAGE + personUpdate.getPersonId());
-        createFirstName();
-        createLastName();
-        createEmail(personId);
-        createSalary();
-        createDepartment();
-        personUpdate.setFirstName(firstName.toUpperCase());
-        personUpdate.setLastName(lastName.toUpperCase());
-        personUpdate.setEmail(email.toLowerCase());
-        personUpdate.setSalary(salary);
-        personUpdate.setDepartment(department);
-        try {
-            personRepository.updateById(personUpdate);
-            log.info("Данные сотрудника с ID {} успешно обновлены", personUpdate.getPersonId());
-            System.out.println(UPDATED_MESSAGE);
-        } catch (RuntimeException e) {
-            log.error("Ошибка при обновлении данных сотрудника с ID {}: {}", personUpdate.getPersonId(), e.getMessage(), e);
-            throw e;
-        }
-        return Optional.of(personUpdate);
-    }
-
-    private void createEmail(UUID currentPersonId) {
-        for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-            System.out.print(ENTER_EMAIL);
-            email = SCANNER.nextLine();
-            log.debug("Ввод email для обновления: {}", email);
-
-            if (email.matches(RegexConstant.EMAIL_REGEX)) {
-                try {
-                    if (personRepository.checkEmail(email, currentPersonId)) {
-                        if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                            System.out.println(ERROR_CREATION_EMAIL_MESSAGE);
-                            log.warn("Email уже назначен другому пользователю: {}", email);
-                        } else {
-                            log.error("Превышено количество попыток ввода email при обновлении");
-                            AppUtil.exitByFromAttempt();
-                        }
-                    } else {
-                        return;
-                    }
-                } catch (RuntimeException e) {
-                    log.error("Ошибка при проверке email в базе: {}", e.getMessage(), e);
-                    throw e;
-                }
-            } else {
-                if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-                    System.out.println(ERROR_ENTER_EMAIL_MESSAGE);
-                    log.warn("Неверный формат email при обновлении: {}", email);
-                } else {
-                    log.error("Превышено количество попыток ввода email при обновлении по формату");
-                    AppUtil.exitByFromAttempt();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void delete(UUID personId) {
-        log.info("Удаление данных сотрудника с ID: {}", personId);
-        getById(personId).ifPresent(person -> {
-            try {
-                personRepository.delete(personId);
-                log.info("Данные сотрудника с ID {} удалёны", person.getPersonId());
-                System.out.println(DELETED_MESSAGE + person.getPersonId());
-            } catch (RuntimeException e) {
-                log.error("Ошибка при удалении данных сотрудника с ID {}: {}", person.getPersonId(), e.getMessage(), e);
-                throw e;
-            }
-        });
-    }
+	@Override
+	public void delete(UUID currentPerson) {
+		log.info("Удаление текущего пользователя с ID: '{}'", currentPerson);
+		Optional<Person> person = getById(currentPerson);
+		if (person.isEmpty()) {
+			log.warn("Не удалось удалить данные — пользователь с ID: '{}' - не найден", currentPerson);
+			return;
+		}
+		try {
+			personRepository.delete(currentPerson);
+			log.info("Данные пользователя с ID '{}' удалены", currentPerson);
+			System.out.println(DELETED_MESSAGE + currentPerson);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при удалении данных пользователя с ID '{}': '{}'", currentPerson, e.getMessage(), e);
+			throw e;
+		}
+	}
 }

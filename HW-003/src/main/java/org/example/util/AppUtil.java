@@ -3,61 +3,81 @@ package org.example.util;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
-import java.util.function.IntConsumer;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static org.example.util.constant.ColorsConstant.*;
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MAX_ATTEMPTS_MESSAGE;
-import static org.example.util.constant.MenuPersonConstant.FINISHING_MESSAGE;
+import static org.example.util.constant.MenuConstant.FINISHING_MESSAGE;
 
 @UtilityClass
 
 public class AppUtil {
-    public static final int ITERATION_LOOP = 5;
-    public static final int ITERATION_LOOP_TO_MESSAGE = 4;
+	public final int MAX_ITERATION_LOOP = 5;
+	public final int MAX_ITERATION_LOOP_TO_MESSAGE = 4;
 
-    public static void exit() {
-        System.out.println(FINISHING_MESSAGE);
-        System.exit(0);
-    }
+	public void exit() {
+		System.out.println(FINISHING_MESSAGE);
+		System.exit(0);
+	}
 
-    public static void exitByFromAttempt() {
-        System.out.println(ERROR_ENTER_MAX_ATTEMPTS_MESSAGE);
-        exit();
-    }
+	public void exitByFromAttempt() {
+		System.out.println(ERROR_ENTER_MAX_ATTEMPTS_MESSAGE);
+		exit();
+	}
 
-    public static void loopIterationAndExit(IntConsumer method, int maxCounts) {
-        try {
-            for (int i = 0; i < maxCounts; i++) {
-                method.accept(i);
-                if (i == maxCounts - 1) {
-                    exitByFromAttempt();
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
+	public void loopIterationAndExit(Function<Integer, Boolean> method, int maxIteration) {
+		try {
+			for (int i = 0; i < maxIteration; i++) {
+				boolean stop = method.apply(i);
+				if (stop) {
+					break;
+				} else if (i == maxIteration - 1) {
+					exitByFromAttempt();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
 
-    public static <T> void printNumberedList(List<T> items) {
-        for (int i = 0; i < items.size(); i++) {
-            String numberOfList = colorizeNumber(items.get(i).toString(), i + 1);
-            System.out.println(numberOfList);
-        }
-    }
+	public <T> Optional<T> loopIterationWithReturnAndExit(Function<Integer, Optional<T>> function, int maxIteration) {
+		try {
+			for (int i = 0; i < maxIteration; i++) {
+				Optional<T> result = function.apply(i);
+				if (result.isPresent()) {
+					return result;
+				}
+				if (i == maxIteration - 1) {
+					exitByFromAttempt();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return Optional.empty();
+	}
 
-    public static String colorizeGreenText(String text) {
-        return GREEN + text + RESET;
-    }
+	public <T> void printNumberedList(List<T> items) {
+		for (int i = 0; i < items.size(); i++) {
+			String numberOfList = colorizeNumber(items.get(i).toString(), i + 1);
+			System.out.println(numberOfList);
+		}
+	}
 
-    public static String colorizeRedText(String text) {
-        return RED + text + RESET;
-    }
+	public String colorizeGreenText(String text) {
+		return GREEN + text + RESET;
+	}
 
-    public static String colorizeOrangeText(String text) {
-        return ORANGE + text + RESET;
-    }
+	public String colorizeRedText(String text) {
+		return RED + text + RESET;
+	}
 
-    public static String colorizeNumber(String text, int number) {
-        return GREEN + number + ". " + RESET + text;
-    }
+	public String colorizeOrangeText(String text) {
+		return ORANGE + text + RESET;
+	}
+
+	public String colorizeNumber(String text, int number) {
+		return GREEN + number + ". " + RESET + text;
+	}
 }

@@ -1,16 +1,18 @@
 package org.example.service;
 
 import org.example.model.Transaction;
+import org.example.model.TransactionType;
 
+import java.util.List;
 import java.util.UUID;
 
-public interface TransactionService extends Service<Transaction, UUID> {
+public interface TransactionService extends ComponentService<Transaction, UUID> {
 
-    void getAllByCreateDate();
+	List<Transaction> getAllSortByType(TransactionType type, UUID currentPerson);
 
-    void getByCategory(String category);
+	List<Transaction> getAllSortByTypeAndCategory(TransactionType type, UUID currentPerson);
 
-    void getByType(String type);
+	List<Transaction> getAllSortByTypeAndDate(TransactionType type, UUID currentPerson);
 
-    void getByPerson(String person); //PersonID?
+	List<Transaction> getAllSortByCreateDate();
 }

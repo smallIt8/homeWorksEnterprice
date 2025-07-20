@@ -1,42 +1,34 @@
 package org.example.model;
 
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.example.util.constant.ErrorMessageConstant.ERROR_CREATION_BUDGET_MESSAGE;
+import static org.example.util.constant.ColorsConstant.INDIGO;
+import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class Budget {
-    private UUID budgetId;
-    private Category category;
-    private BigDecimal amount;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Person person;
+	private UUID budgetId;
+	private String budgetName;
+	private Category category;
+	private BigDecimal limit;
+	private BigDecimal spent;
+	private LocalDate period;
+	private Person person;
 
-    private Budget(UUID BudgetId, Category category, BigDecimal amount, LocalDate startDate, LocalDate endDate, Person person) {
-        if (category.getType() != TransactionType.EXPENSE) {
-            throw new IllegalArgumentException(ERROR_CREATION_BUDGET_MESSAGE);
-        }
-        this.budgetId = BudgetId;
-        this.category = category;
-        this.amount = amount;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.person = person;
-    }
-
-    public static Budget ofExpenseCategory(Category category, BigDecimal amount, LocalDate startDate, LocalDate endDate, Person person) {
-        return new Budget(
-                UUID.randomUUID(),
-                category,
-                amount,
-                startDate,
-                endDate,
-                person);
-    }
+	@Override
+	public String toString() {
+		return "Название: " + INDIGO + budgetName + RESET + "\n" +
+				category +
+				"Лимит: " + INDIGO + limit + RESET + "\n" +
+				"Потрачено: " + INDIGO + spent + RESET + "\n" +
+				"Период: " + INDIGO + period + RESET + "\n" +
+				"Владелец: " + person.toNameString();
+	}
 }
