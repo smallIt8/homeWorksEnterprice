@@ -1,14 +1,12 @@
 package org.example.service;
 
-import org.example.model.Person;
-
 import java.util.List;
 
-public interface ComponentService<T, ID> extends Service<T, ID> {
+public interface ComponentService<E, P, ID> extends Service<E, P, ID> {
 
 	void createBatch();
 
-	List<T> getAll();
+	List<E> getAll();
 
-	List<T> getAllByPerson(Person person);
+	List<E> getAllByOwner(P entity);
 }

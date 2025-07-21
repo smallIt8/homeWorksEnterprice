@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,18 +23,8 @@ public class Transaction {
 	private Category category;
 	private BigDecimal amount;
 	private Person person;
-	private Budget budget;
+	private LocalDate transactionDate;
 	private LocalDateTime createDate;
-
-	public Transaction(UUID transactionId, String transactionName, TransactionType type, Category category, BigDecimal amount, Person person, LocalDateTime createDate) {
-		this.transactionId = transactionId;
-		this.transactionName = transactionName;
-		this.type = type;
-		this.category = category;
-		this.amount = amount;
-		this.person = person;
-		this.createDate = createDate;
-	}
 
 	@Override
 	public String toString() {

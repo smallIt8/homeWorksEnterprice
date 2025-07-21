@@ -33,6 +33,5 @@ public class MenuDependency {
 		PersonControllerImpl personController = new PersonControllerImpl(personService, familyController, transactionController, categoryController, budgetController, financialGoalController);
 		StartController startController = new StartController(startService, personController);
 		startController.startMenu();
-
 	}
 }

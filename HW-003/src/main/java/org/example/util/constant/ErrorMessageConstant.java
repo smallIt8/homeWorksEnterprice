@@ -16,6 +16,7 @@ public class ErrorMessageConstant {
 	public static final String ERROR_ENTER_MESSAGE = AppUtil.colorizeRedText("Неверный ввод.\nповторите ввод: ");
 	public static final String ERROR_ENTER_MAX_ATTEMPTS_MESSAGE = AppUtil.colorizeRedText("Превышено допустимое количество попыток ввода.");
 	public static final String ERROR_ENTER_USER_NAME_OR_PASSWORD_MESSAGE = AppUtil.colorizeRedText("Неверный логин или пароль.\nПовторите вход.");
+	public static final String ERROR_ENTER_NUMBER_MESSAGE = AppUtil.colorizeRedText("Неверный ввод.\nЗапись с таким номером отсутствует.\nПовторите ввод.");
 	public static final String ERROR_ENTER_USER_NAME_MESSAGE = AppUtil.colorizeRedText(
 			"""
 					Неверный ввод.

@@ -3,12 +3,14 @@ package org.example.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.Family;
+import org.example.model.Person;
 import org.example.util.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,6 +43,11 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public List<Family> getAllByOwner(Person currentPerson) {
+		return List.of();
 	}
 
 	@Override

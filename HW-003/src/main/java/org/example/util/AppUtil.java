@@ -1,18 +1,21 @@
 package org.example.util;
 
 import lombok.experimental.UtilityClass;
+import org.example.util.constant.RegexConstant;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import static org.example.util.constant.ColorsConstant.*;
-import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MAX_ATTEMPTS_MESSAGE;
-import static org.example.util.constant.MenuConstant.FINISHING_MESSAGE;
+import static org.example.util.constant.ErrorMessageConstant.*;
+import static org.example.util.constant.MenuConstant.*;
 
 @UtilityClass
 
 public class AppUtil {
+	private static final Scanner SCANNER = new Scanner(System.in);
 	public final int MAX_ITERATION_LOOP = 5;
 	public final int MAX_ITERATION_LOOP_TO_MESSAGE = 4;
 
@@ -56,6 +59,32 @@ public class AppUtil {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 		return Optional.empty();
+	}
+
+	public <T> Optional<T> selectFromList(
+			List<T> items,
+			String listMessage
+	) {
+		System.out.println(listMessage);
+		printNumberedList(items);
+		return loopIterationWithReturnAndExit(count -> {
+			System.out.print(ENTER_NUMBER_IN_LIST);
+			String step = SCANNER.nextLine();
+			if (step.matches(RegexConstant.STEP_REGEX)) {
+				int index = Integer.parseInt(step) - 1;
+				if (index >= 0 && index < items.size()) {
+					T selectedItem = items.get(index);
+					System.out.println(SELECTED_DATA_MESSAGE + INDIGO + selectedItem.toString() + RESET);
+					return Optional.of(selectedItem);
+				} else if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+					System.out.println(ERROR_ENTER_NUMBER_MESSAGE);
+				}
+
+			} else if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+				System.out.println(ERROR_ENTER_MESSAGE);
+			}
+			return Optional.empty();
+		}, MAX_ITERATION_LOOP);
 	}
 
 	public <T> void printNumberedList(List<T> items) {

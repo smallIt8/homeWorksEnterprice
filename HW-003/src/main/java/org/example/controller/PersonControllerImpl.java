@@ -3,17 +3,15 @@ package org.example.controller;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.Person;
 import org.example.service.PersonService;
 import org.example.util.AppUtil;
 import org.example.util.MenuDependency;
 
-import java.util.Optional;
 import java.util.Scanner;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
 import static org.example.util.constant.MenuConstant.PERSON_MENU;
-import static org.example.util.constant.MenuConstant.PERSON_UPDATE;
+import static org.example.util.constant.MenuConstant.PERSON_UPDATE_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Getter
@@ -87,21 +85,18 @@ public class PersonControllerImpl extends BaseController implements PersonContro
 
 	public void personUpdateMenu() {
 		log.info("Запуск меню пользователя/обновление");
-		System.out.print(PERSON_UPDATE);
+		System.out.print(PERSON_UPDATE_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню пользователя/обновление: {}", step);
 			switch (step) {
 				case STEP_ONE -> {
-					personService.update(currentPerson.getPersonId());
-					System.out.print(PERSON_UPDATE);
+					personService.update(currentPerson);
+					System.out.print(PERSON_UPDATE_MENU);
 				}
 				case STEP_TWO -> {
-					Optional<Person> personUpdate = personService.updatePassword(currentPerson.getPersonId());
-					personUpdate.ifPresent(person -> {
-						// Заглушка
-					});
-					System.out.print(PERSON_UPDATE);
+					personService.updatePassword(currentPerson);
+					System.out.print(PERSON_UPDATE_MENU);
 				}
 				case STEP_BACK -> {
 					return true;

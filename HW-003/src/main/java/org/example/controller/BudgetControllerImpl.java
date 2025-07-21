@@ -8,8 +8,8 @@ import org.example.util.AppUtil;
 import java.util.Scanner;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.MenuConstant.PERSON_BUDGET;
-import static org.example.util.constant.MenuConstant.PERSON_TRANSACTION_LIST;
+import static org.example.util.constant.MenuConstant.PERSON_BUDGET_LIST_MENU;
+import static org.example.util.constant.MenuConstant.PERSON_BUDGET_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -28,13 +28,13 @@ public class BudgetControllerImpl extends BaseController implements BudgetContro
 	@Override
 	public void budgetMenu() {
 		log.info("Запуск меню бюджет");
-		System.out.print(PERSON_BUDGET);
+		System.out.print(PERSON_BUDGET_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню бюджет: {}", step);
 			switch (step) {
 				case STEP_ONE -> budgetService.create();
-				case STEP_TWO -> budgetService.update(currentPerson.getPersonId());
+				case STEP_TWO -> budgetService.update(currentPerson);
 				case STEP_THREE -> budgetListMenu();
 				case STEP_NINE -> budgetService.delete(currentPerson.getPersonId());
 				case STEP_BACK -> {
@@ -58,7 +58,7 @@ public class BudgetControllerImpl extends BaseController implements BudgetContro
 	@Override
 	public void budgetListMenu() {
 		log.info("Запуск меню списка бюджета");
-		System.out.print(PERSON_TRANSACTION_LIST);
+		System.out.print(PERSON_BUDGET_LIST_MENU);
 		AppUtil.loopIterationAndExit((Integer count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню списка бюджета: {}", step);

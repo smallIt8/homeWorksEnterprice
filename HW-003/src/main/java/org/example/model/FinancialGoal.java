@@ -21,6 +21,7 @@ public class FinancialGoal {
 	private BigDecimal targetAmount;
 	private BigDecimal currentAmount;
 	private LocalDate endDate;
+	private Status status;
 	private LocalDate createDate;
 	private Person person;
 

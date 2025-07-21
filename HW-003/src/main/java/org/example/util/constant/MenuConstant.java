@@ -9,26 +9,31 @@ public class MenuConstant {
 
 	// ========== Сообщения о выполняемых действиях ==========
 	public static final String WELCOME_MESSAGE = "Добро пожаловать ";
-	public static final String REGISTRATION_MESSAGE = "Регистрация";
+	public static final String REGISTRATION_PERSON_MESSAGE = "Регистрация:";
+	public static final String CREATION_FAMILY_MESSAGE = "Создание семейной группы:";
 	public static final String ADDING_BATCH_MESSAGE = AppUtil.colorizeGreenText("Запуск пакетного добавления сотрудников:");
-	public static final String FINISHING_MESSAGE = "Завершение программы";
+	public static final String FINISHING_MESSAGE = "Завершение программы.";
 
 	// ========== Информационные сообщения ==========
 	public static final String LIST_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников:");
-	public static final String LIST_PERSON_BY_SALARY_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по зарплате:");
+	public static final String LIST_FAMILY_BY_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список семейных групп, созданных пользователем:");
 	public static final String LIST_PERSON_BY_CREATE_DATE_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по дате приема:");
 	public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников с фамилией:");
-	public static final String EMPTY_LIST_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников пуст");
+	public static final String EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список семейных групп, созданных пользователем пуст");
 	public static final String EMPTY_LIST_LAST_NAME_SEARCH_PERSON_MESSAGE = AppUtil.colorizeGreenText("Сотрудники с такой фамилией не найдены");
 	public static final String PERSON_NOT_FOUND_MESSAGE = AppUtil.colorizeGreenText("ID текущего пользователя не найден в БД");
 	public static final String UPDATE_PERSON_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден и готов к обновлению. Имя пользователя: ");
 	public static final String UPDATE_PERSON_PASSWORD_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден, пароль пользователя готов к обновлению. Имя пользователя: ");
+	public static final String REDIRECT_CREATE_FAMILY_MESSAGE = AppUtil.colorizeGreenText("Перенаправление в меню создания семейной группы");
 
 	// ========== Сообщения о выполненных действиях ==========
 	public static final String REGISTERED_MESSAGE = AppUtil.colorizeGreenText("Вы зарегистрировались.");
+	public static final String CREATED_FAMILY_MESSAGE = AppUtil.colorizeGreenText("Вы создали семейную группу.");
+	public static final String SELECTED_DATA_MESSAGE = AppUtil.colorizeGreenText("Вы выбрали данные: ");
 	public static final String ADDED_PERSONS_MESSAGE = AppUtil.colorizeGreenText("Пакетный ввод сотрудников завершен.");
-	public static final String UPDATED_MESSAGE = AppUtil.colorizeGreenText("Вы обновили данные пользователя. ");
-	public static final String UPDATED_PASSWORD_MESSAGE = AppUtil.colorizeGreenText("Вы обновили пароль пользователя. ");
+	public static final String UPDATED_PERSON_MESSAGE = AppUtil.colorizeGreenText("Вы обновили данные пользователя.");
+	public static final String UPDATED_PERSON_PASSWORD_MESSAGE = AppUtil.colorizeGreenText("Вы обновили пароль пользователя.");
+	public static final String UPDATED_FAMILY_MESSAGE = AppUtil.colorizeGreenText("Вы обновили имя семейной группы.");
 	public static final String DELETED_MESSAGE = AppUtil.colorizeGreenText("Вы удалили данные пользователя с ID: ");
 
 	// ========== Инструкции пользователю ==========
@@ -39,7 +44,9 @@ public class MenuConstant {
 	public static final String ENTER_LAST_NAME_SEARCH = AppUtil.colorizeOrangeText("введите фамилию для поиска сотрудника: ");
 	public static final String ENTER_EMAIL = AppUtil.colorizeOrangeText("введите email: ");
 	public static final String ENTER_ID = AppUtil.colorizeOrangeText("введите ID сотрудника: ");
+	public static final String ENTER_FAMILY_NAME = AppUtil.colorizeOrangeText("введите имя семейной группы: ");
 	public static final String ADDING_PERSON = AppUtil.colorizeOrangeText("добавить ещё одного сотрудника? Введите Y(Да) или N(Нет): ");
+	public static final String ENTER_NUMBER_IN_LIST = AppUtil.colorizeOrangeText("введите номер в списке: ");
 
 	// ========== Меню MAIN ==========
 	public static final String MAIN_MENU = """
@@ -72,7 +79,7 @@ public class MenuConstant {
 			
 			ввод:\s""";
 
-	public static final String PERSON_UPDATE = """
+	public static final String PERSON_UPDATE_MENU = """
 			
 			Кабинет пользователя/Обновить данные пользователя
 			
@@ -86,7 +93,7 @@ public class MenuConstant {
 			ввод:\s""";
 
 	//  ========== Меню PERSON/TRANSACTION
-	public static final String PERSON_TRANSACTION = """
+	public static final String PERSON_TRANSACTION_MENU = """
 			
 			Кабинет пользователя/Транзакции
 			
@@ -101,7 +108,7 @@ public class MenuConstant {
 			
 			ввод:\s""";
 
-	public static final String PERSON_TRANSACTION_LIST = """
+	public static final String PERSON_TRANSACTION_LIST_MENU = """
 			
 			Кабинет пользователя/Транзакции/Список транзакций
 			
@@ -120,7 +127,7 @@ public class MenuConstant {
 			ввод:\s""";
 
 	//  ========== Меню PERSON/CATEGORY ==========
-	public static final String PERSON_CATEGORY = """
+	public static final String PERSON_CATEGORY_MENU = """
 			
 			Кабинет пользователя/Категории
 			
@@ -136,7 +143,7 @@ public class MenuConstant {
 			ввод:\s""";
 
 	//  ========== Меню PERSON/BUDGET ==========
-	public static final String PERSON_BUDGET = """
+	public static final String PERSON_BUDGET_MENU = """
 			
 			Кабинет пользователя/Бюджет
 			
@@ -151,7 +158,7 @@ public class MenuConstant {
 			
 			ввод:\s""";
 
-	public static final String PERSON_BUDGET_LIST = """
+	public static final String PERSON_BUDGET_LIST_MENU = """
 			
 			Кабинет пользователя/Бюджет/Список бюджетов
 			
@@ -167,7 +174,7 @@ public class MenuConstant {
 			ввод:\s""";
 
 	//  ========== Меню PERSON/FINANCIAL_GOAL ==========
-	public static final String PERSON_GOAL = """
+	public static final String PERSON_GOAL_MENU = """
 			
 			Кабинет пользователя/Долгосрочные финансовые цели
 			
@@ -183,7 +190,7 @@ public class MenuConstant {
 			ввод:\s""";
 
 	//  ========== Меню PERSON/FAMILY ==========
-	public static final String PERSON_FAMILY = """
+	public static final String PERSON_FAMILY_MENU = """
 			
 			Кабинет пользователя/Семейная группа
 			
@@ -191,7 +198,7 @@ public class MenuConstant {
 			1. Создать семейную группу
 			2. Вступить в семейную группу
 			3. Добавить пользователя в семейную группу
-			4. Обновить данные семейной группы
+			4. Обновить имя семейной группы
 			5. Выйти из семейной группы
 			9. Удалить семейную группу
 			

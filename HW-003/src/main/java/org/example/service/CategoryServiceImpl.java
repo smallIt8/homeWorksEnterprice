@@ -2,6 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.Category;
+import org.example.model.Person;
 import org.example.repository.CategoryRepository;
 
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Optional<Category> update(UUID value) {
+	public Optional<Category> update(Person entity) {
 		return Optional.empty();
 	}
 

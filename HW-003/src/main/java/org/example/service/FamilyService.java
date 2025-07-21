@@ -6,7 +6,9 @@ import org.example.model.Person;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface FamilyService extends Service<Family, UUID> {
+public interface FamilyService extends ComponentService<Family, Person, UUID> {
+
+	void create(Person currentPerson);
 
 	Optional<Family> joinFamily(Person person, Family family);
 
