@@ -1,12 +1,13 @@
 package org.example.service;
 
+import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface TransactionService extends ComponentService<Transaction, UUID> {
+public interface TransactionService extends ComponentService<Transaction, Person, UUID> {
 
 	List<Transaction> getAllSortByType(TransactionType type, UUID currentPerson);
 

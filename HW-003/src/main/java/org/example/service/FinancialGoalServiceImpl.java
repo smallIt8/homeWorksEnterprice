@@ -26,7 +26,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	}
 
 	@Override
-	public Optional<FinancialGoal> update(UUID value) {
+	public Optional<FinancialGoal> update(Person entity) {
 		return Optional.empty();
 	}
 
@@ -41,7 +41,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	}
 
 	@Override
-	public List<FinancialGoal> getAllByPerson(Person person) {
+	public List<FinancialGoal> getAllByOwner(Person person) {
 		return List.of();
 	}
 

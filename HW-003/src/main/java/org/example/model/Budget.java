@@ -1,9 +1,11 @@
 package org.example.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.UUID;
 
 import static org.example.util.constant.ColorsConstant.INDIGO;
@@ -18,8 +20,7 @@ public class Budget {
 	private String budgetName;
 	private Category category;
 	private BigDecimal limit;
-	private BigDecimal spent;
-	private LocalDate period;
+	private YearMonth period;
 	private Person person;
 
 	@Override
@@ -27,7 +28,6 @@ public class Budget {
 		return "Название: " + INDIGO + budgetName + RESET + "\n" +
 				category +
 				"Лимит: " + INDIGO + limit + RESET + "\n" +
-				"Потрачено: " + INDIGO + spent + RESET + "\n" +
 				"Период: " + INDIGO + period + RESET + "\n" +
 				"Владелец: " + person.toNameString();
 	}

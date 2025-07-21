@@ -58,7 +58,7 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public void create() {
 		log.info("Регистрация нового пользователя");
-		System.out.println(REGISTRATION_MESSAGE);
+		System.out.println(REGISTRATION_PERSON_MESSAGE);
 		createUserName();
 		createPassword();
 		createFirstName();
@@ -216,9 +216,9 @@ public class PersonServiceImpl implements PersonService {
 	}
 
 	@Override
-	public Optional<Person> update(UUID currentPerson) {
+	public Optional<Person> update(Person currentPerson) {
 		log.info("Обновление данных текущего пользователя по ID: '{}'", currentPerson);
-		Optional<Person> person = getById(currentPerson);
+		Optional<Person> person = getById(currentPerson.getPersonId());
 		if (person.isEmpty()) {
 			log.warn("Не удалось обновить данные - пользователь с ID: '{}' не найден", currentPerson);
 			return Optional.empty();
@@ -227,14 +227,14 @@ public class PersonServiceImpl implements PersonService {
 		System.out.println(UPDATE_PERSON_MESSAGE + personUpdate.getFirstName() + " " + personUpdate.getLastName());
 		createFirstName();
 		createLastName();
-		updateEmail(currentPerson);
+		updateEmail(currentPerson.getPersonId());
 		personUpdate.setFirstName(firstName.toUpperCase());
 		personUpdate.setLastName(lastName.toUpperCase());
 		personUpdate.setEmail(email.toLowerCase());
 		try {
 			personRepository.update(personUpdate);
 			log.info("Данные текущего пользователя по ID '{}' успешно обновлены", personUpdate.getPersonId());
-			System.out.println(UPDATED_MESSAGE);
+			System.out.println(UPDATED_PERSON_MESSAGE);
 		} catch (RuntimeException e) {
 			log.error("Ошибка при обновлении данных текущего пользователя по ID '{}': '{}'", personUpdate.getPersonId(), e.getMessage(), e);
 			throw e;
@@ -271,27 +271,28 @@ public class PersonServiceImpl implements PersonService {
 	}
 
 	@Override
-	public Optional<Person> updatePassword(UUID currentPerson) {
+	public Optional<Person> updatePassword(Person currentPerson) {
 		log.info("Обновление пароля текущего пользователя ");
-		Optional<Person> person = getById(currentPerson);
+		Optional<Person> person = getById(currentPerson.getPersonId());
 		if (person.isEmpty()) {
 			log.warn("Не удалось обновить пароль — пользователь с ID: '{}' не найден", currentPerson);
 			return Optional.empty();
 		}
-		Person personUpdate = person.get();
+		Person personUpdatePassword = person.get();
 		System.out.println(
-				UPDATE_PERSON_PASSWORD_MESSAGE + personUpdate.getFirstName() + " " + personUpdate.getLastName());
+				UPDATE_PERSON_PASSWORD_MESSAGE + personUpdatePassword.getFirstName() + " " +
+						personUpdatePassword.getLastName());
 		createPassword();
-		personUpdate.setPassword(password);
+		personUpdatePassword.setPassword(password);
 		try {
-			personRepository.updatePassword(personUpdate);
-			log.info("Пароль текущего пользователя по ID '{}' успешно обновлен", personUpdate.getPersonId());
-			System.out.println(UPDATED_PASSWORD_MESSAGE);
+			personRepository.updatePassword(personUpdatePassword);
+			log.info("Пароль текущего пользователя по ID '{}' успешно обновлен", personUpdatePassword.getPersonId());
+			System.out.println(UPDATED_PERSON_PASSWORD_MESSAGE);
 		} catch (RuntimeException e) {
-			log.error("Ошибка при обновлении пароля текущего пользователя по ID '{}': '{}'", personUpdate.getPersonId(), e.getMessage(), e);
+			log.error("Ошибка при обновлении пароля текущего пользователя по ID '{}': '{}'", personUpdatePassword.getPersonId(), e.getMessage(), e);
 			throw e;
 		}
-		return Optional.of(personUpdate);
+		return Optional.of(personUpdatePassword);
 	}
 
 	@Override

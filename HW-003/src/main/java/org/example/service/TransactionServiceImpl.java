@@ -26,17 +26,17 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Optional<Transaction> update(UUID value) {
+	public Optional<Transaction> update(Person entity) {
 		return Optional.empty();
 	}
-
+	
 	@Override
 	public List<Transaction> getAll() {
 		return List.of();
 	}
 
 	@Override
-	public List<Transaction> getAllByPerson(Person person) {
+	public List<Transaction> getAllByOwner(Person currentPerson) {
 		return List.of();
 	}
 

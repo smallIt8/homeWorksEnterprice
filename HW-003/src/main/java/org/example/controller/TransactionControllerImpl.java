@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.MenuConstant.PERSON_TRANSACTION;
-import static org.example.util.constant.MenuConstant.PERSON_TRANSACTION_LIST;
+import static org.example.util.constant.MenuConstant.PERSON_TRANSACTION_LIST_MENU;
+import static org.example.util.constant.MenuConstant.PERSON_TRANSACTION_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -31,13 +31,13 @@ public class TransactionControllerImpl extends BaseController implements Transac
 	@Override
 	public void transactionMenu() {
 		log.info("Запуск меню транзакций");
-		System.out.print(PERSON_TRANSACTION);
+		System.out.print(PERSON_TRANSACTION_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню транзакций: {}", step);
 			switch (step) {
 				case STEP_ONE -> transactionService.create();
-				case STEP_TWO -> transactionService.update(currentPerson.getPersonId());
+				case STEP_TWO -> transactionService.update(currentPerson);
 				case STEP_THREE -> transactionListMenu();
 				case STEP_NINE -> transactionService.delete(currentPerson.getPersonId());
 				case STEP_BACK -> {
@@ -61,7 +61,7 @@ public class TransactionControllerImpl extends BaseController implements Transac
 	@Override
 	public void transactionListMenu() {
 		log.info("Запуск меню списка транзакций");
-		System.out.print(PERSON_TRANSACTION_LIST);
+		System.out.print(PERSON_TRANSACTION_LIST_MENU);
 		AppUtil.loopIterationAndExit((Integer count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню списка транзакций: {}", step);

@@ -8,7 +8,7 @@ import org.example.util.AppUtil;
 import java.util.Scanner;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.MenuConstant.PERSON_CATEGORY;
+import static org.example.util.constant.MenuConstant.PERSON_CATEGORY_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -27,13 +27,13 @@ public class CategoryControllerImpl extends BaseController implements CategoryCo
 	@Override
 	public void categoryMenu() {
 		log.info("Запуск меню категорий");
-		System.out.print(PERSON_CATEGORY);
+		System.out.print(PERSON_CATEGORY_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню категорий: {}", step);
 			switch (step) {
 				case STEP_ONE -> categoryService.create();
-				case STEP_TWO -> categoryService.update(currentPerson.getPersonId());
+				case STEP_TWO -> categoryService.update(currentPerson);
 				case STEP_THREE -> System.out.println("getAll");
 				case STEP_NINE -> categoryService.delete(currentPerson.getPersonId());
 				case STEP_BACK -> {

@@ -8,7 +8,7 @@ import org.example.util.AppUtil;
 import java.util.Scanner;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.MenuConstant.PERSON_GOAL;
+import static org.example.util.constant.MenuConstant.PERSON_GOAL_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -27,13 +27,13 @@ public class FinancialGoalControllerImpl extends BaseController implements Finan
 	@Override
 	public void financialGoalMenu() {
 		log.info("Запуск меню финансовых целей");
-		System.out.print(PERSON_GOAL);
+		System.out.print(PERSON_GOAL_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню финансовых целей: {}", step);
 			switch (step) {
 				case STEP_ONE -> financialGoalService.create();
-				case STEP_TWO -> financialGoalService.update(currentPerson.getPersonId());
+				case STEP_TWO -> financialGoalService.update(currentPerson);
 				case STEP_THREE -> financialGoalService.getAll();
 				case STEP_NINE -> financialGoalService.delete(currentPerson.getPersonId());
 				case STEP_BACK -> {

@@ -11,7 +11,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_MESSAGE;
-import static org.example.util.constant.MenuConstant.PERSON_FAMILY;
+import static org.example.util.constant.MenuConstant.PERSON_FAMILY_MENU;
 import static org.example.util.constant.StepConstant.*;
 
 @Slf4j
@@ -30,15 +30,15 @@ public class FamilyControllerImpl extends BaseController implements FamilyContro
 	@Override
 	public void familyMenu() {
 		log.info("Запуск меню семейной группы");
-		System.out.print(PERSON_FAMILY);
+		System.out.print(PERSON_FAMILY_MENU);
 		AppUtil.loopIterationAndExit((count) -> {
 			String step = SCANNER.nextLine();
 			log.debug("Пользователь ввёл шаг меню семейной группы: {}", step);
 			switch (step) {
-				case STEP_ONE -> familyService.create();
+				case STEP_ONE -> familyService.create(currentPerson);
 				case STEP_TWO -> {
 					String familyNameInput = SCANNER.nextLine();
-					Family familyName = new Family(UUID.randomUUID(), familyNameInput);
+					Family familyName = new Family(UUID.randomUUID(), familyNameInput, currentPerson);
 					Optional<Family> joinedFamily = familyService.joinFamily(currentPerson, familyName);
 					joinedFamily.ifPresent(family -> {
 						// Заглушка
@@ -48,7 +48,7 @@ public class FamilyControllerImpl extends BaseController implements FamilyContro
 					String email = SCANNER.nextLine();
 					boolean result = familyService.addMember(email, currentPerson.getPersonId());
 				}
-				case STEP_FOUR -> familyService.update(currentPerson.getPersonId());
+				case STEP_FOUR -> familyService.update(currentPerson);
 				case STEP_FIVE -> {
 					boolean result = familyService.exitFamily(currentPerson);
 				}

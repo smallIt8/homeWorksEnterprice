@@ -16,4 +16,7 @@ public enum CategoryType {
 	public String toString() {
 		return typeName;
 	}
+
+	public enum Status {
+	}
 }

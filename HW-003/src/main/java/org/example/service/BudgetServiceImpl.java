@@ -25,17 +25,17 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	@Override
-	public Optional<Budget> update(UUID value) {
+	public Optional<Budget> update(Person entity) {
 		return Optional.empty();
 	}
-
+	
 	@Override
 	public List<Budget> getAll() {
 		return List.of();
 	}
 
 	@Override
-	public List<Budget> getAllByPerson(Person person) {
+	public List<Budget> getAllByOwner(Person entity) {
 		return List.of();
 	}
 
