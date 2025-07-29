@@ -1,0 +1,6 @@
+2025-07-29 16:10:44 INFO  [main] o.example.controller.StartController - Запуск главного меню приложения
+2025-07-29 16:10:50 INFO  [main] o.example.service.PersonServiceImpl - Авторизация пользователя
+2025-07-29 16:11:00 INFO  [main] o.example.service.PersonServiceImpl - Авторизация пользователя
+2025-07-29 16:11:52 INFO  [main] o.example.service.PersonServiceImpl - Пользователь 'admin' успешно вошёл в систему
+2025-07-29 16:11:52 INFO  [main] o.e.controller.PersonControllerImpl - Запуск меню пользователя
+2025-07-29 16:11:55 INFO  [main] o.e.controller.PersonControllerImpl - Выход из приложения меню пользователя
