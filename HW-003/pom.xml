@@ -23,6 +23,7 @@
         <lombok.version>1.18.38</lombok.version>
         <logback.version>1.5.18</logback.version>
         <jbcrypto.version>0.4</jbcrypto.version>
+        <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
     </properties>
 
     <dependencies>
@@ -52,6 +53,13 @@
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypto.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet.version}</version>
+            <scope>provided</scope>
         </dependency>
         
     </dependencies>
