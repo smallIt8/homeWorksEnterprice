@@ -4,9 +4,8 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-
     <filter>
-        <filter-name>EncodingFilter</filter-name>
+        <filter-name>EncodingUTF-8</filter-name>
         <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
         <init-param>
             <param-name>encoding</param-name>
@@ -19,7 +18,7 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>EncodingFilter</filter-name>
+        <filter-name>EncodingUTF-8</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

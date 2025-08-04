@@ -35,6 +35,16 @@ public class Person {
 		this.email = email;
 	}
 
+	public Person(UUID personId, String userName, String password, String firstName, String lastName, String email, Family family) {
+		this.personId = personId;
+		this.userName = userName;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.family = family;
+	}
+
 	public Person(UUID personId, String password) {
 		this.personId = personId;
 		this.password = password;

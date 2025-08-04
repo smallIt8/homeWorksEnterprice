@@ -1,37 +1,24 @@
 package org.example.util;
 
 import lombok.experimental.UtilityClass;
-import org.example.controller.*;
 import org.example.repository.*;
 import org.example.service.*;
 
 @UtilityClass
-
 public class MenuDependency {
 
-	public static void start() {
-		FamilyRepository familyRepository = new FamilyRepositoryImpl();
-		PersonRepository personRepository = new PersonRepositoryImpl(familyRepository);
-		TransactionRepository transactionRepository = new TransactionRepositoryImpl();
-		CategoryRepository categoryRepository = new CategoryRepositoryImpl();
-		BudgetRepository budgetRepository = new BudgetRepositoryImpl();
-		FinancialGoalRepository financialGoalRepository = new FinancialGoalRepositoryImpl();
+		public final FamilyRepository FAMILY_REPOSITORY = new FamilyRepositoryImpl();
+		public final PersonRepository PERSON_REPOSITORY = new PersonRepositoryImpl();
+		public final TransactionRepository TRANSACTION_REPOSITORY = new TransactionRepositoryImpl();
+		public final CategoryRepository CATEGORY_REPOSITORY = new CategoryRepositoryImpl();
+		public final BudgetRepository BUDGET_REPOSITORY = new BudgetRepositoryImpl();
 
-		PersonService personService = new PersonServiceImpl(personRepository);
-		FamilyService familyService = new FamilyServiceImpl(familyRepository);
-		TransactionService transactionService = new TransactionServiceImpl(transactionRepository);
-		CategoryService categoryService = new CategoryServiceImpl(categoryRepository);
-		BudgetService budgetService = new BudgetServiceImpl(budgetRepository);
-		FinancialGoalService financialGoalService = new FinancialGoalServiceImpl(financialGoalRepository);
-		StartService startService = new StartServiceImpl(personService);
+		public final FinancialGoalRepository FINANCIAL_GOAL_REPOSITORY = new FinancialGoalRepositoryImpl();
 
-		FamilyControllerImpl familyController = new FamilyControllerImpl(familyService);
-		TransactionControllerImpl transactionController = new TransactionControllerImpl(transactionService);
-		CategoryControllerImpl categoryController = new CategoryControllerImpl(categoryService);
-		BudgetControllerImpl budgetController = new BudgetControllerImpl(budgetService);
-		FinancialGoalControllerImpl financialGoalController = new FinancialGoalControllerImpl(financialGoalService);
-		PersonControllerImpl personController = new PersonControllerImpl(personService, familyController, transactionController, categoryController, budgetController, financialGoalController);
-		StartController startController = new StartController(startService, personController);
-		startController.startMenu();
-	}
+		public final PersonService PERSON_SERVICE = new PersonServiceImpl(PERSON_REPOSITORY);
+		public final FamilyService FAMILY_SERVICE = new FamilyServiceImpl(FAMILY_REPOSITORY);
+		public final TransactionService TRANSACTION_SERVICE = new TransactionServiceImpl(TRANSACTION_REPOSITORY);
+		public final CategoryService CATEGORY_SERVICE = new CategoryServiceImpl(CATEGORY_REPOSITORY);
+		public final BudgetService BUDGET_SERVICE = new BudgetServiceImpl(BUDGET_REPOSITORY);
+		public final FinancialGoalService FINANCIAL_GOAL_SERVICE = new FinancialGoalServiceImpl(FINANCIAL_GOAL_REPOSITORY);
 }

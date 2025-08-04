@@ -27,32 +27,32 @@ public class BudgetControllerImpl extends BaseController implements BudgetContro
 
 	@Override
 	public void budgetMenu() {
-		log.info("Запуск меню бюджет");
-		System.out.print(PERSON_BUDGET_MENU);
-		AppUtil.loopIterationAndExit((count) -> {
-			String step = SCANNER.nextLine();
-			log.debug("Пользователь ввёл шаг меню бюджет: {}", step);
-			switch (step) {
-				case STEP_ONE -> budgetService.create();
-				case STEP_TWO -> budgetService.update(currentPerson);
-				case STEP_THREE -> budgetListMenu();
-				case STEP_NINE -> budgetService.delete(currentPerson.getPersonId());
-				case STEP_BACK -> {
-					return true;
-				}
-				case STEP_ZERO -> {
-					log.info("Выход из приложения меню бюджет");
-					AppUtil.exit();
-				}
-				default -> {
-					log.warn("Ошибка при обработке меню бюджет");
-					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
-						System.out.print(ERROR_ENTER_MESSAGE);
-					}
-				}
-			}
-			return false;
-		}, AppUtil.MAX_ITERATION_LOOP);
+//		log.info("Запуск меню бюджет");
+//		System.out.print(PERSON_BUDGET_MENU);
+//		AppUtil.loopIterationAndExit((count) -> {
+//			String step = SCANNER.nextLine();
+//			log.debug("Пользователь ввёл шаг меню бюджет: {}", step);
+//			switch (step) {
+//				case STEP_ONE -> budgetService.create();
+//				case STEP_TWO -> budgetService.update(currentPerson);
+//				case STEP_THREE -> budgetListMenu();
+//				case STEP_NINE -> budgetService.delete(currentPerson.getPersonId());
+//				case STEP_BACK -> {
+//					return true;
+//				}
+//				case STEP_ZERO -> {
+//					log.info("Выход из приложения меню бюджет");
+//					AppUtil.exit();
+//				}
+//				default -> {
+//					log.warn("Ошибка при обработке меню бюджет");
+//					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+//						System.out.print(ERROR_ENTER_MESSAGE);
+//					}
+//				}
+//			}
+//			return false;
+//		}, AppUtil.MAX_ITERATION_LOOP);
 	}
 
 	@Override

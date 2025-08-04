@@ -16,7 +16,6 @@ import static org.example.util.constant.SqlConstant.*;
 @RequiredArgsConstructor
 
 public class PersonRepositoryImpl implements PersonRepository {
-	private final FamilyRepository familyRepository;
 
 	@Override
 	public Optional<Person> entry(String userName) {

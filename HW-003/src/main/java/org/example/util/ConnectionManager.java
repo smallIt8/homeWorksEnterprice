@@ -15,6 +15,16 @@ public class ConnectionManager {
 	private static final String USERNAME_KEY = "db.username";
 	private static final String PASSWORD_KEY = "db.password";
 
+	static {
+		try {
+			Class.forName("org.postgresql.Driver");
+			log.info("PostgresSQL драйвер загружен");
+		} catch (ClassNotFoundException e) {
+			log.error("Не удалось загрузить PostgresSQL драйвер", e);
+			throw new RuntimeException(e);
+		}
+	}
+
 	public Connection open() {
 		try {
 			return DriverManager.getConnection(

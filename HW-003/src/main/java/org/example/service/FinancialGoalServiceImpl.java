@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.PersonDto;
 import org.example.model.FinancialGoal;
 import org.example.model.Person;
 import org.example.repository.FinancialGoalRepository;
@@ -11,12 +12,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-
 public class FinancialGoalServiceImpl implements FinancialGoalService {
+
 	private final FinancialGoalRepository financialGoalRepository;
 
 	@Override
-	public void create() {
+	public void create(PersonDto personDto) {
 
 	}
 
@@ -26,7 +27,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	}
 
 	@Override
-	public Optional<FinancialGoal> update(Person entity) {
+	public Optional<FinancialGoal> update(PersonDto entity) {
 		return Optional.empty();
 	}
 
@@ -41,7 +42,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	}
 
 	@Override
-	public List<FinancialGoal> getAllByOwner(Person person) {
+	public List<FinancialGoal> getAllByOwner(PersonDto currentPerson) {
 		return List.of();
 	}
 

@@ -30,32 +30,32 @@ public class TransactionControllerImpl extends BaseController implements Transac
 
 	@Override
 	public void transactionMenu() {
-		log.info("Запуск меню транзакций");
-		System.out.print(PERSON_TRANSACTION_MENU);
-		AppUtil.loopIterationAndExit((count) -> {
-			String step = SCANNER.nextLine();
-			log.debug("Пользователь ввёл шаг меню транзакций: {}", step);
-			switch (step) {
-				case STEP_ONE -> transactionService.create();
-				case STEP_TWO -> transactionService.update(currentPerson);
-				case STEP_THREE -> transactionListMenu();
-				case STEP_NINE -> transactionService.delete(currentPerson.getPersonId());
-				case STEP_BACK -> {
-					return true;
-				}
-				case STEP_ZERO -> {
-					log.info("Выход из приложения меню транзакций");
-					AppUtil.exit();
-				}
-				default -> {
-					log.warn("Ошибка при обработке меню транзакций");
-					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
-						System.out.print(ERROR_ENTER_MESSAGE);
-					}
-				}
-			}
-			return false;
-		}, AppUtil.MAX_ITERATION_LOOP);
+//		log.info("Запуск меню транзакций");
+//		System.out.print(PERSON_TRANSACTION_MENU);
+//		AppUtil.loopIterationAndExit((count) -> {
+//			String step = SCANNER.nextLine();
+//			log.debug("Пользователь ввёл шаг меню транзакций: {}", step);
+//			switch (step) {
+//				case STEP_ONE -> transactionService.create();
+//				case STEP_TWO -> transactionService.update(currentPerson);
+//				case STEP_THREE -> transactionListMenu();
+//				case STEP_NINE -> transactionService.delete(currentPerson.getPersonId());
+//				case STEP_BACK -> {
+//					return true;
+//				}
+//				case STEP_ZERO -> {
+//					log.info("Выход из приложения меню транзакций");
+//					AppUtil.exit();
+//				}
+//				default -> {
+//					log.warn("Ошибка при обработке меню транзакций");
+//					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+//						System.out.print(ERROR_ENTER_MESSAGE);
+//					}
+//				}
+//			}
+//			return false;
+//		}, AppUtil.MAX_ITERATION_LOOP);
 	}
 
 	@Override
