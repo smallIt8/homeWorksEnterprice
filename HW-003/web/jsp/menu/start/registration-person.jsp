@@ -7,7 +7,7 @@
 </head>
 <body>
 <div style="text-align: center;">
-    <h1>Вход в личный кабинет</h1>
+    <h1>Регистрация нового пользователя</h1>
     <form action="start" method="post">
         <input type="hidden" name="action" value="register"/>
         <div>
