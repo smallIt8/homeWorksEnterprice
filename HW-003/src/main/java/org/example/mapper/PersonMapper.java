@@ -1,4 +1,4 @@
-package org.example.Maper;
+package org.example.mapper;
 
 import org.example.dto.PersonDto;
 import org.example.model.Person;

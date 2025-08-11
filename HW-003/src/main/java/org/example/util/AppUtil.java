@@ -13,7 +13,6 @@ import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.MenuConstant.*;
 
 @UtilityClass
-
 public class AppUtil {
 	private static final Scanner SCANNER = new Scanner(System.in);
 	public final int MAX_ITERATION_LOOP = 5;
