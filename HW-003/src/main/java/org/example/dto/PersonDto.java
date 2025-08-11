@@ -51,9 +51,9 @@ public class PersonDto {
 		this.family = family;
 	}
 
-	public PersonDto(String firstName, String lastName) {
-		this.firstName = firstName;
-		this.lastName = lastName;
+	public PersonDto(String userName, String password) {
+		this.userName = userName;
+		this.password = password;
 	}
 
 	@Override
