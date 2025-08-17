@@ -1,14 +1,16 @@
 package org.example.util;
 
+import lombok.experimental.UtilityClass;
 import org.mindrot.jbcrypt.BCrypt;
 
+@UtilityClass
 public class PasswordUtil {
 
-	public static String hashPassword(String password) {
+	public String hashPassword(String password) {
 		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
-	public static boolean checkPassword(String password, String hashedPassword) {
+	public boolean checkPassword(String password, String hashedPassword) {
 		return BCrypt.checkpw(password, hashedPassword);
 	}
 }

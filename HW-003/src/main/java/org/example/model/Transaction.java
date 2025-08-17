@@ -15,7 +15,6 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Transaction {
 	private UUID transactionId;
 	private String transactionName;

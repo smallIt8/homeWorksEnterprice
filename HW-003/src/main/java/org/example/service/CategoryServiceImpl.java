@@ -1,6 +1,8 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.BudgetDto;
+import org.example.dto.CategoryDto;
 import org.example.dto.PersonDto;
 import org.example.model.Category;
 import org.example.model.Person;
@@ -25,7 +27,12 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public void delete(UUID value) {
+	public void delete(PersonDto entityDto) {
+
+	}
+
+	@Override
+	public void delete(PersonDto currentPersonDto, CategoryDto CategoryDto) {
 
 	}
 }

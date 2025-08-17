@@ -17,7 +17,8 @@
             <c:if test="${not empty errorMessage}">
                 <p class="errorMessage">${errorMessage}</p>
             </c:if>
-            <form action="start" method="post">
+
+            <form action="${pageContext.request.contextPath}/start" method="post">
                 <input type="hidden" name="action" value="auth"/>
                 <div>
                     <label for="userName">Логин:

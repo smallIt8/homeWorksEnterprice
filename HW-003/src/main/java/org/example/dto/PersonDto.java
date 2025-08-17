@@ -11,7 +11,6 @@ import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
 @NoArgsConstructor
-
 public class PersonDto {
 	private UUID personId;
 	private String userName;
@@ -53,6 +52,18 @@ public class PersonDto {
 
 	public PersonDto(String userName, String password) {
 		this.userName = userName;
+		this.password = password;
+	}
+
+	public PersonDto(UUID personId, String firstName, String lastName, String email) {
+		this.personId = personId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+	}
+
+	public PersonDto(UUID personId, String password) {
+		this.personId = personId;
 		this.password = password;
 	}
 

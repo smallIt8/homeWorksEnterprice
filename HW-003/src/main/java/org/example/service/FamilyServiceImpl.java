@@ -2,6 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.dto.FamilyDto;
 import org.example.mapper.PersonMapper;
 import org.example.dto.PersonDto;
 import org.example.model.Family;
@@ -140,7 +141,12 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public void delete(UUID value) {
+	public void delete(PersonDto personDto) {
+
+	}
+
+	@Override
+	public void delete(PersonDto currentPersonDto, FamilyDto familyDto) {
 
 	}
 }

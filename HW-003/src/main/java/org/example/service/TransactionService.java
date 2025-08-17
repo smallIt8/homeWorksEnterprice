@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dto.PersonDto;
+import org.example.dto.TransactionDto;
 import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
@@ -17,4 +18,6 @@ public interface TransactionService extends ComponentService<Transaction, Person
 	List<Transaction> getAllSortByTypeAndDate(TransactionType type, UUID currentPerson);
 
 	List<Transaction> getAllSortByCreateDate();
+
+	void delete(PersonDto currentPersonDto, TransactionDto transactionDto);
 }

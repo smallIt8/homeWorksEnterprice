@@ -1,16 +1,31 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: small
-  Date: 04.08.2025
-  Time: 12:35
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Title</title>
-</head>
-<body>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-</body>
+<html lang="ru,en">
+    <head>
+        <title>Удаление транзакции</title>
+        <style>
+            .warningMessage {
+                color: red;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="text-align: center;">
+            <h1>Удаление выбранной транзакции: ${transactionName}</h1>
+            <c:if test="${not empty warningMessage}">
+                <p class="warningMessage">${warningMessage}</p>
+            </c:if>
+
+            <form action="${pageContext.request.contextPath}/transact" method="post">
+                <input type="hidden" name="action" value="delete-transact"/>
+                <button type="submit" style="background-color: red; color: white;">Удалить транзакцию</button>
+            </form>
+
+            <form action="${pageContext.request.contextPath}/transact" method="get">
+                <button type="submit">Отмена</button>
+            </form>
+        </div>
+    </body>
 </html>

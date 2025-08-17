@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 @UtilityClass
-
 public class PropertyUtil {
+
 	private static final Properties PROPERTIES = new Properties();
 
 	static {

@@ -9,4 +9,5 @@ public interface ComponentService<E, P, ID> extends Service<E, P, ID> {
 	List<E> getAll();
 
 	List<E> getAllByOwner(P entity);
+
 }

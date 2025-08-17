@@ -4,7 +4,6 @@ import lombok.experimental.UtilityClass;
 import org.example.util.AppUtil;
 
 @UtilityClass
-
 public class MenuConstant {
 
 	// ========== Сообщения о выполняемых действиях ==========
@@ -20,11 +19,47 @@ public class MenuConstant {
 	public static final String LIST_PERSON_BY_CREATE_DATE_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по дате приема:");
 	public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников с фамилией:");
 	public static final String EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список семейных групп, созданных пользователем пуст");
-	public static final String EMPTY_LIST_LAST_NAME_SEARCH_PERSON_MESSAGE = AppUtil.colorizeGreenText("Сотрудники с такой фамилией не найдены");
-	public static final String PERSON_NOT_FOUND_MESSAGE = AppUtil.colorizeGreenText("ID текущего пользователя не найден в БД");
+	public static final String NOT_FOUND_PERSON_MESSAGE = "ID текущего пользователя не найден в БД";
 	public static final String UPDATE_PERSON_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден и готов к обновлению. Имя пользователя: ");
 	public static final String UPDATE_PERSON_PASSWORD_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден, пароль пользователя готов к обновлению. Имя пользователя: ");
 	public static final String REDIRECT_CREATE_FAMILY_MESSAGE = AppUtil.colorizeGreenText("Перенаправление в меню создания семейной группы");
+
+	// ========== Предупреждающие сообщения ==========
+	public static final String WARNING_DELETE_PERSON_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить свою учетную запись?
+					""";
+
+	public static final String WARNING_DELETE_TRANSACTION_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить выбранную транзакцию?
+					""";
+
+	public static final String WARNING_DELETE_BUDGET_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить выбранный бюджет?
+					""";
+
+	public static final String WARNING_DELETE_CATEGORY_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить выбранную категорию?
+					""";
+
+	public static final String WARNING_DELETE_FINANCIAL_GOAL_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить выбранную долгосрочную финансовую цель?
+					""";
+
+	public static final String WARNING_DELETE_FAMILY_MESSAGE =
+			"""
+					Внимание! Это действие необратимо.
+					Вы действительно хотите удалить выбранную Семейную группу?
+					""";
 
 	// ========== Сообщения о выполненных действиях ==========
 	public static final String REGISTERED_MESSAGE = AppUtil.colorizeGreenText("Вы зарегистрировались.");
@@ -48,65 +83,7 @@ public class MenuConstant {
 	public static final String ADDING_PERSON = AppUtil.colorizeOrangeText("добавить ещё одного сотрудника? Введите Y(Да) или N(Нет): ");
 	public static final String ENTER_NUMBER_IN_LIST = AppUtil.colorizeOrangeText("введите номер в списке: ");
 
-	// ========== Меню MAIN ==========
-	public static final String MAIN_MENU = """
-			
-			       Hello GLd-JD2-17-25!
-			Выберите необходимый пункт меню:
-			1. Вход
-			2. Регистрация
-			
-			0. Выход
-			
-			ввод:\s""";
-
-	//  ========== Меню PERSON ==========
-	public static final String PERSON_MENU = """
-			
-			Кабинет пользователя
-			
-			Выберите необходимый пункт меню:
-			1. Транзакции
-			2. Категории
-			3. Бюджет
-			4. Долгосрочные финансовые цели
-			5. Семейная группа
-			6. Обновить данные пользователя
-			9. Удалить учетную запись пользователя
-			
-			0. Выход
-			
-			ввод:\s""";
-
-	public static final String PERSON_UPDATE_MENU = """
-			
-			Кабинет пользователя/Обновить данные пользователя
-			
-			Выберите необходимый пункт меню:
-			1. Обновить данные пользователя
-			2. Обновить пароль пользователя
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
-
 	//  ========== Меню PERSON/TRANSACTION
-	public static final String PERSON_TRANSACTION_MENU = """
-			
-			Кабинет пользователя/Транзакции
-			
-			Выберите необходимый пункт меню:
-			1. Добавить транзакцию
-			2. Обновить данные транзакции
-			3. Просмотреть список транзакций
-			9. Удалить транзакцию
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
-
 	public static final String PERSON_TRANSACTION_LIST_MENU = """
 			
 			Кабинет пользователя/Транзакции/Список транзакций
@@ -125,38 +102,8 @@ public class MenuConstant {
 			
 			ввод:\s""";
 
-	//  ========== Меню PERSON/CATEGORY ==========
-	public static final String PERSON_CATEGORY_MENU = """
-			
-			Кабинет пользователя/Категории
-			
-			Выберите необходимый пункт меню:
-			1. Создать категорию
-			2. Обновить имя категории
-			3. Просмотреть список категорий
-			9. Удалить категорию
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
 
 	//  ========== Меню PERSON/BUDGET ==========
-	public static final String PERSON_BUDGET_MENU = """
-			
-			Кабинет пользователя/Бюджет
-			
-			Выберите необходимый пункт меню:
-			1. Установить бюджет на категорию
-			2. Обновить данные бюджета
-			3. Просмотреть список бюджетов
-			9. Удалить бюджет
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
-
 	public static final String PERSON_BUDGET_LIST_MENU = """
 			
 			Кабинет пользователя/Бюджет/Список бюджетов
@@ -166,40 +113,6 @@ public class MenuConstant {
 			2. Отфильтровать список бюджетов за выбранный период
 			3. Отфильтровать список бюджетов по выбранной категории
 			4. Отфильтровать список бюджетов по выбранной категории за выбранный период
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
-
-	//  ========== Меню PERSON/FINANCIAL_GOAL ==========
-	public static final String PERSON_GOAL_MENU = """
-			
-			Кабинет пользователя/Долгосрочные финансовые цели
-			
-			Выберите необходимый пункт меню:
-			1. Создать долгосрочную финансовую цель
-			2. Обновить данные долгосрочной финансовой цели
-			3. Просмотреть список долгосрочных финансовых целей
-			9. Удалить долгосрочную финансовую цель
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
-
-	//  ========== Меню PERSON/FAMILY ==========
-	public static final String PERSON_FAMILY_MENU = """
-			
-			Кабинет пользователя/Семейная группа
-			
-			Выберите необходимый пункт меню:
-			1. Создать семейную группу
-			2. Вступить в семейную группу
-			3. Добавить пользователя в семейную группу
-			4. Обновить имя семейной группы
-			5. Выйти из семейной группы
-			9. Удалить семейную группу
 			
 			<. Назад
 			0. Выход

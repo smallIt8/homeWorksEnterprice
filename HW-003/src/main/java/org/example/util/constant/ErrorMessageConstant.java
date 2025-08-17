@@ -4,19 +4,18 @@ import lombok.experimental.UtilityClass;
 import org.example.util.AppUtil;
 
 @UtilityClass
-
 public class ErrorMessageConstant {
 	// ========== Сообщения об ошибках создания ==========
 	public static final String ERROR_CREATION_USER_NAME_MESSAGE = "Пользователь с таким логином уже зарегистрирован.";
 	public static final String ERROR_CREATION_EMAIL_MESSAGE = "Пользователь с таким email уже существует.";
-	public static final String ERROR_CREATION_BUDGET_MESSAGE = AppUtil.colorizeRedText("Бюджет можно устанавливать только на категории расходов.");
-	public static final String ERROR_CREATION_FINANCIAL_GOAL_MESSAGE = AppUtil.colorizeRedText("Целевая сумма не может быть 0 и меньше 0");
+	public static final String ERROR_CREATION_BUDGET_MESSAGE = "Бюджет можно устанавливать только на категории расходов.";
+	public static final String ERROR_CREATION_FINANCIAL_GOAL_MESSAGE = "Целевая сумма не может быть 0 и меньше 0";
 
 	// ========== Сообщения об ошибках ввода ==========
-	public static final String ERROR_ENTER_MESSAGE = AppUtil.colorizeRedText("Неверный ввод.\nповторите ввод: ");
-	public static final String ERROR_ENTER_MAX_ATTEMPTS_MESSAGE = AppUtil.colorizeRedText("Превышено допустимое количество попыток ввода.");
+	public static final String ERROR_ENTER_MESSAGE = "Неверный ввод.\nповторите ввод: ";
+	public static final String ERROR_ENTER_MAX_ATTEMPTS_MESSAGE = "Превышено допустимое количество попыток ввода.";
 	public static final String ERROR_ENTER_USER_NAME_OR_PASSWORD_MESSAGE = "Неверный логин или пароль.\nПовторите вход.";
-	public static final String ERROR_ENTER_NUMBER_MESSAGE = AppUtil.colorizeRedText("Неверный ввод.\nЗапись с таким номером отсутствует.\nПовторите ввод.");
+	public static final String ERROR_ENTER_NUMBER_MESSAGE = "Неверный ввод.\nЗапись с таким номером отсутствует.\nПовторите ввод.";
 	public static final String ERROR_ENTER_USER_NAME_MESSAGE =
 			"""
 					Неверный ввод.

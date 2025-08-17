@@ -27,9 +27,11 @@ public class StartServlet extends HttpServlet {
 		var action = req.getParameter("action");
 
 		if ("auth".equals(action)) {
+			log.info("Переход на страницу авторизации");
 			req.getRequestDispatcher(getPath("auth-person"))
 					.forward(req, resp);
 		} else if ("register".equals(action)) {
+			log.info("Переход на страницу регистрации");
 			req.getRequestDispatcher(getPath("registration-person"))
 					.forward(req, resp);
 		}
@@ -40,48 +42,58 @@ public class StartServlet extends HttpServlet {
 		var action = req.getParameter("action");
 
 		if ("auth".equals(action)) {
-			var userName = req.getParameter("userName");
-			var password = req.getParameter("password");
-			PersonDto personDto = new PersonDto(
-					userName,
-					password);
+			PersonDto personDto = buildPersonDto(req, false);
+			log.info("Попытка входа пользователя '{}'", personDto.getUserName());
 			try {
 				Optional<PersonDto> personOpt = personService.entry(personDto);
 				if (personOpt.isPresent()) {
 					req.getSession()
-							.setAttribute("currentPerson", personOpt.get());
-					resp.sendRedirect(req.getContextPath() + "/person");
+							.setAttribute("currentPersonDto", personOpt.get());
+					resp.sendRedirect(req.getContextPath() + "/main-person");
 				} else {
 					req.setAttribute("errorMessage", ERROR_ENTER_USER_NAME_OR_PASSWORD_MESSAGE);
 					req.getRequestDispatcher(getPath("auth-person"))
 							.forward(req, resp);
 				}
 			} catch (Exception e) {
+				log.error("Ошибка при авторизации в сервлете'{}'", e.getMessage(), e);
 				req.getRequestDispatcher(getPath("auth-person"))
 						.forward(req, resp);
 			}
 		} else if ("register".equals(action)) {
-			var userName = req.getParameter("userName");
-			var password = req.getParameter("password");
+			PersonDto personDto = buildPersonDto(req, true);
+			try {
+				personService.create(personDto);
+				req.getRequestDispatcher(getPath("auth-person"))
+						.forward(req, resp);
+			} catch (Exception e) {
+				log.error("Ошибка при регистрации в сервлете'{}'", e.getMessage(), e);
+				req.getRequestDispatcher(getPath("registration-person"))
+						.forward(req, resp);
+			}
+		}
+	}
+
+	private PersonDto buildPersonDto(HttpServletRequest req, boolean isRegistration) {
+		var userName = req.getParameter("userName");
+		var password = req.getParameter("password");
+
+		if (isRegistration) {
 			var firstName = req.getParameter("firstName");
 			var lastName = req.getParameter("lastName");
 			var email = req.getParameter("email");
-			PersonDto personDto = new PersonDto(
+			return new PersonDto(
 					userName,
 					password,
 					firstName,
 					lastName,
 					email
 			);
-
-			try {
-				personService.create(personDto);
-				req.getRequestDispatcher(getPath("auth-person"))
-						.forward(req, resp);
-			} catch (Exception e) {
-				req.getRequestDispatcher(getPath("registration-person"))
-						.forward(req, resp);
-			}
+		} else {
+			return new PersonDto(
+					userName,
+					password
+			);
 		}
 	}
 }

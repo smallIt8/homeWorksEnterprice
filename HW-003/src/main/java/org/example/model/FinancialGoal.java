@@ -14,7 +14,6 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class FinancialGoal {
 	private UUID financialGoalId;
 	private String financialGoalName;

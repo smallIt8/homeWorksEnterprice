@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.FinancialGoalDto;
 import org.example.dto.PersonDto;
 import org.example.model.FinancialGoal;
 import org.example.model.Person;
@@ -47,7 +48,12 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	}
 
 	@Override
-	public void delete(UUID value) {
+	public void delete(PersonDto personDto) {
+
+	}
+
+	@Override
+	public void delete(PersonDto currentPersonDto, FinancialGoalDto financialGoalDto) {
 
 	}
 }

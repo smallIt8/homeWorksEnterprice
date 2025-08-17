@@ -2,6 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.PersonDto;
+import org.example.dto.TransactionDto;
 import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
@@ -62,7 +63,13 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public void delete(UUID value) {
+	public void delete(PersonDto personDto) {
+
+	}
+
+	@Override
+	public void delete(PersonDto currentPersonDto, TransactionDto transactionDto) {
+
 
 	}
 }
