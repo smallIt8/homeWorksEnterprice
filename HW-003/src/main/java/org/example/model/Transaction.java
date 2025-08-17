@@ -1,6 +1,7 @@
 package org.example.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,8 +14,9 @@ import static org.example.util.constant.ColorsConstant.INDIGO;
 import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
 	private UUID transactionId;
 	private String transactionName;

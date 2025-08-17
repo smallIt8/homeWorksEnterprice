@@ -1,5 +1,6 @@
 package org.example.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,9 @@ import static org.example.util.constant.ColorsConstant.INDIGO;
 import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Person {
 	private UUID personId;
 	private String userName;
@@ -21,42 +24,6 @@ public class Person {
 	private String email;
 	private Family family;
 	private LocalDateTime createDate;
-
-	public Person(UUID personId) {
-		this.personId = personId;
-	}
-
-	public Person(UUID personId, String userName, String password, String firstName, String lastName, String email) {
-		this.personId = personId;
-		this.userName = userName;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-	}
-
-	public Person(UUID personId, String userName, String password, String firstName, String lastName, String email, Family family) {
-		this.personId = personId;
-		this.userName = userName;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.family = family;
-	}
-
-	public Person(UUID personId, String password, String firstName, String lastName, String email) {
-		this.personId = personId;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-	}
-
-	public Person(UUID personId, String password) {
-		this.personId = personId;
-		this.password = password;
-	}
 
 	@Override
 	public String toString() {

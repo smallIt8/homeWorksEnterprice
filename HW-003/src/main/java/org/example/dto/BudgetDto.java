@@ -1,5 +1,7 @@
 package org.example.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.model.Category;
@@ -13,7 +15,9 @@ import static org.example.util.constant.ColorsConstant.INDIGO;
 import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class BudgetDto {
 	private UUID budgetId;
 	private String budgetName;
