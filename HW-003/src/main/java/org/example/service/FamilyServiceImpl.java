@@ -36,11 +36,11 @@ public class FamilyServiceImpl implements FamilyService {
 		log.info("Создание новой семейной группы");
 		System.out.println(CREATION_FAMILY_MESSAGE);
 		createFamilyName();
-		Family family = new Family(
-				UUID.randomUUID(),
-				familyName.toUpperCase(),
-				currentPerson
-		);
+		Family family = Family.builder()
+				.familyId(UUID.randomUUID())
+				.familyName(familyName.toUpperCase())
+				.ownerPersonId(currentPerson)
+				.build();
 		try {
 			familyRepository.create(family);
 			log.info("Семейная группа с ID: '{}' успешно создана", family.getFamilyId());

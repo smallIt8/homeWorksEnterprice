@@ -52,13 +52,14 @@ public class PersonServiceImpl implements PersonService {
 		String lastName = createLastName(person.getLastName());
 		String email = createEmail(person.getEmail());
 
-		Person inputPerson = new Person(
-				UUID.randomUUID(),
-				userName.toLowerCase(),
-				password,
-				firstName.toUpperCase(),
-				lastName.toUpperCase(),
-				email.toLowerCase());
+		Person inputPerson = Person.builder()
+				.personId(UUID.randomUUID())
+				.userName(userName.toLowerCase())
+				.password(password)
+				.firstName(firstName.toUpperCase())
+				.lastName(lastName.toUpperCase())
+				.email(email.toLowerCase())
+				.build();
 		log.info("Создана подготовленная модель создаваемого пользователя: '{}'",
 				 inputPerson);
 		try {

@@ -30,7 +30,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 				String firstName = query.getString("first_name");
 				String lastName = query.getString("last_name");
 				String email = query.getString("email");
-				Person person = new Person(personId, hashedPassword, firstName, lastName, email);
+				Person person = Person.builder().personId(personId).password(hashedPassword).firstName(firstName).lastName(lastName).email(email).build();
 				return Optional.of(person);
 			}
 		} catch (SQLException e) {
@@ -105,7 +105,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 					Family family = null;
 					if (familyId != null) {
 						String familyName = query.getString("family_name");
-						family = new Family(familyId);
+						family = Family.builder().familyId(familyId).build();
 						family.setFamilyName(familyName);
 					}
 					person.setFamily(family);

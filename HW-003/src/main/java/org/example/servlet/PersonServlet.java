@@ -89,18 +89,18 @@ public class PersonServlet extends HttpServlet {
 			var firstName = req.getParameter("firstName");
 			var lastName = req.getParameter("lastName");
 			var email = req.getParameter("email");
-			return new PersonDto(
-					currentPerson.getPersonId(),
-					firstName,
-					lastName,
-					email
-			);
+			return PersonDto.builder()
+					.personId(currentPerson.getPersonId())
+					.firstName(firstName)
+					.lastName(lastName)
+					.email(email)
+					.build();
 		} else {
 			var password = req.getParameter("password");
-			return new PersonDto(
-					currentPerson.getPersonId(),
-					password
-			);
+			return PersonDto.builder()
+					.personId(currentPerson.getPersonId())
+					.password(password)
+					.build();
 		}
 	}
 }

@@ -82,18 +82,18 @@ public class StartServlet extends HttpServlet {
 			var firstName = req.getParameter("firstName");
 			var lastName = req.getParameter("lastName");
 			var email = req.getParameter("email");
-			return new PersonDto(
-					userName,
-					password,
-					firstName,
-					lastName,
-					email
-			);
+			return PersonDto.builder()
+					.userName(userName)
+					.password(password)
+					.firstName(firstName)
+					.lastName(lastName)
+					.email(email)
+					.build();
 		} else {
-			return new PersonDto(
-					userName,
-					password
-			);
+			return PersonDto.builder()
+					.userName(userName)
+					.password(password)
+					.build();
 		}
 	}
 }

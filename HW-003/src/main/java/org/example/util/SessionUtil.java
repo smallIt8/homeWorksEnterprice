@@ -10,7 +10,7 @@ import java.io.IOException;
 @UtilityClass
 public class SessionUtil {
 
-	public PersonDto getCurrentPersonDto(HttpServletRequest req) {
+	public static PersonDto getCurrentPersonDto(HttpServletRequest req) {
 
 		Object personSession = req.getSession().getAttribute("currentPersonDto");
 		if (personSession instanceof PersonDto personDto) {
@@ -19,7 +19,7 @@ public class SessionUtil {
 		return null;
 	}
 
-	public PersonDto presenceCurrentPersonDto(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public static PersonDto presenceCurrentPersonDto(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		PersonDto personDto = getCurrentPersonDto(req);
 		if (personDto == null) {
 			resp.sendRedirect(req.getContextPath() + "/start");

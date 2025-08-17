@@ -14,7 +14,7 @@ import static org.example.util.SessionUtil.*;
 @UtilityClass
 public class ServletGetUtil {
 
-	public String actionGet(HttpServletRequest req, HttpServletResponse resp, String defaultAction) throws IOException {
+	public static String actionGet(HttpServletRequest req, HttpServletResponse resp, String defaultAction) throws IOException {
 		var action = req.getParameter("action");
 		var currentPerson = presenceCurrentPersonDto(req, resp);
 

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Notification {
 	public void viewer() {
 		System.out.println("Coming soon...");
