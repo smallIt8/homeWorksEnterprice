@@ -50,11 +50,12 @@ public class StartServlet extends HttpServlet {
 					req.getSession()
 							.setAttribute("currentPersonDto", personOpt.get());
 					resp.sendRedirect(req.getContextPath() + "/main-person");
-				} else {
-					req.setAttribute("errorMessage", ERROR_ENTER_USER_NAME_OR_PASSWORD_MESSAGE);
-					req.getRequestDispatcher(getPath("auth-person"))
-							.forward(req, resp);
 				}
+			} catch (IllegalArgumentException e) {
+				log.error("Ошибка при авторизации в сервлете'{}'", e.getMessage(), e);
+				req.setAttribute("errorMessage", e.getMessage());
+				req.getRequestDispatcher(getPath("auth-person"))
+						.forward(req, resp);
 			} catch (Exception e) {
 				log.error("Ошибка при авторизации в сервлете'{}'", e.getMessage(), e);
 				req.getRequestDispatcher(getPath("auth-person"))

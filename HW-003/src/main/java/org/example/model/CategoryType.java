@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-
 public enum CategoryType {
 	INCOME("Приходная"),
 	EXPENSE("Расходная");
@@ -15,8 +14,5 @@ public enum CategoryType {
 	@Override
 	public String toString() {
 		return typeName;
-	}
-
-	public enum Status {
 	}
 }

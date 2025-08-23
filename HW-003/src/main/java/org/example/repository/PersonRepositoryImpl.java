@@ -14,7 +14,6 @@ import static org.example.util.constant.SqlConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
-
 public class PersonRepositoryImpl implements PersonRepository {
 
 	@Override
@@ -90,7 +89,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 	}
 
 	@Override
-	public Optional<Person> getById(UUID personId) {
+	public Optional<Person> findById(UUID personId) {
 		try (Connection connection = ConnectionManager.open();
 			 PreparedStatement statement = connection.prepareStatement(GET_BY_ID_PERSON_JOIN)) {
 			statement.setObject(1, personId);
@@ -106,7 +105,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 					if (familyId != null) {
 						String familyName = query.getString("family_name");
 						family = Family.builder().familyId(familyId).build();
-						family.setFamilyName(familyName);
+						family.setName(familyName);
 					}
 					person.setFamily(family);
 					person.setCreateDate(query.getTimestamp("create_date").toLocalDateTime());
@@ -121,16 +120,16 @@ public class PersonRepositoryImpl implements PersonRepository {
 	}
 
 	@Override
-	public void update(Person person) {
+	public void update(Person currentPerson) {
 		try (Connection connection = ConnectionManager.open();
 			 PreparedStatement statement = connection.prepareStatement(UPDATE_BY_ID_PERSON)) {
-			statement.setString(1, person.getFirstName());
-			statement.setString(2, person.getLastName());
-			statement.setString(3, person.getEmail());
-			statement.setObject(4, person.getPersonId());
+			statement.setString(1, currentPerson.getFirstName());
+			statement.setString(2, currentPerson.getLastName());
+			statement.setString(3, currentPerson.getEmail());
+			statement.setObject(4, currentPerson.getPersonId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			log.error("Ошибка при обновлении данных пользователя с ID {}: {}", person.getPersonId(), e.getMessage(), e);
+			log.error("Ошибка при обновлении данных пользователя с ID {}: {}", currentPerson.getPersonId(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -153,40 +152,26 @@ public class PersonRepositoryImpl implements PersonRepository {
 	}
 
 	@Override
-	public void updatePassword(Person person) {
+	public void updatePassword(Person currentPerson) {
 		try (Connection connection = ConnectionManager.open();
 			 PreparedStatement statement = connection.prepareStatement(UPDATE_PASSWORD_BY_ID_PERSON)) {
-			statement.setString(1, person.getPassword());
-			statement.setObject(2, person.getPersonId());
+			statement.setString(1, currentPerson.getPassword());
+			statement.setObject(2, currentPerson.getPersonId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			log.error("Ошибка при обновлении пароля пользователя с ID {}: {}", person.getPersonId(), e.getMessage(), e);
+			log.error("Ошибка при обновлении пароля пользователя с ID {}: {}", currentPerson.getPersonId(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void updatePersonFamily(Person person, Family family) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(UPDATE_FAMILY_BY_ID_PERSON)) {
-			UUID familyId = family != null ? family.getFamilyId() : null;
-			statement.setObject(1, familyId);
-			statement.setObject(2, person.getPersonId());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при обновлении семьи пользователя: {}", e.getMessage(), e);
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void delete(UUID personId) {
+	public void delete(UUID currentPersonId) {
 		try (Connection connection = ConnectionManager.open();
 			 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_PERSON)) {
-			statement.setObject(1, personId);
+			statement.setObject(1, currentPersonId);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			log.error("Ошибка при удалении данных пользователя с  ID {}: {}", personId, e.getMessage(), e);
+			log.error("Ошибка при удалении данных пользователя с  ID {}: {}", currentPersonId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

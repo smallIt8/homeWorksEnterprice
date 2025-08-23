@@ -16,21 +16,17 @@ public class ServletGetUtil {
 
 	public static String actionGet(HttpServletRequest req, HttpServletResponse resp, String defaultAction) throws IOException {
 		var action = req.getParameter("action");
-		var currentPerson = presenceCurrentPersonDto(req, resp);
+		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
-		if (currentPerson == null) {
-			return null;
-		}
-
-		req.setAttribute("personName", currentPerson.toNameString());
-		req.setAttribute("person", currentPerson);
+		req.setAttribute("personName", currentPersonDto.toNameString());
+		req.setAttribute("person", currentPersonDto);
 		req.setAttribute("action", action);
 
 		if (action == null)
 			action = defaultAction;
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPerson.toNameString(),
+				 currentPersonDto.toNameString(),
 				 req.getServletPath(),
 				 action
 		);

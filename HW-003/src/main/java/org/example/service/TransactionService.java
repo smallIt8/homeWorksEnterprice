@@ -1,23 +1,23 @@
 package org.example.service;
 
+import org.example.dto.CategoryDto;
 import org.example.dto.PersonDto;
 import org.example.dto.TransactionDto;
-import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface TransactionService extends ComponentService<Transaction, PersonDto, UUID> {
+public interface TransactionService extends ComponentService<TransactionDto, Transaction, PersonDto, UUID> {
 
-	List<Transaction> getAllSortByType(TransactionType type, UUID currentPerson);
+	List<TransactionDto> getAllSortByType(TransactionType type, PersonDto currentPersonDto);
 
-	List<Transaction> getAllSortByTypeAndCategory(TransactionType type, UUID currentPerson);
+	List<TransactionDto> getAllSortByTypeAndCategory(TransactionType type, CategoryDto categoryDto, PersonDto currentPersonDto);
 
-	List<Transaction> getAllSortByTypeAndDate(TransactionType type, UUID currentPerson);
+	List<TransactionDto> getAllSortByTypeAndDate(TransactionType type, LocalDate date, PersonDto currentPersonDto);
 
-	List<Transaction> getAllSortByCreateDate();
+	List<TransactionDto> getAllSortByCreateDate(LocalDate createDate, PersonDto currentPersonDto);
 
-	void delete(PersonDto currentPersonDto, TransactionDto transactionDto);
 }

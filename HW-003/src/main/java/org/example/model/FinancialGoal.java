@@ -18,20 +18,20 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @AllArgsConstructor
 public class FinancialGoal {
 	private UUID financialGoalId;
-	private String financialGoalName;
+	private String name;
 	private BigDecimal targetAmount;
 	private BigDecimal currentAmount;
 	private LocalDate endDate;
 	private Status status;
 	private LocalDate createDate;
-	private Person person;
+	private Person creator;
 
 	@Override
 	public String toString() {
-		return "Название: " + INDIGO + financialGoalName + RESET + "\n" +
+		return "Название: " + INDIGO + name + RESET + "\n" +
 				"Цель: " + INDIGO + targetAmount + RESET + "\n" +
 				"Накоплено с: " + INDIGO + createDate + RESET + "- " + INDIGO + currentAmount + RESET + "\n" +
 				"Конечная дата накопления: " + INDIGO + endDate + RESET + "\n" +
-				"Владелец: " + person.toNameString();
+				"Владелец: " + creator.toNameString();
 	}
 }

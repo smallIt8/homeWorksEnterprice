@@ -20,19 +20,26 @@
                         <br/>
                         <div>
                             <label for="type">Тип транзакции:
-                                <input type= "text" name="type" id="type" required/>
+                                <select name="type" id="type" required>
+                                    <option value="INCOME">Приходная</option>
+                                    <option value="EXPENSE">Расходная</option>
+                                </select>
                             </label>
                         </div>
                         <br/>
                         <div>
                             <label for="category">Категория:
-                                <input type="text" name="category" id="category" required/>
+                                <select name="categoryId" id="category" required>
+                                    <c:forEach var="category" items="${categories}">
+                                        <option value="${category.categoryId}">${category.categoryName}</option>
+                                    </c:forEach>
+                                </select>
                             </label>
                         </div>
                         <br/>
                         <div>
                             <label for="amount">Стоимость:
-                                <input type="number" name="amount" id="amount" required/>
+                                <input type="number" name="amount" id="amount" step="0.01" min="0.01" required/>
                             </label>
                         </div>
                         <br/>

@@ -6,15 +6,6 @@ import org.example.model.Person;
 import java.util.List;
 import java.util.UUID;
 
-public interface BudgetRepository extends Repository<Budget, UUID> {
+public interface BudgetRepository extends ComponentRepository<Budget, UUID> {
 
-	void createBatch(List<Budget> UUIDS);
-
-	List<Budget> getAll();
-
-	List<Person> getByLastName(String lastName);
-
-	List<Person> getAllByCreateDate();
-
-	boolean checkEmail(String email, UUID excludeId);
 }

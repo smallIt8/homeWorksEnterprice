@@ -15,12 +15,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FamilyDto {
 	private UUID familyId;
-	private String familyName;
-	private Person ownerPersonId;
+	private String name;
+	private Person creator;
 	private List<Person> members;
 
 	@Override
 	public String toString() {
-		return familyName;
+		return name;
 	}
 }

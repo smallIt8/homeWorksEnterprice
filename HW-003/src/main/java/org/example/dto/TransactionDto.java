@@ -22,21 +22,21 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @AllArgsConstructor
 public class TransactionDto {
 	private UUID transactionId;
-	private String transactionName;
+	private String name;
 	private TransactionType type;
 	private Category category;
 	private BigDecimal amount;
-	private Person person;
+	private Person creator;
 	private LocalDate transactionDate;
 	private LocalDateTime createDate;
 
 	@Override
 	public String toString() {
-		return "Наименование операции: " + INDIGO + transactionName + RESET + "\n" +
+		return "Наименование операции: " + INDIGO + name + RESET + "\n" +
 				"Тип: " + INDIGO + type + RESET + "\n" +
 				"Категория: " + INDIGO + category + RESET + "\n" +
 				"Сумма: " + INDIGO + amount + RESET + "\n" +
-				"Зарегистрировал: " + person.toNameString() +
+				"Зарегистрировал: " + creator.toNameString() +
 				"Дата создания: " + INDIGO + createDate + RESET + "\n";
 	}
 }

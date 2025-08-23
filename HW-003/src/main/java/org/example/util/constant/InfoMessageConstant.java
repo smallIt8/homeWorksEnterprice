@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.example.util.AppUtil;
 
 @UtilityClass
-public class MenuConstant {
+public class InfoMessageConstant {
 
 	// ========== Сообщения о выполняемых действиях ==========
 	public static final String WELCOME_MESSAGE = "Добро пожаловать ";
@@ -18,10 +18,18 @@ public class MenuConstant {
 	public static final String LIST_FAMILY_BY_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список семейных групп, созданных пользователем:");
 	public static final String LIST_PERSON_BY_CREATE_DATE_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников отсортированный по дате приема:");
 	public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = AppUtil.colorizeGreenText("Список сотрудников с фамилией:");
-	public static final String EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE = AppUtil.colorizeGreenText("Список семейных групп, созданных пользователем пуст");
+	public static final String EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE = "Пользователь не состоит в семейных группах";
+	public static final String EMPTY_LIST_FAMILY_BY_OWNER_PERSON_MESSAGE = "Список семейных групп, созданных пользователем пуст";
+	public static final String EMPTY_LIST_TRANSACTION_BY_PERSON_MESSAGE = "Список транзакций, созданных пользователем пуст";
+	public static final String EMPTY_LIST_FINANCIAL_GOAL_BY_PERSON_MESSAGE = "Список долгосрочных финансовых целей, созданных пользователем пуст";
+	public static final String EMPTY_LIST_BUDGET_BY_PERSON_MESSAGE = "Список бюджетов, созданных пользователем пуст";
+	public static final String EMPTY_LIST_CATEGORY_BY_PERSON_MESSAGE = "Список категорий, созданных пользователем пуст";
 	public static final String NOT_FOUND_PERSON_MESSAGE = "ID текущего пользователя не найден в БД";
-	public static final String UPDATE_PERSON_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден и готов к обновлению. Имя пользователя: ");
-	public static final String UPDATE_PERSON_PASSWORD_MESSAGE = AppUtil.colorizeGreenText("Пользователь найден, пароль пользователя готов к обновлению. Имя пользователя: ");
+	public static final String NOT_FOUND_TRANSACTION_MESSAGE = "ID транзакции не найден в БД";
+	public static final String NOT_FOUND_FAMILY_MESSAGE = "ID семейной группы не найден в БД";
+	public static final String NOT_FOUND_FINANCIAL_GOAL_MESSAGE = "ID долгосрочной финансовой цели не найден в БД";
+	public static final String NOT_FOUND_BUDGET_MESSAGE = "ID бюджета не найден в БД";
+	public static final String NOT_FOUND_CATEGORY_MESSAGE = "ID категории не найден в БД";
 	public static final String REDIRECT_CREATE_FAMILY_MESSAGE = AppUtil.colorizeGreenText("Перенаправление в меню создания семейной группы");
 
 	// ========== Предупреждающие сообщения ==========

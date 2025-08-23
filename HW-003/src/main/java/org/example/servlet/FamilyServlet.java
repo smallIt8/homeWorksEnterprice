@@ -11,7 +11,7 @@ import org.example.util.MenuDependency;
 
 import java.io.IOException;
 
-import static org.example.util.constant.MenuConstant.WARNING_DELETE_FAMILY_MESSAGE;
+import static org.example.util.constant.InfoMessageConstant.WARNING_DELETE_FAMILY_MESSAGE;
 import static org.example.util.jsp.JspHelper.getPath;
 import static org.example.util.servlet.ServletGetUtil.actionGet;
 

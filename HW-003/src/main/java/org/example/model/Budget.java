@@ -18,18 +18,18 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @AllArgsConstructor
 public class Budget {
 	private UUID budgetId;
-	private String budgetName;
+	private String name;
 	private Category category;
 	private BigDecimal limit;
 	private YearMonth period;
-	private Person person;
+	private Person creator;
 
 	@Override
 	public String toString() {
-		return "Название: " + INDIGO + budgetName + RESET + "\n" +
+		return "Название: " + INDIGO + name + RESET + "\n" +
 				category +
 				"Лимит: " + INDIGO + limit + RESET + "\n" +
 				"Период: " + INDIGO + period + RESET + "\n" +
-				"Владелец: " + person.toNameString();
+				"Владелец: " + creator.toNameString();
 	}
 }

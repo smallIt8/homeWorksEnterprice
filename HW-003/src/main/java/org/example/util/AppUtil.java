@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 import static org.example.util.constant.ColorsConstant.*;
 import static org.example.util.constant.ErrorMessageConstant.*;
-import static org.example.util.constant.MenuConstant.*;
+import static org.example.util.constant.InfoMessageConstant.*;
 
 @UtilityClass
 public class AppUtil {

@@ -13,12 +13,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Category {
 	private UUID categoryId;
-	private String categoryName;
+	private String name;
 	private CategoryType type;
-	private Person person;
+	private Person creator;
 
 	@Override
 	public String toString() {
-		return categoryName;
+		return name;
 	}
 }

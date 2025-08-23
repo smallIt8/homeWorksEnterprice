@@ -11,7 +11,8 @@ import org.example.service.PersonService;
 import org.example.util.MenuDependency;
 
 import static org.example.util.SessionUtil.presenceCurrentPersonDto;
-import static org.example.util.constant.MenuConstant.*;
+import static org.example.util.constant.ErrorMessageConstant.*;
+import static org.example.util.constant.InfoMessageConstant.*;
 import static org.example.util.jsp.JspHelper.*;
 import static org.example.util.servlet.ServletGetUtil.*;
 
@@ -49,9 +50,6 @@ public class PersonServlet extends HttpServlet {
 		var action = req.getParameter("action");
 		var currentPerson = presenceCurrentPersonDto(req, resp);
 
-		if (currentPerson == null)
-			return;
-
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
 				 currentPerson.toNameString(),
 				 req.getServletPath(),
@@ -68,7 +66,10 @@ public class PersonServlet extends HttpServlet {
 				}
 				case "updated-password" -> {
 					PersonDto personUpdatePassDto = buildPersonDto(req, currentPerson, false);
-					personService.updatePassword(personUpdatePassDto);
+					var updatePasswordOpt = personService.updatePassword(personUpdatePassDto);
+					if (updatePasswordOpt.isEmpty()) {
+						req.setAttribute("errorMessage", ERROR_UPDATE_PERSON_PASSWORD_MESSAGE);
+					}
 					resp.sendRedirect(req.getContextPath() + "/main-person");
 				}
 				case "delete-person" -> {

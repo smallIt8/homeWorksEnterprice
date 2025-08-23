@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-
 public enum Status {
 	ACTIVE("Активная"),
 	COMPLETED("Завершенная"),

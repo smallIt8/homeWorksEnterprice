@@ -1,22 +1,22 @@
 package org.example.service;
 
 import org.example.dto.BudgetDto;
+import org.example.dto.CategoryDto;
 import org.example.dto.PersonDto;
 import org.example.model.Budget;
-import org.example.model.Person;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface BudgetService extends ComponentService<BudgetDto, PersonDto, UUID> {
+public interface BudgetService extends ComponentService<BudgetDto, Budget, PersonDto, UUID> {
 
-	List<Budget> getAllSortByDate(UUID currentPerson);
+	List<BudgetDto> getAllSortByDate(LocalDate date, PersonDto currentPersonDto);
 
-	List<Budget> getAllSortByCategory(String category, UUID currentPerson);
+	List<BudgetDto> getAllSortByCategory(CategoryDto categoryDto, PersonDto currentPersonDto);
 
-	List<Budget> getAllSortByCategoryAndDate(String category, UUID currentPerson);
+	List<BudgetDto> getAllSortByCategoryAndDate(CategoryDto categoryDto, LocalDate date, PersonDto currentPersonDto);
 
-	List<Budget> getAllSortByCreateDate();
+	List<BudgetDto> getAllSortByCreateDate(LocalDate createDate, PersonDto currentPersonDto);
 
-	void delete(PersonDto currentPersonDto, BudgetDto budgetDto);
 }

@@ -20,20 +20,20 @@ import static org.example.util.constant.ColorsConstant.RESET;
 @AllArgsConstructor
 public class FinancialGoalDto {
 	private UUID financialGoalId;
-	private String financialGoalName;
+	private String name;
 	private BigDecimal targetAmount;
-	private BigDecimal currentAmount;
+	private BigDecimal currentAmount; // null in table
 	private LocalDate endDate;
-	private Status status;
+	private Status status; // null in table
 	private LocalDate createDate;
-	private Person person;
+	private Person creator;
 
 	@Override
 	public String toString() {
-		return "Название: " + INDIGO + financialGoalName + RESET + "\n" +
+		return "Название: " + INDIGO + name + RESET + "\n" +
 				"Цель: " + INDIGO + targetAmount + RESET + "\n" +
 				"Накоплено с: " + INDIGO + createDate + RESET + "- " + INDIGO + currentAmount + RESET + "\n" +
 				"Конечная дата накопления: " + INDIGO + endDate + RESET + "\n" +
-				"Владелец: " + person.toNameString();
+				"Владелец: " + creator.toNameString();
 	}
 }
