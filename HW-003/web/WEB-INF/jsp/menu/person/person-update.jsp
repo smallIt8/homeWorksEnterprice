@@ -7,30 +7,30 @@
     </head>
     <body>
         <div style="text-align: left;">
-            <h1 style="text-align: center;">Обновление данных пользователя: ${personName}</h1>
-            <h3>Выберите необходимое действие:</h3>
+            <h1 style="text-align: center;">Обновление данных пользователя: <span style="color: blue;">${personName}</span></h1>
             <div>
                 <c:if test="${action == 'update'}">
-                <form action="${pageContext.request.contextPath}/main-person" method="get">
-                    <input type="hidden" name="action" value="update-person"/>
-                    <button type="submit">Обновить данные пользователя</button>
-                </form>
-                <br/>
-                <form action="${pageContext.request.contextPath}/main-person" method="get">
-                    <input type="hidden" name="action" value="update-password"/>
-                    <button type="submit">Обновить пароль пользователя</button>
-                </form>
-                <br/>
-                <br/>
-                <form action="${pageContext.request.contextPath}/main-person" method="get">
-                    <input type="hidden" name="action" value="back"/>
-                    <button type="submit">Вернуться назад</button>
-                </form>
-                <br/>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
-                    <button type="submit">Выйти из системы</button>
-                </form>
-                <br/>
+                    <h3>Выберите необходимое действие:</h3>
+                    <form action="${pageContext.request.contextPath}/main-person" method="get">
+                        <input type="hidden" name="action" value="update-person"/>
+                        <button type="submit">Обновить данные пользователя</button>
+                    </form>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/main-person" method="get">
+                        <input type="hidden" name="action" value="update-password"/>
+                        <button type="submit">Обновить пароль пользователя</button>
+                    </form>
+                    <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/main-person" method="get">
+                        <input type="hidden" name="action" value="back"/>
+                        <button type="submit">Вернуться назад</button>
+                    </form>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/logout" method="get">
+                        <button type="submit">Выйти из системы</button>
+                    </form>
+                    <br/>
                 </c:if>
             </div>
 
@@ -41,7 +41,7 @@
                         <input type="hidden" name="action" value="updated-person"/>
                         <div>
                             <label>Имя:
-                            <input type="text" name="firstName" value="${person.firstName}" required/>
+                                <input type="text" name="firstName" value="${person.firstName}" required/>
                             </label>
                         </div>
                         <br/>

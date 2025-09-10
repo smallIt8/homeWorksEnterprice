@@ -7,7 +7,7 @@
     </head>
     <body>
         <div style="text-align: left;">
-            <h1 style="text-align: center;">Кабинет пользователя: ${personName}</h1>
+            <h1 style="text-align: center;">Кабинет пользователя: <span style="color: blue;">${personName}</span></h1>
             <h3>Выберите необходимое действие:</h3>
             <div>
                 <form action="${pageContext.request.contextPath}/transact" method="get">
@@ -27,7 +27,7 @@
                 </form>
                 <br/>
                 <form action="${pageContext.request.contextPath}/family" method="get">
-                    <button type="submit">Семейная группа</button>
+                    <button type="submit">Семейные группы</button>
                 </form>
                 <br/>
                 <form action="${pageContext.request.contextPath}/main-person" method="get">
@@ -44,7 +44,6 @@
                 <form action="${pageContext.request.contextPath}/logout" method="get">
                     <button type="submit">Выйти из системы</button>
                 </form>
-                <br/>
             </div>
         </div>
     </body>

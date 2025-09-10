@@ -19,10 +19,10 @@ public class LogoutServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		var currentPerson = presenceCurrentPersonDto(req, resp);
 
-		if (currentPerson == null)
-			return;
+		log.info("Пользователь '{}' с ID '{}' вышел из системы",
+				 currentPerson.toNameString(),
+				 currentPerson.getPersonId());
 
-		log.info("Пользователь '{}' с ID '{}' вышел из системы", currentPerson.toNameString(), currentPerson.getPersonId());
 		req.getSession().invalidate();
 		resp.sendRedirect(req.getContextPath() + "/index.jsp");
 	}

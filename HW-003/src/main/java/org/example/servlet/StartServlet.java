@@ -10,11 +10,10 @@ import org.example.dto.PersonDto;
 import org.example.service.PersonService;
 import org.example.util.MenuDependency;
 
-import static org.example.util.jsp.JspStartHelper.*;
-import static org.example.util.constant.ErrorMessageConstant.*;
-
 import java.io.IOException;
 import java.util.Optional;
+
+import static org.example.helper.jsp.JspStartHelper.getPath;
 
 @Slf4j
 @WebServlet("/start")

@@ -6,20 +6,26 @@ import org.example.model.Budget;
 import java.util.List;
 
 public class BudgetMapper {
+	public static List<BudgetDto> modelToDtoList(List<Budget> budgets) {
+		return budgets.stream()
+				.map(BudgetMapper::modelToDto)
+				.toList();
+	}
+
 	public static BudgetDto modelToDto(Budget budget) {
 		return BudgetDto.builder()
 				.budgetId(budget.getBudgetId())
 				.name(budget.getName())
-				.category(budget.getCategory())
+				.categoryDto(CategoryMapper.modelToDtoLight(budget.getCategory()))
 				.limit(budget.getLimit())
 				.period(budget.getPeriod())
-				.creator(budget.getCreator())
+				.creatorDto(PersonMapper.modelToDtoLight(budget.getCreator()))
 				.build();
 	}
 
-	public static List<BudgetDto> modelToDtoList(List<Budget> budgets) {
-		return budgets.stream()
-				.map(BudgetMapper::modelToDto)
+	public static List<Budget> dtoToModelList(List<BudgetDto> budgetsDto) {
+		return budgetsDto.stream()
+				.map(BudgetMapper::dtoToModel)
 				.toList();
 	}
 
@@ -27,10 +33,16 @@ public class BudgetMapper {
 		return Budget.builder()
 				.budgetId(budgetDto.getBudgetId())
 				.name(budgetDto.getName())
-				.category(budgetDto.getCategory())
+				.category(CategoryMapper.dtoToModelLight(budgetDto.getCategoryDto()))
 				.limit(budgetDto.getLimit())
 				.period(budgetDto.getPeriod())
-				.creator(budgetDto.getCreator())
+				.creator(PersonMapper.dtoToModelLight(budgetDto.getCreatorDto()))
+				.build();
+	}
+
+	public static Budget dtoToModelLight(BudgetDto budgetDto) {
+		return Budget.builder()
+				.budgetId(budgetDto.getBudgetId())
 				.build();
 	}
 }

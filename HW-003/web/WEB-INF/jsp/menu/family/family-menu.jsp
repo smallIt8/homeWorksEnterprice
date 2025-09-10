@@ -7,7 +7,7 @@
     </head>
     <body>
         <div style="text-align: left;">
-            <h1 style="text-align: center;">Меню семейной группы пользователя: ${personName}</h1>
+            <h1 style="text-align: center;">Меню семейной группы пользователя: <span style="color: blue;">${personName}</span></h1>
             <h3>Выберите необходимое действие:</h3>
             <div>
                 <form action="${pageContext.request.contextPath}/family" method="get">
@@ -36,6 +36,11 @@
                 </form>
                 <br/>
                 <form action="${pageContext.request.contextPath}/family" method="get">
+                    <input type="hidden" name="action" value="list"/>
+                    <button type="submit">Просмотреть список семейных групп, в которых состоит пользователь</button>
+                </form>
+                <br/>
+                <form action="${pageContext.request.contextPath}/family" method="get">
                     <input type="hidden" name="action" value="exit-family"/>
                     <button type="submit">Выйти из семейной группы</button>
                 </form>
@@ -53,7 +58,6 @@
                 <form action="${pageContext.request.contextPath}/logout" method="get">
                     <button type="submit">Выйти из системы</button>
                 </form>
-                <br/>
             </div>
         </div>
     </body>

@@ -1,6 +1,5 @@
 package org.example.repository;
 
-import org.example.model.Family;
 import org.example.model.Person;
 
 import java.util.Optional;

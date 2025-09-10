@@ -27,7 +27,7 @@
         <jakarta.servlet.jsp.jstl-api.version>3.0.2</jakarta.servlet.jsp.jstl-api.version>
         <jakarta.servlet.jsp.jstl.version>3.0.1</jakarta.servlet.jsp.jstl.version>
         <junit.version>4.13.1</junit.version>
-        <tomcat-catalina.version>11.0.9</tomcat-catalina.version>
+        <tomcat-catalina.version>11.0.10</tomcat-catalina.version>
     </properties>
 
     <dependencies>

@@ -2,10 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.FamilyDto;
-import org.example.dto.PersonDto;
-import org.example.model.Family;
-import org.example.model.Person;
+import org.example.dto.*;
+import org.example.model.*;
 import org.example.repository.FamilyRepository;
 
 import java.util.*;
@@ -29,23 +27,17 @@ public class FamilyServiceImpl implements FamilyService {
 		log.info("Создание новой семейной группы пользователя с ID: '{}'",
 				 family.getCreator().getPersonId());
 
-		String name = validateName(family.getName());
-
-		Family inputFamily = Family.builder()
-				.familyId(UUID.randomUUID())
-				.name(family.getName().toUpperCase())
-				.creator(family.getCreator())
-				.build();
+		Family inputFamily = buildValidatedFamily(family);
 
 		log.info("Создана подготовленная модель создаваемой семейной группы '{}' пользователя: '{}'",
-				 name,
-				 family.getCreator().getPersonId());
+				 inputFamily.getName(),
+				 inputFamily.getCreator().getPersonId());
 
 		try {
 			familyRepository.create(inputFamily);
 			log.info("Семейная группа с ID: '{}' успешно создана для пользователя с ID: '{}'",
 					 inputFamily.getFamilyId(),
-					 family.getCreator().getPersonId());
+					 inputFamily.getCreator().getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при создании семейной группы: '{}'",
 					  e.getMessage(), e);
@@ -68,25 +60,49 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public Map<FamilyDto, String> createBatch(List<FamilyDto> familiesDto) {
+		List<Family> families = dtoToModelList(familiesDto);
+
 		log.info("Добавление пакета семейных групп: количество = '{}'",
 				 familiesDto.size());
 
 		Map<FamilyDto, String> errors = new LinkedHashMap<>();
+		List<Family> familiesSuccess = new ArrayList<>();
 
-		for (FamilyDto dto : familiesDto) {
+		for (int i = 0; i < families.size(); i++) {
+			Family family = families.get(i);
+			FamilyDto familyDto = familiesDto.get(i);
 			try {
-				create(dto);
+				Family validatedFamily = buildValidatedFamily(family);
+
+				familiesSuccess.add(validatedFamily);
+				log.info("Семейная группа с ID: '{}' успешно подготовлена для добавления",
+						 validatedFamily.getFamilyId());
 			} catch (RuntimeException e) {
 				log.warn("Ошибка при создании семейной группы '{}' в пакете: '{}'",
-						 dto.getName(),
+						 family.getName(),
 						 e.getMessage());
-				errors.put(dto, e.getMessage());
+				errors.put(familyDto, e.getMessage());
 			}
 		}
-		log.info("Пакет семейных групп обработан, количество ошибок: {}",
+		if (!familiesSuccess.isEmpty()) {
+			familyRepository.createBatch(familiesSuccess);
+			log.info("Успешно добавленные семейные группы: '{}'",
+					 familiesSuccess.size());
+		}
+		log.info("Пакет семейных групп обработан, успешно: '{}',  количество ошибок: '{}'",
+				 familiesSuccess.size(),
 				 errors.size());
 		return errors;
-		// Not implements List entity to repository
+	}
+
+	private Family buildValidatedFamily(Family family) {
+		String name = validateName(family.getName());
+
+		return Family.builder()
+				.familyId(UUID.randomUUID())
+				.name(name.toUpperCase())
+				.creator(family.getCreator())
+				.build();
 	}
 
 	@Override
@@ -148,7 +164,7 @@ public class FamilyServiceImpl implements FamilyService {
 		log.info("Получение списка семейных групп пользователя с ID: '{}'",
 				 currentPersonDto.getPersonId());
 		try {
-			List<Family> families = familyRepository.getAllByOwner(currentPersonDto.getPersonId());
+			List<Family> families = familyRepository.findAllByOwner(currentPersonDto.getPersonId());
 			if (families.isEmpty()) {
 				log.warn("Список семейных групп пользователя с ID '{}' пуст",
 						 currentPersonDto.getPersonId());
@@ -189,7 +205,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 		String name = validateName(family.getName());
 
-		familyUpdate.setName(name);
+		familyUpdate.setName(name.toUpperCase());
 
 		log.info("Создана подготовленная модель обновляемой семейной группы с ID: '{}'",
 				 familyUpdate.getFamilyId());
@@ -213,7 +229,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public void delete(FamilyDto familyDto, PersonDto currentPersonDto) {
-		Family family = dtoToModel(familyDto);
+		Family family = dtoToModelLight(familyDto);
 		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Удаление семейной группы с ID: '{}' пользователя с ID: '{}'",

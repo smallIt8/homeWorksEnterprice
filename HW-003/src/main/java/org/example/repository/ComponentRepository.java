@@ -9,7 +9,7 @@ public interface ComponentRepository<E, ID> {
 
 	void createBatch(List<E> entities);
 
-	Optional<E> findById(ID entity);
+	Optional<E> findById(ID entityId);
 
 	List<E> findAll(ID currentPersonId);
 

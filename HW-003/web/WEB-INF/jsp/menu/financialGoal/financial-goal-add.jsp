@@ -11,27 +11,32 @@
             <div>
                 <c:if test="${action == 'add'}">
                     <form action="${pageContext.request.contextPath}/financial-goal" method="post">
-                        <input type="hidden" name="action" value="add"/>
+                        <input type="hidden" name="action" value="add-financial-goal"/>
                         <div>
-                            <label for="financialGoalName">Имя долгосрочной финансовой цели:
-                                <input type="text" name="financialGoalName" id="financialGoalName" required/>
+                            <label for="name">Имя долгосрочной финансовой цели:
+                                <input type="text" name="name" id="name" required/>
                             </label>
                         </div>
+                        <br/>
                         <div>
-                            <label for="target">Цель:
-                                <input type="number" name="target" id="target" required/>
+                            <label for="targetAmount">Цель:
+                                <input type="number" name="targetAmount" id="targetAmount" step="0.01" min="0.01" required/>
                             </label>
                         </div>
+                        <br/>
                         <div>
                             <label for="endDate">Конечная дата накопления:
                                 <input type="date" name="endDate" id="endDate" required/>
                             </label>
                         </div>
                         <br/>
-                        <br/>
                         <button type="submit">Создать</button>
                     </form>
                     <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/financial-goal" method="get">
+                        <button type="submit">Отмена</button>
+                    </form>
                 </c:if>
             </div>
         </div>

@@ -13,7 +13,7 @@
     </head>
     <body>
         <div style="text-align: center;">
-            <h1>Удаление учетной записи пользователя: ${personName}</h1>
+            <h1>Удаление учетной записи пользователя: <span style="color: blue;">${personName}</span></h1>
             <c:if test="${not empty warningMessage}">
                 <p class="warningMessage">${warningMessage}</p>
             </c:if>

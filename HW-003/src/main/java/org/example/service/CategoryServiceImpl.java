@@ -2,12 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.PersonDto;
-import org.example.dto.CategoryDto;
-import org.example.mapper.PersonMapper;
-import org.example.model.Category;
-import org.example.model.CategoryType;
-import org.example.model.Person;
+import org.example.dto.*;
+import org.example.model.*;
 import org.example.repository.CategoryRepository;
 
 import java.util.*;
@@ -31,24 +27,16 @@ public class CategoryServiceImpl implements CategoryService {
 		log.info("Добавление новой категории пользователя с ID: '{}'",
 				 category.getCreator().getPersonId());
 
-		String name = validateName(category.getName());
-		CategoryType type = validateType(category.getType());
-
-		Category inputCategory = Category.builder()
-				.categoryId(UUID.randomUUID())
-				.name(name.toLowerCase())
-				.type(type)
-				.creator(category.getCreator())
-				.build();
+		Category inputCategory = buildValidatedCategory(category);
 
 		log.info("Создана подготовленная модель добавляемой категории '{}' пользователя: '{}'",
-				 name,
-				 category.getCreator().getPersonId());
+				 inputCategory.getName(),
+				 inputCategory.getCreator().getPersonId());
 		try {
 			categoryRepository.create(inputCategory);
 			log.info("Категория с ID: '{}' успешно создана для пользователя c ID: '{}'",
 					 inputCategory.getCategoryId(),
-					 category.getCreator().getPersonId());
+					 inputCategory.getCreator().getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при создании категории: '{}'",
 					  e.getMessage(), e);
@@ -82,25 +70,51 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public Map<CategoryDto, String> createBatch(List<CategoryDto> categoriesDto) {
+		List<Category> categories = dtoToModel(categoriesDto);
+
 		log.info("Добавление пакета категорий: количество = '{}'",
 				 categoriesDto.size());
 
 		Map<CategoryDto, String> errors = new LinkedHashMap<>();
+		List<Category> categoriesSuccess = new ArrayList<>();
 
-		for (CategoryDto dto : categoriesDto) {
+		for (int i = 0; i < categories.size(); i++) {
+			Category category = categories.get(i);
+			CategoryDto categoryDto = categoriesDto.get(i);
 			try {
-				create(dto);
+				Category validatedCategory = buildValidatedCategory(category);
+
+				categoriesSuccess.add(validatedCategory);
+				log.info("Категория с ID: '{}' успешно подготовлена для добавления",
+						 validatedCategory.getCategoryId());
 			} catch (RuntimeException e) {
 				log.warn("Ошибка при создании категории '{}' в пакете: '{}'",
-						 dto.getName(),
+						 category.getName(),
 						 e.getMessage());
-				errors.put(dto, e.getMessage());
+				errors.put(categoryDto, e.getMessage());
 			}
 		}
-		log.info("Пакет категорий обработан, количество ошибок: {}",
+		if (!categoriesSuccess.isEmpty()) {
+			categoryRepository.createBatch(categoriesSuccess);
+			log.info("Успешно добавленные категории: '{}'",
+					 categoriesSuccess.size());
+		}
+		log.info("Пакет категорий обработан, успешно: '{}',  количество ошибок: '{}'",
+				 categoriesSuccess.size(),
 				 errors.size());
 		return errors;
-		// Not implements List entity to repository
+	}
+
+	private Category buildValidatedCategory(Category category) {
+		String name = validateName(category.getName());
+		CategoryType type = validateType(category.getType());
+
+		return Category.builder()
+				.categoryId(UUID.randomUUID())
+				.name(name.toLowerCase())
+				.type(type)
+				.creator(category.getCreator())
+				.build();
 	}
 
 	@Override
@@ -138,7 +152,8 @@ public class CategoryServiceImpl implements CategoryService {
 			if (categories.isEmpty()) {
 				log.info("Список категорий пользователя с ID '{}' пуст",
 						 currentPersonDto.getPersonId());
-				throw new IllegalArgumentException(EMPTY_LIST_CATEGORY_BY_PERSON_MESSAGE);
+				return modelToDtoList(categories);
+//				throw new IllegalArgumentException(EMPTY_LIST_CATEGORY_BY_PERSON_MESSAGE);
 			}
 			log.info("Получено '{}' категорий пользователя с ID '{}':",
 					 categories.size(),
@@ -174,10 +189,8 @@ public class CategoryServiceImpl implements CategoryService {
 				 person.getPersonId());
 
 		String name = validateName(category.getName());
-		CategoryType type = validateType(category.getType());
 
-		categoryUpdate.setName(name);
-		categoryUpdate.setType(type);
+		categoryUpdate.setName(name.toLowerCase());
 
 		log.info("Создана подготовленная модель обновляемой категории с ID: '{}'",
 				 categoryUpdate.getCategoryId());
@@ -196,8 +209,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public void delete(CategoryDto categoryDto, PersonDto currentPersonDto) {
-		Category category = dtoToModel(categoryDto);
-		Person person = PersonMapper.dtoToModel(currentPersonDto);
+		Category category = dtoToModelLight(categoryDto);
+		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Удаление категории с ID: '{}' пользователя с ID: '{}'",
 				 category.getCategoryId(),

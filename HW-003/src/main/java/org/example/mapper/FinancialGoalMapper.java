@@ -6,22 +6,26 @@ import org.example.model.FinancialGoal;
 import java.util.List;
 
 public class FinancialGoalMapper {
+	public static List<FinancialGoalDto> modelToDtoList(List<FinancialGoal> financialGoals) {
+		return financialGoals.stream()
+				.map(FinancialGoalMapper::modelToDto)
+				.toList();
+	}
+
 	public static FinancialGoalDto modelToDto(FinancialGoal financialGoal) {
 		return FinancialGoalDto.builder()
 				.financialGoalId(financialGoal.getFinancialGoalId())
 				.name(financialGoal.getName())
 				.targetAmount(financialGoal.getTargetAmount())
-				.currentAmount(financialGoal.getCurrentAmount())
 				.endDate(financialGoal.getEndDate())
-				.status(financialGoal.getStatus())
+				.creatorDto(PersonMapper.modelToDtoLight(financialGoal.getCreator()))
 				.createDate(financialGoal.getCreateDate())
-				.creator(financialGoal.getCreator())
 				.build();
 	}
 
-	public static List<FinancialGoalDto> modelToDtoList(List<FinancialGoal> financialGoals) {
-		return financialGoals.stream()
-				.map(FinancialGoalMapper::modelToDto)
+	public static List<FinancialGoal> dtoToModelList(List<FinancialGoalDto> financialGoalsDto) {
+		return financialGoalsDto.stream()
+				.map(FinancialGoalMapper::dtoToModel)
 				.toList();
 	}
 
@@ -30,11 +34,15 @@ public class FinancialGoalMapper {
 				.financialGoalId(financialGoalDto.getFinancialGoalId())
 				.name(financialGoalDto.getName())
 				.targetAmount(financialGoalDto.getTargetAmount())
-				.currentAmount(financialGoalDto.getCurrentAmount())
 				.endDate(financialGoalDto.getEndDate())
-				.status(financialGoalDto.getStatus())
+				.creator(PersonMapper.dtoToModelLight(financialGoalDto.getCreatorDto()))
 				.createDate(financialGoalDto.getCreateDate())
-				.creator(financialGoalDto.getCreator())
+				.build();
+	}
+
+	public static FinancialGoal dtoToModelLight(FinancialGoalDto financialGoalDto) {
+		return FinancialGoal.builder()
+				.financialGoalId(financialGoalDto.getFinancialGoalId())
 				.build();
 	}
 }

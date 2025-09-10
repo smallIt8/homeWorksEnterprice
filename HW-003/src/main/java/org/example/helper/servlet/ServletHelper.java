@@ -1,4 +1,4 @@
-package org.example.util.servlet;
+package org.example.helper.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +12,7 @@ import static org.example.util.SessionUtil.*;
 
 @Slf4j
 @UtilityClass
-public class ServletGetUtil {
+public class ServletHelper {
 
 	public static String actionGet(HttpServletRequest req, HttpServletResponse resp, String defaultAction) throws IOException {
 		var action = req.getParameter("action");

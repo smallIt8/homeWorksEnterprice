@@ -7,14 +7,20 @@
     </head>
     <body>
         <div style="text-align: left;">
-            <h1 style="text-align: center;">Обновление долгосрочной финансовой цели: ${financialGoalName}</h1>
-            <h3>Выберите необходимое действие:</h3>
+            <h1 style="text-align: center;">Обновление долгосрочной финансовой цели: <span style="color: blue;">${personName}</span></h1>
             <div>
                 <c:if test="${action == 'update'}">
-                    <form action="${pageContext.request.contextPath}/financial-goal" method="get">
-                        <input type="hidden" name="action" value="update-financial"/>
-                        <button type="submit">Обновить данные долгосрочной финансовой цели</button>
-                    </form>
+                    <h3>Выберите долгосрочную финансовую цель для обновления:</h3>
+                    <c:forEach var="financialGoal" items="${financialGoals}">
+                        <div class="financialGoal-box">
+                            <p>${financialGoal.name} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
+                            <form action="${pageContext.request.contextPath}/financial-goal" method="get" style="display:inline;">
+                                <input type="hidden" name="action" value="update-financial-goal"/>
+                                <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
+                                <button type="submit">Обновить</button>
+                            </form>
+                        </div>
+                    </c:forEach>
                     <br/>
                     <br/>
                     <form action="${pageContext.request.contextPath}/financial-goal" method="get">
@@ -29,7 +35,47 @@
                     <form action="${pageContext.request.contextPath}/logout" method="get">
                         <button type="submit">Выйти из системы</button>
                     </form>
+                </c:if>
+            </div>
+
+            <div>
+                <c:if test="${action == 'update-financial-goal'}">
+                    <h3>Обновление долгосрочной финансовой цели: <span style="color: orange;">${financialGoal.name}</span></h3>
+                    <form action="${pageContext.request.contextPath}/financial-goal" method="get">
+                        <input type="hidden" name="action" value="update-financial-goal"/>
+                        <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
+                        <input type="hidden" name="name" value="${financialGoal.name}"/>
+                        <input type="hidden" name="targetAmount" value="${financialGoal.targetAmount}"/>
+                        <input type="hidden" name="endDate" value="${financialGoal.endDate}"/>
+                    </form>
+
+                    <form action="${pageContext.request.contextPath}/financial-goal" method="post">
+                        <input type="hidden" name="action" value="updated-financial-goal"/>
+                        <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
+                        <div>
+                            <label>Имя долгосрочной финансовой цели:
+                                <input type="text" name="name" value="${financialGoal.name}" required/>
+                            </label>
+                        </div>
+                        <br/>
+                        <div>
+                            <label>Цель:
+                                <input type="number" name="targetAmount" value="${financialGoal.targetAmount}" step="0.01" min="0.01" required/>
+                            </label>
+                        </div>
+                        <div>
+                            <label>Конечная дата накопления:
+                                <input type="date" name="endDate" value="${financialGoal.endDate}" required/>
+                            </label>
+                        </div>
+                        <br/>
+                        <button type="submit">Сохранить изменения</button>
+                    </form>
                     <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/financial-goal" method="get">
+                        <button type="submit">Отмена</button>
+                    </form>
                 </c:if>
             </div>
         </div>

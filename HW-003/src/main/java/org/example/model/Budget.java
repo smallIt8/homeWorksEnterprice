@@ -9,9 +9,6 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.UUID;
 
-import static org.example.util.constant.ColorsConstant.INDIGO;
-import static org.example.util.constant.ColorsConstant.RESET;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,13 +20,4 @@ public class Budget {
 	private BigDecimal limit;
 	private YearMonth period;
 	private Person creator;
-
-	@Override
-	public String toString() {
-		return "Название: " + INDIGO + name + RESET + "\n" +
-				category +
-				"Лимит: " + INDIGO + limit + RESET + "\n" +
-				"Период: " + INDIGO + period + RESET + "\n" +
-				"Владелец: " + creator.toNameString();
-	}
 }

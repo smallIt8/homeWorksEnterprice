@@ -17,9 +17,4 @@ public class Family {
 	private String name;
 	private Person creator;
 	private List<Person> members;
-
-	@Override
-	public String toString() {
-		return name;
-	}
 }

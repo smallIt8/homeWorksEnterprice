@@ -2,13 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.CategoryDto;
-import org.example.dto.PersonDto;
-import org.example.dto.TransactionDto;
-import org.example.model.Category;
-import org.example.model.Person;
-import org.example.model.Transaction;
-import org.example.model.TransactionType;
+import org.example.dto.*;
+import org.example.model.*;
 import org.example.repository.TransactionRepository;
 
 import java.math.BigDecimal;
@@ -34,30 +29,16 @@ public class TransactionServiceImpl implements TransactionService {
 		log.info("Добавление новой транзакции пользователя с ID: '{}'",
 				 transaction.getCreator().getPersonId());
 
-		String name = validateName(transaction.getName());
-		TransactionType type = validateType(transaction.getType());
-		Category category = validateCategory(transaction.getCategory());
-		BigDecimal amount = validateAmount(transaction.getAmount());
-		LocalDate transactionDate = validateTransactionDate(transaction.getTransactionDate());
-
-		Transaction inputTransaction = Transaction.builder()
-				.transactionId(UUID.randomUUID())
-				.name(name.toLowerCase())
-				.type(type)
-				.category(category)
-				.amount(amount)
-				.creator(transaction.getCreator())
-				.transactionDate(transactionDate)
-				.build();
+		Transaction inputTransaction = buildValidatedTransaction(transaction);
 
 		log.info("Создана подготовленная модель добавляемой транзакции '{}' пользователя: '{}'",
-				 name,
-				 transaction.getCreator().getPersonId());
+				 inputTransaction.getName(),
+				 inputTransaction.getCreator().getPersonId());
 		try {
 			transactionRepository.create(inputTransaction);
 			log.info("Транзакция с ID: '{}' успешно создана для пользователя c ID: '{}'",
 					 inputTransaction.getTransactionId(),
-					 transaction.getCreator().getPersonId());
+					 inputTransaction.getCreator().getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при создании транзакции: '{}'",
 					  e.getMessage(), e);
@@ -127,80 +108,58 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public Map<TransactionDto, String> createBatch(List<TransactionDto> transactionsDto) {
+		List<Transaction> transactions = dtoToModelList(transactionsDto);
+
 		log.info("Добавление пакета транзакций: количество = '{}'",
 				 transactionsDto.size());
 
 		Map<TransactionDto, String> errors = new LinkedHashMap<>();
+		List<Transaction> transactionsSuccess = new ArrayList<>();
 
-		for (TransactionDto dto : transactionsDto) {
+		for (int i = 0; i < transactions.size(); i++) {
+			Transaction transaction = transactions.get(i);
+			TransactionDto transactionDto = transactionsDto.get(i);
 			try {
-				create(dto);
+				Transaction validatedTransaction = buildValidatedTransaction(transaction);
+
+				transactionsSuccess.add(validatedTransaction);
+				log.info("Транзакция с ID: '{}' успешно подготовлена для добавления",
+						 validatedTransaction.getTransactionId());
 			} catch (RuntimeException e) {
 				log.warn("Ошибка при создании транзакции '{}' в пакете: '{}'",
-						 dto.getName(),
+						 transaction.getName(),
 						 e.getMessage());
-				errors.put(dto, e.getMessage());
+				errors.put(transactionDto, e.getMessage());
 			}
 		}
-		log.info("Пакет транзакций обработан, количество ошибок: {}",
+		if (!transactionsSuccess.isEmpty()) {
+			transactionRepository.createBatch(transactionsSuccess);
+			log.info("Успешно добавленные транзакции: '{}'",
+					 transactionsSuccess.size());
+		}
+		log.info("Пакет транзакций обработан, успешно: '{}',  количество ошибок: '{}'",
+				 transactionsSuccess.size(),
 				 errors.size());
 		return errors;
-		// Not implements List entity to repository
 	}
 
-//	@Override
-//	public void createBatch() {
-//		log.info("Запуск пакетного добавления сотрудников");
-//		System.out.println(ADDING_BATCH_MESSAGE);
-//		List<Person> persons = new ArrayList<>();
-//		while (true) {
-//			System.out.println(ADDING_MESSAGE + (persons.size() + 1));
-//			createFirstName();
-//			createLastName();
-//			createEmail();
-//			createSalary();
-//			createDepartment();
-//			Person person = new Person(
-//					UUID.randomUUID(),
-//					firstName.toUpperCase(),
-//					lastName.toUpperCase(),
-//					email.toLowerCase(),
-//					salary,
-//					department
-//			);
-//			persons.add(person);
-//			log.debug("Добавлен сотрудник в пакет: {}", person);
-//
-//			for (int i = 0; i < AppUtil.ITERATION_LOOP; i++) {
-//				System.out.print(ADDING_PERSON);
-//				String answer = SCANNER.nextLine().toUpperCase();
-//				log.debug("Ввод для продолжения пакетного добавления: '{}'", answer);
-//				if (answer.matches(RegexConstant.YES_OR_NO_REGEX)) {
-//					if (answer.equals("Y")) {
-//						log.info("Выбран ввод следующего сотрудников");
-//						break;
-//					} else if (answer.equals("N")) {
-//						log.info("Не выбран ввод следующего сотрудника");
-//						try {
-//							personRepository.createBatch(persons);
-//							log.info("Пакет сотрудников успешно добавлен. Всего: {}", persons.size());
-//							System.out.println(ADDED_PERSONS_MESSAGE);
-//						} catch (RuntimeException e) {
-//							log.error("Ошибка при пакетном добавлении сотрудников: {}", e.getMessage(), e);
-//							throw e;
-//						}
-//						return;
-//					}
-//				} else if (i < AppUtil.ITERATION_LOOP_TO_MESSAGE) {
-//					System.out.println(ERROR_ENTER_YES_OR_NO_MESSAGE);
-//					log.warn("Неверный ввод ответа: {}", answer);
-//				} else {
-//					log.error("Превышено количество попыток ввода Y/N");
-//					AppUtil.exitByFromAttempt();
-//				}
-//			}
-//		}
-//	}
+	private Transaction buildValidatedTransaction(Transaction transaction) {
+		String name = validateName(transaction.getName());
+		TransactionType type = validateType(transaction.getType());
+		Category category = validateCategory(transaction.getCategory());
+		BigDecimal amount = validateAmount(transaction.getAmount());
+		LocalDate transactionDate = validateTransactionDate(transaction.getTransactionDate());
+
+		return Transaction.builder()
+				.transactionId(UUID.randomUUID())
+				.name(name.toLowerCase())
+				.type(type)
+				.category(category)
+				.amount(amount)
+				.creator(transaction.getCreator())
+				.transactionDate(transactionDate)
+				.build();
+	}
 
 	@Override
 	public Optional<Transaction> findById(UUID transactionId, UUID currentPersonId) {
@@ -263,9 +222,9 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction transactionUpdate = findById(
 				transaction.getTransactionId(),
 				person.getPersonId()).orElseThrow(() -> {
-					log.warn("Не удалось обновить транзакцию с ID '{}' - транзакция не найдена",
-							 transaction.getTransactionId());
-					return new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
+			log.warn("Не удалось обновить транзакцию с ID '{}' - транзакция не найдена",
+					 transaction.getTransactionId());
+			return new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
 		});
 
 		log.info("Обновление данных транзакции с ID: '{}' пользователя с ID: '{}'",
@@ -278,7 +237,7 @@ public class TransactionServiceImpl implements TransactionService {
 		BigDecimal amount = validateAmount(transaction.getAmount());
 		LocalDate transactionDate = validateTransactionDate(transaction.getTransactionDate());
 
-		transactionUpdate.setName(name);
+		transactionUpdate.setName(name.toLowerCase());
 		transactionUpdate.setType(type);
 		transactionUpdate.setCategory(category);
 		transactionUpdate.setAmount(amount);
@@ -325,7 +284,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public void delete(TransactionDto transactionDto, PersonDto currentPersonDto) {
-		Transaction transaction = dtoToModel(transactionDto);
+		Transaction transaction = dtoToModelLight(transactionDto);
 		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Удаление транзакции с ID: '{}' пользователя с ID: '{}'",
@@ -335,9 +294,9 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction transactionToDelete = findById(
 				transaction.getTransactionId(),
 				person.getPersonId()).orElseThrow(() -> {
-					log.warn("Не удалось удалить транзакцию с ID '{}' - транзакция не найдена",
-							 transaction.getTransactionId());
-					return new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
+			log.warn("Не удалось удалить транзакцию с ID '{}' - транзакция не найдена",
+					 transaction.getTransactionId());
+			return new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
 		});
 
 		try {

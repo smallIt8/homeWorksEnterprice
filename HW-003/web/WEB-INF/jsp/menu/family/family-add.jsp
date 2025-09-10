@@ -11,16 +11,23 @@
             <div>
                 <c:if test="${action == 'add'}">
                     <form action="${pageContext.request.contextPath}/family" method="post">
-                        <input type="hidden" name="action" value="add"/>
+                        <input type="hidden" name="action" value="add-family"/>
+                        <c:if test="${not empty backTo}">
+                            <input type="hidden" name="backTo" value="${backTo}"/>
+                        </c:if>
                         <div>
-                            <label for="familyName">Имя транзакции:
-                                <input type="text" name="familyName" id="familyName" required/>
+                            <label for="name">Имя семейной группы:
+                                <input type="text" name="name" id="name" required/>
                             </label>
                         </div>
                         <br/>
-                        <button type="submit">Добавить</button>
+                        <button type="submit">Создать</button>
                     </form>
                     <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/family" method="get">
+                        <button type="submit">Отмена</button>
+                    </form>
                 </c:if>
             </div>
         </div>

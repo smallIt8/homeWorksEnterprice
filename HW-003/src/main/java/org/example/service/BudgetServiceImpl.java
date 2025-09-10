@@ -2,12 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.CategoryDto;
-import org.example.dto.PersonDto;
-import org.example.dto.BudgetDto;
-import org.example.model.Category;
-import org.example.model.Person;
-import org.example.model.Budget;
+import org.example.dto.*;
+import org.example.model.*;
 import org.example.repository.BudgetRepository;
 
 import java.math.BigDecimal;
@@ -34,30 +30,18 @@ public class BudgetServiceImpl implements BudgetService {
 		log.info("Установление нового бюджета пользователя с ID: '{}'",
 				 budget.getCreator().getPersonId());
 
-		String name = validateName(budget.getName());
-		Category category = validateCategory(budget.getCategory());
-		BigDecimal limit = validateLimit(budget.getLimit());
-		YearMonth period = validatePeriod(budget.getPeriod());
-
-		Budget inputBudget = Budget.builder()
-				.budgetId(UUID.randomUUID())
-				.name(name.toLowerCase())
-				.category(category)
-				.limit(limit)
-				.period(period)
-				.creator(budget.getCreator())
-				.build();
+		Budget inputBudget = buildValidatedBudget(budget);
 
 		log.info("Создана подготовленная модель устанавливаемого бюджета '{}' пользователя: '{}' на категорию '{}'",
-				 name,
-				 budget.getCreator().getPersonId(),
-				 category.getName());
+				 inputBudget.getName(),
+				 inputBudget.getCreator().getPersonId(),
+				 inputBudget.getCategory().getName());
 		try {
 			budgetRepository.create(inputBudget);
 			log.info("Бюджет с ID: '{}' успешно установлен на категорию '{}' для пользователя c ID: '{}'",
 					 inputBudget.getBudgetId(),
-					 category.getName(),
-					 budget.getCreator().getPersonId());
+					 inputBudget.getCategory().getName(),
+					 inputBudget.getCreator().getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при установке бюджета: '{}'",
 					  e.getMessage(), e);
@@ -116,25 +100,55 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public Map<BudgetDto, String> createBatch(List<BudgetDto> budgetsDto) {
+		List<Budget> budgets = dtoToModelList(budgetsDto);
+
 		log.info("Добавление пакета бюджетов: количество = '{}'",
 				 budgetsDto.size());
 
 		Map<BudgetDto, String> errors = new LinkedHashMap<>();
+		List<Budget> budgetsSuccess = new ArrayList<>();
 
-		for (BudgetDto dto : budgetsDto) {
+		for (int i = 0; i < budgets.size(); i++) {
+			Budget budget = budgets.get(i);
+			BudgetDto budgetDto = budgetsDto.get(i);
 			try {
-				create(dto);
+				Budget validatedBudget = buildValidatedBudget(budget);
+
+				budgetsSuccess.add(validatedBudget);
+				log.info("Бюджет с ID: '{}' успешно подготовлен для добавления",
+						 validatedBudget.getBudgetId());
 			} catch (RuntimeException e) {
 				log.warn("Ошибка при создании бюджета '{}' в пакете: '{}'",
-						 dto.getName(),
+						 budget.getName(),
 						 e.getMessage());
-				errors.put(dto, e.getMessage());
+				errors.put(budgetDto, e.getMessage());
 			}
 		}
-		log.info("Пакет бюджетов обработан, количество ошибок: {}",
+		if (!budgetsSuccess.isEmpty()) {
+			budgetRepository.createBatch(budgetsSuccess);
+			log.info("Успешно добавленные бюджеты: '{}'",
+					 budgetsSuccess.size());
+		}
+		log.info("Пакет бюджетов обработан, успешно: '{}',  количество ошибок: '{}'",
+				 budgetsSuccess.size(),
 				 errors.size());
 		return errors;
-		// Not implements List entity to repository
+	}
+
+	private Budget buildValidatedBudget(Budget budget) {
+		String name = validateName(budget.getName());
+		Category category = validateCategory(budget.getCategory());
+		BigDecimal limit = validateLimit(budget.getLimit());
+		YearMonth period = validatePeriod(budget.getPeriod());
+
+		return Budget.builder()
+				.budgetId(UUID.randomUUID())
+				.name(name.toLowerCase())
+				.category(category)
+				.limit(limit)
+				.period(period)
+				.creator(budget.getCreator())
+				.build();
 	}
 
 	@Override
@@ -212,7 +226,7 @@ public class BudgetServiceImpl implements BudgetService {
 		BigDecimal limit = validateLimit(budget.getLimit());
 		YearMonth period = validatePeriod(budget.getPeriod());
 
-		budgetUpdate.setName(name);
+		budgetUpdate.setName(name.toLowerCase());
 		budgetUpdate.setCategory(category);
 		budgetUpdate.setLimit(limit);
 		budgetUpdate.setPeriod(period);
@@ -254,7 +268,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public void delete(BudgetDto budgetDto, PersonDto currentPersonDto) {
-		Budget budget = dtoToModel(budgetDto);
+		Budget budget = dtoToModelLight(budgetDto);
 		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Удаление бюджета с ID: '{}' пользователя с ID: '{}'",

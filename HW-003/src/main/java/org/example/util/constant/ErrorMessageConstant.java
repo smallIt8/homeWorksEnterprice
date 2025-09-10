@@ -1,7 +1,6 @@
 package org.example.util.constant;
 
 import lombok.experimental.UtilityClass;
-import org.example.util.AppUtil;
 
 @UtilityClass
 public class ErrorMessageConstant {
@@ -71,24 +70,7 @@ public class ErrorMessageConstant {
 					содержать от 2 до 10 символов после '.', включая только буквы.
 					""";
 
-	public static final String ERROR_ENTER_SALARY_MESSAGE = AppUtil.colorizeRedText(
-			"""
-					Неверный ввод.
-					Зарплата должна быть в формате '*****.**',
-					должна содержать от 1 до 10 символов перед '.', включая только цифры,
-					может содержать до 2 символов после '.', включая только цифры.
-					""");
-
-	public static final String ERROR_ENTER_DEPARTMENT_MESSAGE = AppUtil.colorizeRedText(
-			"""
-					Неверный ввод.
-					Название департамента должно содержать от 2 до 50 символов,
-					должен начинаться с буквы или цифры
-					включая буквы, цифры, пробелы и
-					специальные символы '.,-_:'
-					""");
-
-	public static final String ERROR_ENTER_UUID_MESSAGE = AppUtil.colorizeRedText(
+	public static final String ERROR_ENTER_UUID_MESSAGE =
 			"""
 					Неверный ввод.
 					ID сотрудника должен быть в формате UUID (********-****-****-****-************),
@@ -98,13 +80,13 @@ public class ErrorMessageConstant {
 					содержать 4 символа между третьим и четвертым дефисом,
 					содержать 12 символов после четвертого дефиса
 					и состоять только из латинских букв от A до F в верхнем и нижнем регистре и цифр 0–9.
-					""");
+					""";
 
-	public static final String ERROR_ENTER_YES_OR_NO_MESSAGE = AppUtil.colorizeRedText(
+	public static final String ERROR_ENTER_YES_OR_NO_MESSAGE =
 			"""
 					Неверный ввод.
 					Ответ должен быть только Y(Да) или N(Нет)
-					""");
+					""";
 
 	public static final String ERROR_ENTER_TRANSACTION_NAME_MESSAGE =
 			"""

@@ -2,11 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.PersonDto;
-import org.example.dto.FinancialGoalDto;
-import org.example.mapper.PersonMapper;
-import org.example.model.Person;
-import org.example.model.FinancialGoal;
+import org.example.dto.*;
+import org.example.model.*;
 import org.example.repository.FinancialGoalRepository;
 
 import java.math.BigDecimal;
@@ -32,26 +29,16 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 		log.info("Добавление новой долгосрочной финансовой цели пользователя с ID: '{}'",
 				 financialGoal.getCreator().getPersonId());
 
-		String name = validateName(financialGoal.getName());
-		BigDecimal targetAmount = validateTargetAmount(financialGoal.getTargetAmount());
-		LocalDate endDate = validateEndDate(financialGoal.getEndDate());
-
-		FinancialGoal inputFinancialGoal = FinancialGoal.builder()
-				.financialGoalId(UUID.randomUUID())
-				.name(name.toLowerCase())
-				.targetAmount(targetAmount)
-				.endDate(endDate)
-				.creator(financialGoal.getCreator())
-				.build();
+		FinancialGoal inputFinancialGoal = buildValidatedFinancialGoal(financialGoal);
 
 		log.info("Создана подготовленная модель добавляемой долгосрочной финансовой цели '{}' пользователя: '{}'",
-				 name,
-				 financialGoal.getCreator().getPersonId());
+				 inputFinancialGoal.getName(),
+				 inputFinancialGoal.getCreator().getPersonId());
 		try {
 			financialGoalRepository.create(inputFinancialGoal);
 			log.info("Долгосрочная финансовая цель с ID: '{}' успешно создана для пользователя c ID: '{}'",
 					 inputFinancialGoal.getFinancialGoalId(),
-					 financialGoal.getCreator().getPersonId());
+					 inputFinancialGoal.getCreator().getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при создании долгосрочной финансовой цели: '{}'",
 					  e.getMessage(), e);
@@ -97,25 +84,53 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 
 	@Override
 	public Map<FinancialGoalDto, String> createBatch(List<FinancialGoalDto> financialGoalsDto) {
+		List<FinancialGoal> financialGoals = dtoToModelList(financialGoalsDto);
+
 		log.info("Добавление пакета долгосрочных финансовых целей: количество = '{}'",
 				 financialGoalsDto.size());
 
 		Map<FinancialGoalDto, String> errors = new LinkedHashMap<>();
+		List<FinancialGoal> financialGoalsSuccess = new ArrayList<>();
 
-		for (FinancialGoalDto dto : financialGoalsDto) {
+		for (int i = 0; i < financialGoals.size(); i++) {
+			FinancialGoal financialGoal = financialGoals.get(i);
+			FinancialGoalDto financialGoalDto = financialGoalsDto.get(i);
 			try {
-				create(dto);
+				FinancialGoal validatedFinancialGoal = buildValidatedFinancialGoal(financialGoal);
+
+				financialGoalsSuccess.add(validatedFinancialGoal);
+				log.info("Долгосрочная финансовая цель с ID: '{}' успешно подготовлена для добавления",
+						 validatedFinancialGoal.getFinancialGoalId());
 			} catch (RuntimeException e) {
 				log.warn("Ошибка при создании долгосрочной финансовой цели '{}' в пакете: '{}'",
-						 dto.getName(),
+						 financialGoal.getName(),
 						 e.getMessage());
-				errors.put(dto, e.getMessage());
+				errors.put(financialGoalDto, e.getMessage());
 			}
 		}
-		log.info("Пакет долгосрочных финансовых целей обработан, количество ошибок: {}",
+		if (!financialGoalsSuccess.isEmpty()) {
+			financialGoalRepository.createBatch(financialGoalsSuccess);
+			log.info("Успешно добавленные долгосрочные финансовые цели: '{}'",
+					 financialGoalsSuccess.size());
+		}
+		log.info("Пакет долгосрочных финансовых целей обработан, успешно: '{}',  количество ошибок: '{}'",
+				 financialGoalsSuccess.size(),
 				 errors.size());
 		return errors;
-		// Not implements List entity to repository
+	}
+
+	private FinancialGoal buildValidatedFinancialGoal(FinancialGoal financialGoal) {
+		String name = validateName(financialGoal.getName());
+		BigDecimal targetAmount = validateTargetAmount(financialGoal.getTargetAmount());
+		LocalDate endDate = validateEndDate(financialGoal.getEndDate());
+
+		return FinancialGoal.builder()
+				.financialGoalId(UUID.randomUUID())
+				.name(name.toLowerCase())
+				.targetAmount(targetAmount)
+				.endDate(endDate)
+				.creator(financialGoal.getCreator())
+				.build();
 	}
 
 	@Override
@@ -170,7 +185,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 	@Override
 	public Optional<FinancialGoalDto> update(FinancialGoalDto financialGoalDto, PersonDto currentPersonDto) {
 		FinancialGoal financialGoal = dtoToModel(financialGoalDto);
-		Person person = PersonMapper.dtoToModel(currentPersonDto);
+		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Обновление долгосрочной финансовой цели с ID: '{}' пользователя с ID: '{}'",
 				 financialGoal.getFinancialGoalId(),
@@ -192,7 +207,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 		BigDecimal targetAmount = validateTargetAmount(financialGoal.getTargetAmount());
 		LocalDate endDate = validateEndDate(financialGoal.getEndDate());
 
-		financialGoalUpdate.setName(name);
+		financialGoalUpdate.setName(name.toLowerCase());
 		financialGoalUpdate.setTargetAmount(targetAmount);
 		financialGoalUpdate.setEndDate(endDate);
 
@@ -218,7 +233,7 @@ public class FinancialGoalServiceImpl implements FinancialGoalService {
 
 	@Override
 	public void delete(FinancialGoalDto financialGoalDto, PersonDto currentPersonDto) {
-		FinancialGoal financialGoal = dtoToModel(financialGoalDto);
+		FinancialGoal financialGoal = dtoToModelLight(financialGoalDto);
 		Person person = dtoToModel(currentPersonDto);
 
 		log.info("Удаление долгосрочной финансовой цели с ID: '{}' пользователя с ID: '{}'",

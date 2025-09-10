@@ -91,7 +91,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 	@Override
 	public Optional<Person> findById(UUID personId) {
 		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(GET_BY_ID_PERSON_JOIN)) {
+			 PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_PERSON_JOIN)) {
 			statement.setObject(1, personId);
 			try (ResultSet query = statement.executeQuery()) {
 				if (query.next()) {

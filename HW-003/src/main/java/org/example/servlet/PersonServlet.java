@@ -10,13 +10,13 @@ import org.example.dto.PersonDto;
 import org.example.service.PersonService;
 import org.example.util.MenuDependency;
 
+import java.io.IOException;
+
 import static org.example.util.SessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.InfoMessageConstant.*;
-import static org.example.util.jsp.JspHelper.*;
-import static org.example.util.servlet.ServletGetUtil.*;
-
-import java.io.IOException;
+import static org.example.helper.jsp.JspHelper.getPath;
+import static org.example.helper.servlet.ServletHelper.*;
 
 @Slf4j
 @WebServlet("/main-person")
@@ -27,9 +27,6 @@ public class PersonServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		var action = actionGet(req, resp, "person-menu");
-
-		if (action == null)
-			return;
 
 		switch (action) {
 			case "update", "update-person", "update-password" ->
@@ -48,10 +45,10 @@ public class PersonServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		var action = req.getParameter("action");
-		var currentPerson = presenceCurrentPersonDto(req, resp);
+		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPerson.toNameString(),
+				 currentPersonDto.toNameString(),
 				 req.getServletPath(),
 				 action
 		);
@@ -59,13 +56,13 @@ public class PersonServlet extends HttpServlet {
 		try {
 			switch (action) {
 				case "updated-person" -> {
-					PersonDto personUpdateDto = buildPersonDto(req, currentPerson, true);
+					PersonDto personUpdateDto = buildPersonDto(req, currentPersonDto, true);
 					personService.update(personUpdateDto);
 					req.getSession().setAttribute("currentPersonDto", personUpdateDto);
 					resp.sendRedirect(req.getContextPath() + "/main-person");
 				}
 				case "updated-password" -> {
-					PersonDto personUpdatePassDto = buildPersonDto(req, currentPerson, false);
+					PersonDto personUpdatePassDto = buildPersonDto(req, currentPersonDto, false);
 					var updatePasswordOpt = personService.updatePassword(personUpdatePassDto);
 					if (updatePasswordOpt.isEmpty()) {
 						req.setAttribute("errorMessage", ERROR_UPDATE_PERSON_PASSWORD_MESSAGE);
@@ -73,13 +70,13 @@ public class PersonServlet extends HttpServlet {
 					resp.sendRedirect(req.getContextPath() + "/main-person");
 				}
 				case "delete-person" -> {
-					personService.delete(currentPerson);
+					personService.delete(currentPersonDto);
 					resp.sendRedirect(req.getContextPath() + "/logout");
 				}
 				default -> resp.sendRedirect(req.getContextPath() + "/main-person");
 			}
 		} catch (Exception e) {
-			log.error("Ошибка при обработке действия '{}' для пользователя '{}'", action, currentPerson.getUserName(), e);
+			log.error("Ошибка при обработке действия '{}' для пользователя '{}'", action, currentPersonDto.getUserName(), e);
 			req.getRequestDispatcher(getPath("person", "person-update"))
 					.forward(req, resp);
 		}

@@ -11,35 +11,52 @@
             <div>
                 <c:if test="${action == 'add'}">
                     <form action="${pageContext.request.contextPath}/budget" method="post">
-                        <input type="hidden" name="action" value="add"/>
+                        <input type="hidden" name="action" value="add-budget"/>
                         <div>
-                            <label for="budgetName">Имя бюджета:
-                                <input type="text" name="budgetName" id="budgetName" required/>
+                            <label for="name">Имя бюджета:
+                                <input type="text" name="name" id="name" required/>
                             </label>
                         </div>
                         <br/>
                         <div>
-                            <label for="categoryName">Категория:
-                                <input type= "text" name="categoryName" id="categoryName" required/>
-                            </label>
+                            <c:choose>
+                                <c:when test="${not empty categories}">
+                                    <label for="category">Категория:
+                                        <select name="categoryId" id="category">
+                                            <c:forEach var="category" items="${categories}">
+                                                <option value="${category.categoryId}">${category.name}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </label>
+                                </c:when>
+                                <c:otherwise>
+                                    <div style="color: red;">${warningMessage}</div>
+                                </c:otherwise>
+                            </c:choose>
+                            <a href="${pageContext.request.contextPath}/category?action=add&backTo=budget">
+                                <button type="button">Создать категорию</button>
+                            </a>
                         </div>
                         <br/>
                         <div>
                             <label for="limit">Лимит:
-                                <input type= "number" name="limit" id="limit" required/>
+                                <input type= "number" name="limit" id="limit" step="0.01" min="0.01" required/>
                             </label>
                         </div>
                         <br/>
                         <div>
                             <label for="period">Период:
-                                <input type= "date" name="period" id="period" required/>
+                                <input type= "month" name="period" id="period" required/>
                             </label>
                         </div>
-                        <br/>
                         <br/>
                         <button type="submit">Установить</button>
                     </form>
                     <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/transact" method="get">
+                        <button type="submit">Отмена</button>
+                    </form>
                 </c:if>
             </div>
         </div>

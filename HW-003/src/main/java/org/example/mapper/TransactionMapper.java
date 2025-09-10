@@ -6,22 +6,27 @@ import org.example.model.Transaction;
 import java.util.List;
 
 public class TransactionMapper {
+	public static List<TransactionDto> modelToDtoList(List<Transaction> transactions) {
+		return transactions.stream()
+				.map(TransactionMapper::modelToDto)
+				.toList();
+	}
+
 	public static TransactionDto modelToDto(Transaction transaction) {
 		return TransactionDto.builder()
 				.transactionId(transaction.getTransactionId())
 				.name(transaction.getName())
 				.type(transaction.getType())
-				.category(transaction.getCategory())
+				.categoryDto(CategoryMapper.modelToDtoLight(transaction.getCategory()))
 				.amount(transaction.getAmount())
-				.creator(transaction.getCreator())
+				.creatorDto(PersonMapper.modelToDtoLight(transaction.getCreator()))
 				.transactionDate(transaction.getTransactionDate())
-				.createDate(transaction.getCreateDate())
 				.build();
 	}
 
-	public static List<TransactionDto> modelToDtoList(List<Transaction> transactions) {
-		return transactions.stream()
-				.map(TransactionMapper::modelToDto)
+	public static List<Transaction> dtoToModelList(List<TransactionDto> transactionsDto) {
+		return transactionsDto.stream()
+				.map(TransactionMapper::dtoToModel)
 				.toList();
 	}
 
@@ -30,10 +35,16 @@ public class TransactionMapper {
 				.transactionId(transactionDto.getTransactionId())
 				.name(transactionDto.getName())
 				.type(transactionDto.getType())
-				.category(transactionDto.getCategory())
+				.category(CategoryMapper.dtoToModelLight(transactionDto.getCategoryDto()))
 				.amount(transactionDto.getAmount())
-				.creator(transactionDto.getCreator())
+				.creator(PersonMapper.dtoToModelLight(transactionDto.getCreatorDto()))
 				.transactionDate(transactionDto.getTransactionDate())
+				.build();
+	}
+
+	public static Transaction dtoToModelLight(TransactionDto transactionDto) {
+		return Transaction.builder()
+				.transactionId(transactionDto.getTransactionId())
 				.build();
 	}
 }

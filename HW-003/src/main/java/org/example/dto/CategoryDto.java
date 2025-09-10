@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.model.CategoryType;
-import org.example.model.Person;
 
 import java.util.UUID;
 
@@ -17,10 +16,5 @@ public class CategoryDto {
 	private UUID categoryId;
 	private String name;
 	private CategoryType type;
-	private Person creator;
-
-	@Override
-	public String toString() {
-		return name;
-	}
+	private PersonDto creatorDto;
 }

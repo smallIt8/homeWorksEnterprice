@@ -11,23 +11,32 @@
             <div>
                 <c:if test="${action == 'add'}">
                     <form action="${pageContext.request.contextPath}/category" method="post">
-                        <input type="hidden" name="action" value="add"/>
+                        <input type="hidden" name="action" value="add-category"/>
+                        <c:if test="${not empty backTo}">
+                            <input type="hidden" name="backTo" value="${backTo}"/>
+                        </c:if>
                         <div>
-                            <label for="categoryName">Имя категории:
-                                <input type="text" name="categoryName" id="categoryName" required/>
+                            <label for="name">Имя категории:
+                                <input type="text" name="name" id="name" required/>
                             </label>
                         </div>
                         <br/>
                         <div>
                             <label for="type">Тип категории:
-                                <input type= "text" name="type" id="type" required/>
+                                <select name="type" id="type" required>
+                                    <option value="EXPENSE">Расходная</option>
+                                    <option value="INCOME">Приходная</option>
+                                </select>
                             </label>
                         </div>
-                        <br/>
                         <br/>
                         <button type="submit">Создать</button>
                     </form>
                     <br/>
+                    <br/>
+                    <form action="${pageContext.request.contextPath}/category" method="get">
+                        <button type="submit">Отмена</button>
+                    </form>
                 </c:if>
             </div>
         </div>
