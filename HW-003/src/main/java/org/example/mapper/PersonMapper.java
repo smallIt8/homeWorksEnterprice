@@ -19,7 +19,7 @@ public class PersonMapper {
 				.firstName(person.getFirstName())
 				.lastName(person.getLastName())
 				.email(person.getEmail())
-				//.familyDto(FamilyMapper.modelToDto(person.getFamily()))
+//				.familiesDto(FamilyMapper.modelToDtoList(person.getFamilies()))
 				.build();
 	}
 

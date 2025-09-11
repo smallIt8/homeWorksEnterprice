@@ -7,6 +7,8 @@ import org.example.model.Person;
 import org.example.util.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,7 +51,6 @@ public class PersonRepositoryImpl implements PersonRepository {
 			statement.setString(4, person.getFirstName());
 			statement.setString(5, person.getLastName());
 			statement.setString(6, person.getEmail());
-			statement.setNull(7, Types.OTHER);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			log.error("Ошибка при создании пользователя '{}': {}", person.getUserName(), e.getMessage(), e);
@@ -91,7 +92,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 	@Override
 	public Optional<Person> findById(UUID personId) {
 		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_PERSON_JOIN)) {
+			 PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_PERSON)) {
 			statement.setObject(1, personId);
 			try (ResultSet query = statement.executeQuery()) {
 				if (query.next()) {
@@ -100,14 +101,23 @@ public class PersonRepositoryImpl implements PersonRepository {
 					person.setFirstName(query.getString("first_name"));
 					person.setLastName(query.getString("last_name"));
 					person.setEmail(query.getString("email"));
-					UUID familyId = query.getObject("family_id", UUID.class);
-					Family family = null;
-					if (familyId != null) {
-						String familyName = query.getString("family_name");
-						family = Family.builder().familyId(familyId).build();
-						family.setName(familyName);
+					try (PreparedStatement statementFamilies = connection.prepareStatement(FIND_BY_PERSON_FAMILIES)) {
+						statementFamilies.setObject(1, personId);
+						try (ResultSet queryFamilies = statementFamilies.executeQuery()) {
+							List<Family> families = new ArrayList<>();
+							while (queryFamilies.next()) {
+								Family family = new Family();
+								family.setFamilyId(queryFamilies.getObject("family_id", UUID.class));
+								family.setName(queryFamilies.getString("family_name"));
+								UUID creatorId = queryFamilies.getObject("person_id", UUID.class);
+								Person creator = new Person();
+								creator.setPersonId(creatorId);
+								family.setCreator(creator);
+								families.add(family);
+							}
+							person.setFamilies(families);
+						}
 					}
-					person.setFamily(family);
 					person.setCreateDate(query.getTimestamp("create_date").toLocalDateTime());
 					return Optional.of(person);
 				}

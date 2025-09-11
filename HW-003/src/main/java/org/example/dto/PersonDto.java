@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.model.Family;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -18,7 +21,7 @@ public class PersonDto {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private FamilyDto familyDto;
+	private List<FamilyDto> familiesDto = new ArrayList<>();
 
 	public String toNameString() {
 		return firstName + " " + lastName + "\n";

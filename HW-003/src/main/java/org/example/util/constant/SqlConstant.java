@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class SqlConstant {
 	public static final String ENTRY_PERSON = "SELECT person_id, password, first_name, last_name, email FROM person WHERE user_name = ?";
-	public static final String CREATE_PERSON = "INSERT INTO person (person_id, user_name, password, first_name, last_name, email, family_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	public static final String CREATE_PERSON = "INSERT INTO person (person_id, user_name, password, first_name, last_name, email) VALUES (?, ?, ?, ?, ?, ?)";
 	public static final String CREATE_TRANSACTION = "INSERT INTO transaction (transaction_id, transaction_name, type, category_id, amount, person_id, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	public static final String CREATE_BUDGET = "INSERT INTO budget (budget_id, budget_name, category_id, budget_limit, period, person_id) VALUES (?, ?, ?, ?, ?, ?)";
 	public static final String CREATE_FINANCIAL_GOAL = "INSERT INTO financial_goal (financial_goal_id, financial_goal_name, target_amount, end_date, person_id) VALUES (?, ?, ?, ?, ?)";
@@ -30,13 +30,16 @@ public class SqlConstant {
 	public static final String FIND_BY_CREATOR_ALL_FINANCIAL_GOAL = "SELECT * FROM financial_goal WHERE person_id = ?";
 	public static final String FIND_BY_CREATOR_ALL_CATEGORY = "SELECT * FROM category WHERE person_id = ?";
 	public static final String FIND_BY_CREATOR_ALL_FAMILY = "SELECT * FROM family WHERE person_id = ?";
-	public static final String FIND_BY_ID_PERSON_JOIN = """
-					SELECT p.person_id, p.user_name, p.first_name, p.last_name, p.email, p.family_id, p.create_date, f.family_name
-					FROM person p
-					LEFT JOIN family f
-					ON p.family_id = f.family_id
-					WHERE p.person_id = ?;
-			""";
+	public static final String FIND_BY_ID_PERSON = "SELECT person_id, user_name, first_name, last_name, email, create_date FROM person WHERE person_id = ?";
+	public static final String FIND_BY_PERSON_FAMILIES = """
+        SELECT f.family_id, f.family_name, f.person_id AS person_id
+        FROM family_person fp
+        JOIN family f
+        ON fp.family_id = f.family_id
+        WHERE fp.person_id = ?
+    """;
+
+
 	public static final String FIND_BY_ID_TRANSACTION_JOIN = """
 					SELECT t.transaction_id, t.transaction_name, t.type, t.category_id, t.amount, t.person_id, t.transaction_date, c.category_name
 					FROM transaction t
