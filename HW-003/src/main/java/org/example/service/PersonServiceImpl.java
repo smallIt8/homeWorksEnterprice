@@ -2,7 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.Maper.PersonMapper;
+import org.example.mapper.PersonMapper;
 import org.example.dto.PersonDto;
 import org.example.model.Family;
 import org.example.model.Person;
@@ -13,6 +13,7 @@ import org.example.util.constant.RegexConstant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.MenuConstant.*;
 
 @Slf4j
@@ -22,41 +23,43 @@ public class PersonServiceImpl implements PersonService {
 	private final PersonRepository personRepository;
 
 	@Override
-	public Optional<Person> entry(String userNameDto, String passwordDto) {
+	public Optional<PersonDto> entry(PersonDto personDto) {
 		log.info("Авторизация пользователя");
-		Optional<Person> personOpt = personRepository.entry(userNameDto.toLowerCase());
+		Person personModel = PersonMapper.dtoToModel(personDto);
+		Optional<Person> personOpt = personRepository.entry(personModel.getUserName().toLowerCase());
 		if (personOpt.isPresent()) {
 			Person person = personOpt.get();
-			if (PasswordUtil.checkPassword(passwordDto, person.getPassword())) {
-				log.info("Пользователь '{}' успешно вошёл в систему", userNameDto);
-				return personRepository.getById(person.getPersonId());
+			if (PasswordUtil.checkPassword(personModel.getPassword(), person.getPassword())) {
+				log.info("Пользователь '{}' успешно вошёл в систему", personModel.getUserName());
+				return Optional.of(PersonMapper.modelToDto(person));
 			}
 		}
-		log.warn("Ошибка входа пользователя '{}' - неверное имя пользователя или пароль", userNameDto);
+		log.warn("Ошибка входа пользователя '{}' - неверное имя пользователя или пароль", personModel.getUserName());
 		return Optional.empty();
 	}
 
 	@Override
 	public void create(PersonDto personDto) {
 		log.info("Регистрация нового пользователя");
-		String userName = createUserName(personDto.getUserName());
-		String password = createPassword(personDto.getPassword());
-		String firstName = createFirstName(personDto.getFirstName());
-		String lastName = createLastName(personDto.getLastName());
-		String email = createEmail(personDto.getEmail());
+		Person personModel = PersonMapper.dtoToModel(personDto);
 
-		PersonDto inputPersonDto = new PersonDto(
+		String userName = createUserName(personModel.getUserName());
+		String password = createPassword(personModel.getPassword());
+		String firstName = createFirstName(personModel.getFirstName());
+		String lastName = createLastName(personModel.getLastName());
+		String email = createEmail(personModel.getEmail());
+
+		Person inputPerson = new Person(
 				UUID.randomUUID(),
 				userName.toLowerCase(),
 				password,
 				firstName.toUpperCase(),
 				lastName.toUpperCase(),
 				email.toLowerCase());
-		log.info("Создан подготовленный DTO создаваемого пользователя: '{}'", inputPersonDto);
-		Person person = PersonMapper.dtoToModel(inputPersonDto);
+		log.info("Создана подготовленная модель создаваемого пользователя: '{}'", inputPerson);
 		try {
-			personRepository.create(person);
-			log.info("Пользователь с ID: '{}' успешно создан", person.getPersonId());
+			personRepository.create(inputPerson);
+			log.info("Пользователь с ID: '{}' успешно создан", inputPerson.getPersonId());
 		} catch (RuntimeException e) {
 			log.error("Ошибка при создании пользователя: '{}'", e.getMessage(), e);
 			throw e;
@@ -71,11 +74,11 @@ public class PersonServiceImpl implements PersonService {
 				return userName;
 			} else {
 				log.warn("Пользователь с таким логином уже существует: '{}'", userName);
-				throw new IllegalArgumentException("Логин уже существует");
+				throw new IllegalArgumentException(ERROR_CREATION_USER_NAME_MESSAGE);
 			}
 		} else {
 			log.error("Неверный формат логина: '{}'", userName);
-			throw new IllegalArgumentException("Неверный формат логина");
+			throw new IllegalArgumentException(ERROR_ENTER_USER_NAME_MESSAGE);
 		}
 	}
 
@@ -87,7 +90,7 @@ public class PersonServiceImpl implements PersonService {
 			return password;
 		} else {
 			log.error("Неверный формат пароля");
-			throw new IllegalArgumentException("Неверный формат пароля");
+			throw new IllegalArgumentException(ERROR_ENTER_PASSWORD_MESSAGE);
 		}
 	}
 
@@ -98,7 +101,7 @@ public class PersonServiceImpl implements PersonService {
 			return firstName;
 		} else {
 			log.error("Неверный формат имени: '{}'", firstName);
-			throw new IllegalArgumentException("Неверный формат имени");
+			throw new IllegalArgumentException(ERROR_ENTER_FIRST_NAME_MESSAGE);
 		}
 	}
 
@@ -109,7 +112,7 @@ public class PersonServiceImpl implements PersonService {
 			return lastName;
 		} else {
 			log.error("Неверный формат фамилии: '{}'", lastName);
-			throw new IllegalArgumentException("Неверный формат фамилии");
+			throw new IllegalArgumentException(ERROR_ENTER_LAST_NAME_MESSAGE);
 		}
 	}
 
@@ -121,11 +124,11 @@ public class PersonServiceImpl implements PersonService {
 				return email;
 			} else {
 				log.warn("Пользователь с таким эмейл уже существует: '{}'", email);
-				throw new IllegalArgumentException("Пользователь с таким эмейл существует");
+				throw new IllegalArgumentException(ERROR_CREATION_EMAIL_MESSAGE);
 			}
 		} else {
 			log.error("Неверный формат эмейл: '{}'", email);
-			throw new IllegalArgumentException("Неверный формат email");
+			throw new IllegalArgumentException(ERROR_ENTER_EMAIL_MESSAGE);
 		}
 	}
 

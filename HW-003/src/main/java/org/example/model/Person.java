@@ -1,5 +1,6 @@
 package org.example.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,6 @@ import static org.example.util.constant.ColorsConstant.RESET;
 
 @Data
 @NoArgsConstructor
-
 public class Person {
 	private UUID personId;
 	private String userName;
@@ -43,6 +43,14 @@ public class Person {
 		this.lastName = lastName;
 		this.email = email;
 		this.family = family;
+	}
+
+	public Person(UUID personId, String password, String firstName, String lastName, String email) {
+		this.personId = personId;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
 	}
 
 	public Person(UUID personId, String password) {

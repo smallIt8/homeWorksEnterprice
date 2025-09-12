@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 
 public class SqlConstant {
-	public static final String ENTRY_PERSON = "SELECT person_id, password FROM person WHERE user_name = ?";
+	public static final String ENTRY_PERSON = "SELECT person_id, password, first_name, last_name, email FROM person WHERE user_name = ?";
 	public static final String CREATE_PERSON = "INSERT INTO person (person_id, user_name, password, first_name, last_name, email, family_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	public static final String GET_ALL_PERSON = "SELECT * FROM person";
 	public static final String GET_BY_LAST_NAME_PERSON = "SELECT * FROM person WHERE last_name ILIKE ?";

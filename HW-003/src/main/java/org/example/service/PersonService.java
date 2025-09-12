@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface PersonService extends Service<Person, PersonDto, UUID> {
 
-	Optional<Person> entry(String userNameDto, String passwordDto);
+	Optional<PersonDto> entry(PersonDto personDto);
 
 	Optional<Person> getById(UUID currentPerson);
 

@@ -27,7 +27,10 @@ public class PersonRepositoryImpl implements PersonRepository {
 			if (query.next()) {
 				UUID personId = query.getObject("person_id", UUID.class);
 				String hashedPassword = query.getString("password");
-				Person person = new Person(personId, hashedPassword);
+				String firstName = query.getString("first_name");
+				String lastName = query.getString("last_name");
+				String email = query.getString("email");
+				Person person = new Person(personId, hashedPassword, firstName, lastName, email);
 				return Optional.of(person);
 			}
 		} catch (SQLException e) {

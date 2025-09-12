@@ -2,7 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.Maper.PersonMapper;
+import org.example.mapper.PersonMapper;
 import org.example.dto.PersonDto;
 import org.example.model.Family;
 import org.example.model.Person;
