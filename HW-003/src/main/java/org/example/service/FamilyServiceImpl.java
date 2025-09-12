@@ -2,6 +2,8 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.Maper.PersonMapper;
+import org.example.dto.PersonDto;
 import org.example.model.Family;
 import org.example.model.Person;
 import org.example.repository.FamilyRepository;
@@ -18,14 +20,14 @@ import static org.example.util.constant.MenuConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
-
 public class FamilyServiceImpl implements FamilyService {
+
 	private final FamilyRepository familyRepository;
 	private static final Scanner SCANNER = new Scanner(System.in);
 	private String familyName;
 
 	@Override
-	public void create() {
+	public void create(PersonDto personDto) {
 	}
 
 	@Override
@@ -88,7 +90,8 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public List<Family> getAllByOwner(Person currentPerson) {
+	public List<Family> getAllByOwner(PersonDto currentPersonDto) {
+		Person currentPerson = PersonMapper.dtoToModel(currentPersonDto);
 		List<Family> families = familyRepository.getAllByOwner(currentPerson);
 		if (families.isEmpty()) {
 			log.warn("Список семейных групп, созданных текущим пользователем пуст");
@@ -101,7 +104,7 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public Optional<Family> update(Person currentPerson) {
+	public Optional<Family> update(PersonDto currentPerson) {
 		log.info("Обновление имени семейных групп созданных текущим пользователем");
 		List<Family> families = getAllByOwner(currentPerson);
 		if (families.isEmpty()) {

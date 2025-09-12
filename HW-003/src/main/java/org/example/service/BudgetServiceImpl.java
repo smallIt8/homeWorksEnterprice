@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.PersonDto;
 import org.example.model.Budget;
 import org.example.model.Person;
 import org.example.repository.BudgetRepository;
@@ -14,8 +15,10 @@ import java.util.UUID;
 public class BudgetServiceImpl implements BudgetService {
 	private final BudgetRepository budgetRepository;
 
+
+
 	@Override
-	public void create() {
+	public void create(PersonDto personDto) {
 
 	}
 
@@ -25,7 +28,7 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	@Override
-	public Optional<Budget> update(Person entity) {
+	public Optional<Budget> update(PersonDto entity) {
 		return Optional.empty();
 	}
 	
@@ -35,7 +38,7 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	@Override
-	public List<Budget> getAllByOwner(Person entity) {
+	public List<Budget> getAllByOwner(PersonDto entity) {
 		return List.of();
 	}
 

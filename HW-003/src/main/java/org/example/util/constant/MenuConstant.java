@@ -63,7 +63,6 @@ public class MenuConstant {
 	//  ========== Меню PERSON ==========
 	public static final String PERSON_MENU = """
 			
-			      Hello GLd-JD2-17-25!
 			Кабинет пользователя
 			
 			Выберите необходимый пункт меню:

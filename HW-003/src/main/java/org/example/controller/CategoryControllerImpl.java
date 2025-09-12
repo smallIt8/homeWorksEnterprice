@@ -26,31 +26,31 @@ public class CategoryControllerImpl extends BaseController implements CategoryCo
 
 	@Override
 	public void categoryMenu() {
-		log.info("Запуск меню категорий");
-		System.out.print(PERSON_CATEGORY_MENU);
-		AppUtil.loopIterationAndExit((count) -> {
-			String step = SCANNER.nextLine();
-			log.debug("Пользователь ввёл шаг меню категорий: {}", step);
-			switch (step) {
-				case STEP_ONE -> categoryService.create();
-				case STEP_TWO -> categoryService.update(currentPerson);
-				case STEP_THREE -> System.out.println("getAll");
-				case STEP_NINE -> categoryService.delete(currentPerson.getPersonId());
-				case STEP_BACK -> {
-					return true;
-				}
-				case STEP_ZERO -> {
-					log.info("Выход из приложения меню категорий");
-					AppUtil.exit();
-				}
-				default -> {
-					log.warn("Ошибка при обработке меню категорий");
-					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
-						System.out.print(ERROR_ENTER_MESSAGE);
-					}
-				}
-			}
-			return false;
-		}, AppUtil.MAX_ITERATION_LOOP);
+//		log.info("Запуск меню категорий");
+//		System.out.print(PERSON_CATEGORY_MENU);
+//		AppUtil.loopIterationAndExit((count) -> {
+//			String step = SCANNER.nextLine();
+//			log.debug("Пользователь ввёл шаг меню категорий: {}", step);
+//			switch (step) {
+//				case STEP_ONE -> categoryService.create();
+//				case STEP_TWO -> categoryService.update(currentPerson);
+//				case STEP_THREE -> System.out.println("getAll");
+//				case STEP_NINE -> categoryService.delete(currentPerson.getPersonId());
+//				case STEP_BACK -> {
+//					return true;
+//				}
+//				case STEP_ZERO -> {
+//					log.info("Выход из приложения меню категорий");
+//					AppUtil.exit();
+//				}
+//				default -> {
+//					log.warn("Ошибка при обработке меню категорий");
+//					if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
+//						System.out.print(ERROR_ENTER_MESSAGE);
+//					}
+//				}
+//			}
+//			return false;
+//		}, AppUtil.MAX_ITERATION_LOOP);
 	}
 }

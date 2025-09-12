@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.dto.PersonDto;
 import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
@@ -7,7 +8,7 @@ import org.example.model.TransactionType;
 import java.util.List;
 import java.util.UUID;
 
-public interface TransactionService extends ComponentService<Transaction, Person, UUID> {
+public interface TransactionService extends ComponentService<Transaction, PersonDto, UUID> {
 
 	List<Transaction> getAllSortByType(TransactionType type, UUID currentPerson);
 

@@ -23,6 +23,9 @@
         <lombok.version>1.18.38</lombok.version>
         <logback.version>1.5.18</logback.version>
         <jbcrypto.version>0.4</jbcrypto.version>
+        <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+        <junit.version>4.13.1</junit.version>
+        <tomcat-catalina.version>11.0.9</tomcat-catalina.version>
     </properties>
 
     <dependencies>
@@ -52,6 +55,27 @@
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypto.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat-catalina.version}</version>
+            <scope>provided</scope>
         </dependency>
         
     </dependencies>

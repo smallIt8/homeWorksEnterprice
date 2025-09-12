@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.PersonDto;
 import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
@@ -16,7 +17,7 @@ public class TransactionServiceImpl implements TransactionService {
 	private final TransactionRepository transactionRepository;
 
 	@Override
-	public void create() {
+	public void create(PersonDto personDto) {
 
 	}
 
@@ -26,7 +27,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Optional<Transaction> update(Person entity) {
+	public Optional<Transaction> update(PersonDto entity) {
 		return Optional.empty();
 	}
 	
@@ -36,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<Transaction> getAllByOwner(Person currentPerson) {
+	public List<Transaction> getAllByOwner(PersonDto currentPerson) {
 		return List.of();
 	}
 

@@ -1,12 +1,13 @@
 package org.example.service;
 
+import org.example.dto.PersonDto;
 import org.example.model.Family;
 import org.example.model.Person;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface FamilyService extends ComponentService<Family, Person, UUID> {
+public interface FamilyService extends ComponentService<Family, PersonDto, UUID> {
 
 	void create(Person currentPerson);
 
