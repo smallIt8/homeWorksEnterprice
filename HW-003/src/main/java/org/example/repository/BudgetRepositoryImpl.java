@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.example.model.QBudget.budget;
+import static org.example.model.QCategory.category;
+import static org.example.model.QTransaction.transaction;
 import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
@@ -61,6 +63,7 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 			Budget result = new JPAQuery<Budget>(session)
 					.select(budget)
 					.from(budget)
+					.join(budget.category, category).fetchJoin()
 					.where(budget.budgetId.eq(budgetId))
 					.fetchOne();
 
@@ -97,16 +100,14 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public List<Budget> findAll(UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
 
-			List<Budget> budgets = new JPAQuery<Budget>(session)
+			return new JPAQuery<Budget>(session)
 					.select(budget)
 					.from(budget)
+					.join(budget.category, category).fetchJoin()
 					.where(budget.creator.personId.eq(currentPersonId))
 					.fetch();
 
-			session.getTransaction().commit();
-			return budgets;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка бюджетов для пользователя с ID {}: {}",
 					  currentPersonId, e.getMessage(), e);

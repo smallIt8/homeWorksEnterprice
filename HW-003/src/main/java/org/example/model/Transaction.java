@@ -50,6 +50,6 @@ public class Transaction {
 	@Column(name = "transaction_date", nullable = false)
 	private LocalDate transactionDate;
 
-	@Column(name = "create_date")
+	@Column(name = "create_date", insertable = false)
 	private LocalDateTime createDate;
 }

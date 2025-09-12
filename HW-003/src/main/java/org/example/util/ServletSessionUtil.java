@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.example.util.constant.InfoMessageConstant.NOT_FOUND_PERSON_SESSION_MESSAGE;
 
 @UtilityClass
-public class SessionUtil {
+public class ServletSessionUtil {
 
 	public static PersonDto presenceCurrentPersonDto(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		PersonDto currentPersonDto = getCurrentPersonDto(req);

@@ -12,7 +12,7 @@ import org.example.util.MenuDependency;
 
 import java.io.IOException;
 
-import static org.example.util.SessionUtil.presenceCurrentPersonDto;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.InfoMessageConstant.*;
 import static org.example.helper.jsp.JspHelper.getPath;

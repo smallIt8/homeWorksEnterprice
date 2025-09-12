@@ -62,6 +62,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 			Transaction result = new JPAQuery<Transaction>(session)
 					.select(transaction)
 					.from(transaction)
+					.join(transaction.category, category).fetchJoin()
 					.where(transaction.transactionId.eq(transactionId))
 					.fetchOne();
 
@@ -99,17 +100,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public List<Transaction> findAll(UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
 
-			List<Transaction> transactions = new JPAQuery<Transaction>(session)
+			return new JPAQuery<Transaction>(session)
 					.select(transaction)
 					.from(transaction)
 					.join(transaction.category, category).fetchJoin()
 					.where(transaction.creator.personId.eq(currentPersonId))
 					.fetch();
 
-			session.getTransaction().commit();
-			return transactions;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка транзакций для пользователя с ID {}: {}",
 					  currentPersonId, e.getMessage(), e);

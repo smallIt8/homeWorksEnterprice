@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.example.mapper.TransactionMapper.modelToDto;
-import static org.example.util.SessionUtil.presenceCurrentPersonDto;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.InfoMessageConstant.*;
 import static org.example.helper.jsp.JspHelper.getPath;
 import static org.example.helper.servlet.ServletHelper.*;

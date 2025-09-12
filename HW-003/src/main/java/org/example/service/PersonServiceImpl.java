@@ -13,7 +13,7 @@ import static org.example.mapper.PersonMapper.*;
 import static org.example.util.constant.ErrorMessageConstant.*;
 import static org.example.util.constant.InfoMessageConstant.*;
 import static org.example.util.constant.RegexConstant.*;
-import static org.example.util.PasswordUtil.*;
+import static org.example.util.PasswordHashUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor

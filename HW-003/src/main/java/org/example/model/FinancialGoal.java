@@ -46,6 +46,6 @@ public class FinancialGoal {
 	@JoinColumn(name = "person_id", nullable = false)
 	private Person creator;
 
-	@Column(name = "create_date")
+	@Column(name = "create_date", insertable = false)
 	private LocalDateTime createDate;
 }

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static org.example.util.SessionUtil.presenceCurrentPersonDto;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 
 @Slf4j
 @WebServlet("/logout")

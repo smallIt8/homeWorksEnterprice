@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.example.mapper.BudgetMapper.modelToDto;
-import static org.example.util.SessionUtil.presenceCurrentPersonDto;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.InfoMessageConstant.WARNING_DELETE_BUDGET_MESSAGE;
 import static org.example.helper.jsp.JspHelper.getPath;
 import static org.example.helper.servlet.ServletHelper.actionGet;

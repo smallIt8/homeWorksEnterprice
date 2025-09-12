@@ -41,6 +41,6 @@ public class Person {
 	@ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
 	private List<Family> families;
 
-	@Column(name = "create_date")
+	@Column(name = "create_date", insertable = false)
 	private LocalDateTime createDate;
 }

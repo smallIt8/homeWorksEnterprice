@@ -17,7 +17,7 @@ import java.util.*;
 import java.io.IOException;
 
 import static org.example.mapper.FamilyMapper.modelToDto;
-import static org.example.util.SessionUtil.presenceCurrentPersonDto;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.InfoMessageConstant.*;
 import static org.example.helper.jsp.JspHelper.getPath;
 import static org.example.helper.servlet.ServletHelper.*;

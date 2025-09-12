@@ -60,7 +60,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 			criteria.select(category).where(
 					cb.equal(category.get(Category_.categoryId), categoryId)
 			);
-			session.getTransaction().begin();
+			session.getTransaction().commit();
 			return session.createQuery(criteria)
 					.uniqueResultOptional();
 		} catch (Exception e) {
@@ -95,7 +95,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public List<Category> findAll(UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
 			var cb = session.getCriteriaBuilder();
 			var criteria = cb.createQuery(Category.class);
 			var category = criteria.from(Category.class);
@@ -104,7 +103,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 					.where(cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId))
 					.orderBy(cb.asc(category.get(Category_.name)));
 
-			session.getTransaction().begin();
 			return session.createQuery(criteria)
 					.list();
 		} catch (Exception e) {
