@@ -19,7 +19,7 @@ import static org.example.helper.jsp.JspStartHelper.getPath;
 @WebServlet("/start")
 public class StartServlet extends HttpServlet {
 
-	private final PersonService personService = MenuDependency.PERSON_SERVICE;
+	private final PersonService personService = MenuDependency.personService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

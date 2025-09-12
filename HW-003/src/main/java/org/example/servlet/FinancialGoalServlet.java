@@ -28,7 +28,7 @@ import static org.example.helper.servlet.ServletHelper.*;
 @WebServlet("/financial-goal")
 public class FinancialGoalServlet extends HttpServlet {
 
-	private final FinancialGoalService financialGoalService = MenuDependency.FINANCIAL_GOAL_SERVICE;
+	private final FinancialGoalService financialGoalService = MenuDependency.financialGoalService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -26,6 +26,7 @@ import java.util.UUID;
 public class Transaction {
 
 	@Id
+	@Column(name = "transaction_id")
 	private UUID transactionId;
 
 	@Column(name = "transaction_name", nullable = false)

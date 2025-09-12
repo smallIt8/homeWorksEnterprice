@@ -21,7 +21,7 @@ public class PersonDto {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private List<FamilyDto> familiesDto = new ArrayList<>();
+	private List<FamilyDto> familiesDto;
 
 	public String toNameString() {
 		return firstName + " " + lastName + "\n";

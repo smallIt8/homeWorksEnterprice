@@ -3,15 +3,15 @@ package org.example.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.*;
-import org.example.util.ConnectionManager;
 
-import java.sql.*;
-import java.util.ArrayList;
+import org.hibernate.Session;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.example.util.constant.SqlConstant.*;
+import static org.example.util.constant.HqlConstant.*;
+import static org.example.util.HibernateSessionFactoryUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,69 +19,65 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 
 	@Override
 	public void create(Family family) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(CREATE_FAMILY)) {
-			statement.setObject(1, family.getFamilyId());
-			statement.setString(2, family.getName());
-			statement.setObject(3, family.getCreator().getPersonId());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при создании семейной группы '{}': {}", family.getName(), e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			session.persist(family);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при создании семейной группы '{}': {}",
+					  family.getName(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void createBatch(List<Family> families) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(CREATE_FAMILY)) {
-			for (Family family : families) {
-				statement.setObject(1, family.getFamilyId());
-				statement.setString(2, family.getName());
-				statement.setObject(3, family.getCreator().getPersonId());
-				statement.addBatch();
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+
+			for (int i = 0; i < families.size(); i++) {
+				session.persist(families.get(i));
+				if (i % 20 == 0) {
+					session.flush();
+					session.clear();
+				}
 			}
-			int[] result = statement.executeBatch();
-			log.info("Добавлено семейных групп: {}", result.length);
-		} catch (SQLException e) {
+
+			session.getTransaction().commit();
+			log.info("Добавлено семейных групп: {}", families.size());
+		} catch (Exception e) {
 			log.error("Ошибка при массовом добавлении семейных групп: {}", e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	public Optional<Family> findById(UUID familyId) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_FAMILY)) {
-			statement.setObject(1, familyId);
-			try (ResultSet query = statement.executeQuery()) {
-				if (query.next()) {
-					Family family = Family.builder()
-							.familyId(familyId)
-							.name(query.getString("family_name"))
-							.creator(Person.builder()
-											 .personId(query.getObject("person_id", UUID.class))
-											 .build()
-							)
-							.build();
-					return Optional.of(family);
-				}
-			}
-		} catch (SQLException e) {
-			log.error("Ошибка при получении данных семейной группы с ID {}: {}", familyId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			Family family = session.createQuery(FIND_BY_ID_FAMILY, Family.class)
+					.setParameter("familyId", familyId)
+					.uniqueResult();
+			session.getTransaction().commit();
+			return Optional.ofNullable(family);
+		} catch (Exception e) {
+			log.error("Ошибка при получении данных семейной группы с ID {}: {}",
+					  familyId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return Optional.empty();
 	}
 
 	@Override
 	public void update(Family family) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(UPDATE_BY_ID_FAMILY)) {
-			statement.setString(1, family.getName());
-			statement.setObject(2, family.getFamilyId());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при обновлении данных семейной группы с ID {}: {}", family.getFamilyId(), e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			session.createQuery(UPDATE_BY_ID_FAMILY)
+					.setParameter("name", family.getName())
+					.setParameter("id", family.getFamilyId())
+					.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при обновлении данных семейной группы с ID {}: {}",
+					  family.getFamilyId(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -93,39 +89,32 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 
 	@Override
 	public List<Family> findAllByOwner(UUID currentPersonId) {
-		List<Family> families = new ArrayList<>();
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(FIND_BY_CREATOR_ALL_FAMILY)) {
-			statement.setObject(1, currentPersonId);
-			try (ResultSet query = statement.executeQuery()) {
-				while (query.next()) {
-					Family family = Family.builder()
-							.familyId(query.getObject("family_id", UUID.class))
-							.name(query.getString("family_name"))
-							.creator(Person.builder()
-											 .personId(query.getObject("person_id", UUID.class))
-											 .build()
-							)
-							.build();
-					families.add(family);
-				}
-			}
-		} catch (SQLException e) {
-			log.error("Ошибка при получении списка семейных групп пользователя с ID {}: {}", currentPersonId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			List<Family> families = session.createQuery(FIND_BY_CREATOR_ALL_FAMILY, Family.class)
+					.setParameter("personId", currentPersonId)
+					.list();
+			session.getTransaction().commit();
+			return families;
+		} catch (Exception e) {
+			log.error("Ошибка при получении списка семейных групп пользователя с ID {}: {}",
+					  currentPersonId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return families;
 	}
 
 	@Override
 	public void delete(UUID familyId, UUID currentPersonId) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_FAMILY)) {
-			statement.setObject(1, familyId);
-			statement.setObject(2, currentPersonId);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при удалении данных семейной группы с  ID {}: {}", familyId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			session.createQuery(DELETE_BY_ID_FAMILY)
+					.setParameter("familyId", familyId)
+					.setParameter("personId", currentPersonId)
+					.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при удалении данных семейной группы с  ID {}: {}",
+					  familyId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

@@ -25,6 +25,7 @@ import java.util.UUID;
 public class Family {
 
 	@Id
+	@Column(name = "family_id")
 	private UUID familyId;
 
 	@Column(name = "family_name", nullable = false, unique = true)
@@ -40,5 +41,5 @@ public class Family {
 			joinColumns = @JoinColumn(name = "family_id"),
 			inverseJoinColumns = @JoinColumn(name = "person_id")
 	)
-	private List<Person> members = new ArrayList<>();
+	private List<Person> members;
 }

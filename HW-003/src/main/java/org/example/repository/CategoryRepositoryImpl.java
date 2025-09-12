@@ -3,15 +3,13 @@ package org.example.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.*;
-import org.example.util.ConnectionManager;
+import org.hibernate.Session;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.example.util.constant.SqlConstant.*;
+import static org.example.util.HibernateSessionFactoryUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,33 +17,33 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
 	@Override
 	public void create(Category category) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(CREATE_CATEGORY)) {
-			statement.setObject(1, category.getCategoryId());
-			statement.setString(2, category.getName());
-			statement.setString(3, category.getType().name());
-			statement.setObject(4, category.getCreator().getPersonId());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при создании транзакции '{}': {}", category.getName(), e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			session.persist(category);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при создании категории '{}': {}",
+					  category.getName(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void createBatch(List<Category> categories) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(CREATE_CATEGORY)) {
-			for (Category category : categories) {
-				statement.setObject(1, category.getCategoryId());
-				statement.setString(2, category.getName());
-				statement.setString(3, category.getType().name());
-				statement.setObject(4, category.getCreator().getPersonId());
-				statement.addBatch();
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+
+			for (int i = 0; i < categories.size(); i++) {
+				session.persist(categories.get(i));
+				if (i % 20 == 0) {
+					session.flush();
+					session.clear();
+				}
 			}
-			int[] result = statement.executeBatch();
-			log.info("Добавлено категорий: {}", result.length);
-		} catch (SQLException e) {
+
+			session.getTransaction().commit();
+			log.info("Добавлено категорий: {}", categories.size());
+		} catch (Exception e) {
 			log.error("Ошибка при массовом добавлении категорий: {}", e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
@@ -53,79 +51,89 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
 	@Override
 	public Optional<Category> findById(UUID categoryId) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_CATEGORY)) {
-			statement.setObject(1, categoryId);
-			try (ResultSet query = statement.executeQuery()) {
-				if (query.next()) {
-					Category category = Category.builder()
-							.categoryId(categoryId)
-							.name(query.getString("category_name"))
-							.type(CategoryType.valueOf(query.getString("type")))
-							.creator(Person.builder()
-											 .personId(query.getObject("person_id", UUID.class))
-											 .build()
-							)
-							.build();
-					return Optional.of(category);
-				}
-			}
-		} catch (SQLException e) {
-			log.error("Ошибка при получении данных категории с ID {}: {}", categoryId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			var cb = session.getCriteriaBuilder();
+			var criteria = cb.createQuery(Category.class);
+			var category = criteria.from(Category.class);
+
+			criteria.select(category).where(
+					cb.equal(category.get(Category_.categoryId), categoryId)
+			);
+			session.getTransaction().begin();
+			return session.createQuery(criteria)
+					.uniqueResultOptional();
+		} catch (Exception e) {
+			log.error("Ошибка при получении данных категории с ID {}: {}",
+					  categoryId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return Optional.empty();
 	}
 
 	@Override
 	public void update(Category category) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(UPDATE_BY_ID_CATEGORY)) {
-			statement.setString(1, category.getName());
-			statement.setObject(2, category.getCategoryId());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при обновлении данных категории с ID {}: {}", category.getCategoryId(), e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			var cb = session.getCriteriaBuilder();
+			var criteria = cb.createCriteriaUpdate(Category.class);
+			var root = criteria.from(Category.class);
+
+			criteria.set(root.get(Category_.name), category.getName())
+					.where(
+							cb.equal(root.get(Category_.categoryId), category.getCategoryId())
+					);
+
+			session.createMutationQuery(criteria).executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при обновлении данных категории с ID {}: {}",
+					  category.getCategoryId(), e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public List<Category> findAll(UUID currentPersonId) {
-		List<Category> categories = new ArrayList<>();
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(FIND_BY_CREATOR_ALL_CATEGORY)) {
-			statement.setObject(1, currentPersonId);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					Category category = Category.builder()
-							.categoryId(resultSet.getObject("category_id", UUID.class))
-							.name(resultSet.getString("category_name"))
-							.type(CategoryType.valueOf(resultSet.getString("type")))
-							.creator(Person.builder()
-											 .personId(resultSet.getObject("person_id", UUID.class))
-											 .build()
-							)
-							.build();
-					categories.add(category);
-				}
-			}
-		} catch (SQLException e) {
-			log.error("Ошибка при получении списка категорий для пользователя '{}': {}", currentPersonId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.getTransaction().begin();
+			var cb = session.getCriteriaBuilder();
+			var criteria = cb.createQuery(Category.class);
+			var category = criteria.from(Category.class);
+
+			criteria.select(category)
+					.where(cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId))
+					.orderBy(cb.asc(category.get(Category_.name)));
+
+			session.getTransaction().begin();
+			return session.createQuery(criteria)
+					.list();
+		} catch (Exception e) {
+			log.error("Ошибка при получении списка категорий для пользователя '{}': {}",
+					  currentPersonId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return categories;
 	}
 
 	@Override
 	public void delete(UUID categoryId, UUID currentPersonId) {
-		try (Connection connection = ConnectionManager.open();
-			 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_CATEGORY)) {
-			statement.setObject(1, categoryId);
-			statement.setObject(2, currentPersonId);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			log.error("Ошибка при удалении данных категории с  ID {}: {}", categoryId, e.getMessage(), e);
+		try (Session session = openSession()) {
+			session.beginTransaction();
+			var cb = session.getCriteriaBuilder();
+			var criteria = cb.createCriteriaDelete(Category.class);
+			var category = criteria.from(Category.class);
+
+			criteria.where(
+					cb.and(
+							cb.equal(category.get(Category_.categoryId), categoryId),
+							cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId)
+					)
+			);
+
+			session.createMutationQuery(criteria).executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Ошибка при удалении данных категории с  ID {}: {}",
+					  categoryId, e.getMessage(), e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

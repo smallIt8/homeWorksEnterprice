@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.time.YearMonth;
 
 @Converter
-public class DateConverter implements AttributeConverter<YearMonth, Date> {
+public class DateConverterUtil implements AttributeConverter<YearMonth, Date> {
 
 	@Override
 	public Date convertToDatabaseColumn(YearMonth yearMonth) {

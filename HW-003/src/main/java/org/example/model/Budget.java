@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.util.DateConverter;
+import org.example.util.DateConverterUtil;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -30,6 +30,7 @@ import java.util.UUID;
 public class Budget {
 
 	@Id
+	@Column(name = "budget_id")
 	private UUID budgetId;
 
 	@Column(name = "budget_name", nullable = false)
@@ -42,7 +43,7 @@ public class Budget {
 	@Column(name = "budget_limit", nullable = false)
 	private BigDecimal limit;
 
-	@Convert(converter = DateConverter.class)
+	@Convert(converter = DateConverterUtil.class)
 	@Column(name = "period", nullable = false)
 	private YearMonth period;
 

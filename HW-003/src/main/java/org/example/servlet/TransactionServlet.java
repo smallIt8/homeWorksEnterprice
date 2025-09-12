@@ -30,7 +30,7 @@ import static org.example.helper.servlet.ServletHelper.*;
 @WebServlet("/transact")
 public class TransactionServlet extends HttpServlet {
 
-	private final TransactionService transactionService = MenuDependency.TRANSACTION_SERVICE;
+	private final TransactionService transactionService = MenuDependency.transactionService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

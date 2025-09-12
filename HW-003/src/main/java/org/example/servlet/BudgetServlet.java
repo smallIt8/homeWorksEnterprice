@@ -29,7 +29,7 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/budget")
 public class BudgetServlet extends HttpServlet {
 
-	private final BudgetService budgetService = MenuDependency.BUDGET_SERVICE;
+	private final BudgetService budgetService = MenuDependency.budgetService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

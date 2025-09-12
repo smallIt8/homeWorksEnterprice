@@ -26,6 +26,7 @@ import java.util.UUID;
 public class Category {
 
 	@Id
+	@Column(name = "category_id")
 	private UUID categoryId;
 
 	@Column(name = "category_name", nullable = false)

@@ -8,7 +8,7 @@ import org.hibernate.cfg.Configuration;
 
 @Slf4j
 @UtilityClass
-public class HibernateSessionFactory {
+public class HibernateSessionFactoryUtil {
 
 	private static final SessionFactory sessionFactory;
 

@@ -27,7 +27,7 @@ import static org.example.helper.servlet.ServletHelper.*;
 @WebServlet("/category")
 public class CategoryServlet extends HttpServlet {
 
-	private final CategoryService categoryService = MenuDependency.CATEGORY_SERVICE;
+	private final CategoryService categoryService = MenuDependency.categoryService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

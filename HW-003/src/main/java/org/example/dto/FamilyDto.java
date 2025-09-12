@@ -18,5 +18,5 @@ public class FamilyDto {
 	private UUID familyId;
 	private String name;
 	private PersonDto creatorDto;
-	private List<PersonDto> membersDto = new ArrayList<>();
+	private List<PersonDto> membersDto;
 }

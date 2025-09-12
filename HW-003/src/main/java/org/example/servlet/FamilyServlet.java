@@ -26,7 +26,7 @@ import static org.example.helper.servlet.ServletHelper.*;
 @WebServlet("/family")
 public class FamilyServlet extends HttpServlet {
 
-	private final FamilyService familyService = MenuDependency.FAMILY_SERVICE;
+	private final FamilyService familyService = MenuDependency.familyService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

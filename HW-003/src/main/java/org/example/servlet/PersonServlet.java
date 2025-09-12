@@ -22,7 +22,7 @@ import static org.example.helper.servlet.ServletHelper.*;
 @WebServlet("/main-person")
 public class PersonServlet extends HttpServlet {
 
-	private final PersonService personService = MenuDependency.PERSON_SERVICE;
+	private final PersonService personService = MenuDependency.personService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

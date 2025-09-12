@@ -20,6 +20,7 @@ import java.util.UUID;
 public class Person {
 
 	@Id
+	@Column(name = "person_id")
 	private UUID personId;
 
 	@Column(name = "user_name", nullable = false, unique = true)
@@ -38,7 +39,7 @@ public class Person {
 	private String email;
 
 	@ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
-	private List<Family> families = new ArrayList<>();
+	private List<Family> families;
 
 	@Column(name = "create_date")
 	private LocalDateTime createDate;

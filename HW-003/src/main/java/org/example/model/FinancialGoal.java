@@ -30,6 +30,7 @@ import java.util.UUID;
 public class FinancialGoal {
 
 	@Id
+	@Column(name = "financial_goal_id")
 	private UUID financialGoalId;
 
 	@Column(name = "financial_goal_name", nullable = false)
