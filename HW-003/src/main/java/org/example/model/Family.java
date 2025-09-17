@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class Family {
 	private UUID familyId;
 
 	@Column(name = "family_name", nullable = false, unique = true)
-	private String name;
+	private String familyName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "person_id", nullable = false)

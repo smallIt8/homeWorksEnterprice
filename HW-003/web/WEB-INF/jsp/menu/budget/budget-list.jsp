@@ -11,7 +11,7 @@
         <div>
             <c:forEach var="budget" items="${budgets}">
                 <div class="budget-box">
-                    <p>${budget.name} | ${budget.categoryDto.name} | ${budget.limit} | ${budget.period}</p>
+                    <p>${budget.budgetName} | ${budget.categoryDto.categoryName} | ${budget.limit} | ${budget.period}</p>
                     <form action="${pageContext.request.contextPath}/budget" method="get" style="display:inline;">
                         <input type="hidden" name="action" value="update-budget"/>
                         <input type="hidden" name="budgetId" value="${budget.budgetId}"/>

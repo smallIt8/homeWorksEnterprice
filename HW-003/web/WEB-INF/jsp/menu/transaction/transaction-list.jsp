@@ -11,7 +11,7 @@
             <div>
                 <c:forEach var="transact" items="${transactions}">
                     <div class="transaction-box">
-                        <p>${transact.name} | ${transact.type.typeName} | ${transact.categoryDto.name} | ${transact.amount} | ${transact.transactionDate}</p>
+                        <p>${transact.transactionName} | ${transact.type.typeName} | ${transact.categoryDto.categoryName} | ${transact.amount} | ${transact.transactionDate}</p>
                         <form action="${pageContext.request.contextPath}/transact" method="get" style="display:inline;">
                             <input type="hidden" name="action" value="update-transact"/>
                             <input type="hidden" name="transactionId" value="${transact.transactionId}"/>

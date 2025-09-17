@@ -1,46 +1,52 @@
 package org.example.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.BudgetDto;
 import org.example.model.Budget;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class BudgetMapper {
-	public static List<BudgetDto> modelToDtoList(List<Budget> budgets) {
+
+	private final CategoryMapper categoryMapper;
+	private final PersonMapper personMapper;
+
+	public List<BudgetDto> mapModelToDtoList(List<Budget> budgets) {
 		return budgets.stream()
-				.map(BudgetMapper::modelToDto)
+				.map(this::mapModelToDto)
 				.toList();
 	}
 
-	public static BudgetDto modelToDto(Budget budget) {
+	public BudgetDto mapModelToDto(Budget budget) {
 		return BudgetDto.builder()
 				.budgetId(budget.getBudgetId())
-				.name(budget.getName())
-				.categoryDto(CategoryMapper.modelToDtoLight(budget.getCategory()))
+				.budgetName(budget.getBudgetName())
+				.categoryDto(categoryMapper.mapModelToDtoLight(budget.getCategory()))
 				.limit(budget.getLimit())
 				.period(budget.getPeriod())
-				.creatorDto(PersonMapper.modelToDtoLight(budget.getCreator()))
+				.creatorDto(personMapper.mapModelToDtoLight(budget.getCreator()))
 				.build();
 	}
 
-	public static List<Budget> dtoToModelList(List<BudgetDto> budgetsDto) {
+	public List<Budget> mapDtoToModelList(List<BudgetDto> budgetsDto) {
 		return budgetsDto.stream()
-				.map(BudgetMapper::dtoToModel)
+				.map(this::mapDtoToModel)
 				.toList();
 	}
 
-	public static Budget dtoToModel(BudgetDto budgetDto) {
+	public Budget mapDtoToModel(BudgetDto budgetDto) {
 		return Budget.builder()
 				.budgetId(budgetDto.getBudgetId())
-				.name(budgetDto.getName())
-				.category(CategoryMapper.dtoToModelLight(budgetDto.getCategoryDto()))
+				.budgetName(budgetDto.getBudgetName())
+				.category(categoryMapper.mapDtoToModelLight(budgetDto.getCategoryDto()))
 				.limit(budgetDto.getLimit())
 				.period(budgetDto.getPeriod())
-				.creator(PersonMapper.dtoToModelLight(budgetDto.getCreatorDto()))
+				.creator(personMapper.mapDtoToModelLight(budgetDto.getCreatorDto()))
 				.build();
 	}
 
-	public static Budget dtoToModelLight(BudgetDto budgetDto) {
+	public Budget mapDtoToModelLight(BudgetDto budgetDto) {
 		return Budget.builder()
 				.budgetId(budgetDto.getBudgetId())
 				.build();

@@ -19,7 +19,7 @@
                    <h3>Выберите семейную группу для удаления:</h3>
                    <c:forEach var="family" items="${families}">
                        <div class="family-box">
-                           <p>${family.name}</p>
+                           <p>${family.familyName}</p>
                            <form action="${pageContext.request.contextPath}/family" method="get" style="display:inline;">
                                <input type="hidden" name="action" value="delete-family"/>
                                <input type="hidden" name="familyId" value="${family.familyId}"/>
@@ -46,7 +46,7 @@
 
            <div style="text-align: center;">
                <c:if test="${action == 'delete-family'}">
-                   <h1>Удаление семейной группы: <span style="color: orange;">${family.name}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
+                   <h1>Удаление семейной группы: <span style="color: orange;">${family.familyName}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
                    <c:if test="${not empty warningMessage}">
                        <p class="warningMessage">${warningMessage}</p>
                    </c:if>

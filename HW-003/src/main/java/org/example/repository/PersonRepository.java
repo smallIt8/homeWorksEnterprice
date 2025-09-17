@@ -7,22 +7,21 @@ import java.util.UUID;
 
 public interface PersonRepository {
 
-	Optional<Person> entry(String userName);
+	Optional<Person> getPersonByUserName(String userName);
 
 	void create(Person person);
 
-	boolean checkUserName(String userName);
+	boolean existsByUserName(String userName);
 
-	boolean checkEmail(String email);
+	boolean existsByEmail(String email);
 
 	Optional<Person> findById(UUID personId);
 
 	void update(Person currentPerson);
 
-	boolean checkUpdateEmail(String email, UUID currentPersonId);
+	boolean updateEmailExistsByExclude(String email, UUID currentPersonId);
 
 	void updatePassword(Person currentPerson);
 
 	void delete(UUID currentPersonId);
-
 }

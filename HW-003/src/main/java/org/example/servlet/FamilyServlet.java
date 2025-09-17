@@ -5,28 +5,32 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.PersonDto;
 import org.example.dto.FamilyDto;
+import org.example.mapper.FamilyMapper;
 import org.example.model.Family;
 import org.example.service.FamilyService;
 import org.example.util.MenuDependency;
+import org.example.util.ValidationDtoUtil;
 
 import java.util.*;
 
 import java.io.IOException;
 
-import static org.example.mapper.FamilyMapper.modelToDto;
 import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
-import static org.example.util.constant.InfoMessageConstant.*;
+import static org.example.util.constant.InfoMessageConstant.WARNING_DELETE_FAMILY_MESSAGE;
 import static org.example.helper.jsp.JspHelper.getPath;
-import static org.example.helper.servlet.ServletHelper.*;
+import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
+@RequiredArgsConstructor
 @WebServlet("/family")
 public class FamilyServlet extends HttpServlet {
 
 	private final FamilyService familyService = MenuDependency.familyService();
+	private final FamilyMapper familyMapper = MenuDependency.familyMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,8 +38,22 @@ public class FamilyServlet extends HttpServlet {
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
 		switch (action) {
-			case "add" -> req.getRequestDispatcher(getPath("family", "family-add"))
-					.forward(req, resp);
+			case "add" -> {
+				var familyInput = req.getSession().getAttribute("familyInput");
+				var familyWarns = req.getSession().getAttribute("familyWarns");
+
+				if (familyInput != null) {
+					req.setAttribute("family", familyInput);
+					req.getSession().removeAttribute("familyInput");
+				}
+				if (familyWarns != null) {
+					req.setAttribute("warn", familyWarns);
+					req.getSession().removeAttribute("familyWarns");
+				}
+
+				req.getRequestDispatcher(getPath("family", "family-add"))
+						.forward(req, resp);
+			}
 			case "list", "update", "delete" -> {
 				var families = familyService.findAllOwnerFamily(currentPersonDto);
 				req.setAttribute("families", families);
@@ -50,31 +68,45 @@ public class FamilyServlet extends HttpServlet {
 				}
 			}
 			case "update-family" -> {
-				UUID familyId = UUID.fromString(req.getParameter("familyId"));
-				UUID currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
+				var familyId = UUID.fromString(req.getParameter("familyId"));
+				var currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
 
-				Optional<Family> familyOpt = familyService.findById(familyId, currentPersonId);
+				var familyInput = req.getSession().getAttribute("familyInput");
+				var familyWarns = req.getSession().getAttribute("familyWarns");
 
-				if (familyOpt.isPresent()) {
-					FamilyDto familyDto = modelToDto(familyOpt.get());
-
-					req.setAttribute("family", familyDto);
-					req.setAttribute("action", "update-family");
-					req.getRequestDispatcher(getPath("family", "family-update"))
-							.forward(req, resp);
+				if (familyInput != null) {
+					req.setAttribute("family", familyInput);
+					req.getSession().removeAttribute("familyInput");
 				} else {
-					log.warn("Семейная группа для обновления с ID '{}' не найдена для пользователя '{}'", familyId, currentPersonId);
-					resp.sendRedirect(req.getContextPath() + "/family");
+					Optional<Family> familyOpt = familyService.findById(familyId, currentPersonId);
+					if (familyOpt.isPresent()) {
+						req.setAttribute("family", familyMapper.mapModelToDto(familyOpt.get()));
+					} else {
+						log.warn("Семейная группа для обновления с ID '{}' не найдена для пользователя '{}'",
+								 familyId,
+								 currentPersonId);
+						resp.sendRedirect(req.getContextPath() + "/family");
+						return;
+					}
 				}
+
+				if (familyWarns != null) {
+					req.setAttribute("warn", familyWarns);
+					req.getSession().removeAttribute("familyWarns");
+				}
+
+				req.setAttribute("action", "update-family");
+				req.getRequestDispatcher(getPath("family", "family-update"))
+						.forward(req, resp);
 			}
 			case "delete-family" -> {
-				UUID familyId = UUID.fromString(req.getParameter("familyId"));
-				UUID currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
+				var familyId = UUID.fromString(req.getParameter("familyId"));
+				var currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
 
 				Optional<Family> familyOpt = familyService.findById(familyId, currentPersonId);
 
 				if (familyOpt.isPresent()) {
-					FamilyDto familyDto = modelToDto(familyOpt.get());
+					FamilyDto familyDto = familyMapper.mapModelToDto(familyOpt.get());
 
 					req.setAttribute("family", familyDto);
 					req.setAttribute("action", "delete-family");
@@ -82,7 +114,9 @@ public class FamilyServlet extends HttpServlet {
 					req.getRequestDispatcher(getPath("family", "family-delete"))
 							.forward(req, resp);
 				} else {
-					log.warn("Семейная группа для удаления с ID '{}' не найдена для пользователя '{}'", familyId, currentPersonId);
+					log.warn("Семейная группа для удаления с ID '{}' не найдена для пользователя '{}'",
+							 familyId,
+							 currentPersonId);
 					resp.sendRedirect(req.getContextPath() + "/family");
 				}
 			}
@@ -98,7 +132,7 @@ public class FamilyServlet extends HttpServlet {
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPersonDto.toNameString(),
+				 currentPersonDto.getFullName(),
 				 req.getServletPath(),
 				 action
 		);
@@ -106,24 +140,46 @@ public class FamilyServlet extends HttpServlet {
 		try {
 			switch (action) {
 				case "add-family" -> {
-					FamilyDto familyAddDto = buildFamilyDto(req, true, false, currentPersonDto);
+					var familyAddDto = buildFamilyDto(req, true, false, currentPersonDto);
+					var warns = ValidationDtoUtil.validateAnnotation(familyAddDto);
+
+					if (!warns.isEmpty()) {
+						req.getSession().setAttribute("familyInput", familyAddDto);
+						req.getSession().setAttribute("familyWarns", warns);
+						resp.sendRedirect(req.getContextPath() + "/family?action=add");
+						return;
+					}
+
 					familyService.create(familyAddDto);
 					resp.sendRedirect(req.getContextPath() + "/family");
 				}
 				case "updated-family" -> {
-					FamilyDto familyUpdateDto = buildFamilyDto(req, false, false, currentPersonDto);
+					var familyUpdateDto = buildFamilyDto(req, false, false, currentPersonDto);
+					var warns = ValidationDtoUtil.validateAnnotation(familyUpdateDto);
+
+					if (!warns.isEmpty()) {
+						req.getSession().setAttribute("familyInput", familyUpdateDto);
+						req.getSession().setAttribute("familyWarns", warns);
+
+						var familyId = req.getParameter("familyId");
+						resp.sendRedirect(req.getContextPath() + "/family?action=update-family&familyId=" + familyId);
+						return;
+					}
 					familyService.update(familyUpdateDto, currentPersonDto);
 					resp.sendRedirect(req.getContextPath() + "/family");
 				}
 				case "deleted-family" -> {
-					FamilyDto familyToDeleteDto = buildFamilyDto(req, false, true, currentPersonDto);
+					var familyToDeleteDto = buildFamilyDto(req, false, true, currentPersonDto);
 					familyService.delete(familyToDeleteDto, currentPersonDto);
 					resp.sendRedirect(req.getContextPath() + "/family");
 				}
 				default -> resp.sendRedirect(req.getContextPath() + "/family");
 			}
 		} catch (Exception e) {
-			log.error("Ошибка при обработке действия '{}' для пользователя '{}'", action, currentPersonDto.getUserName(), e);
+			log.error("Ошибка при обработке действия '{}' для пользователя '{}'",
+					  action,
+					  currentPersonDto.getUserName(),
+					  e);
 			req.getRequestDispatcher(getPath("family", "family-menu"))
 					.forward(req, resp);
 			req.setAttribute("errorMessage", e.getMessage());
@@ -142,14 +198,14 @@ public class FamilyServlet extends HttpServlet {
 
 		if (isAdd) {
 			return FamilyDto.builder()
-					.name(name)
+					.familyName(name)
 					.creatorDto(currentPersonDto)
 					.build();
 		} else {
 			var familyId = UUID.fromString(req.getParameter("familyId"));
 			return FamilyDto.builder()
 					.familyId(familyId)
-					.name(name)
+					.familyName(name)
 					.creatorDto(currentPersonDto)
 					.build();
 		}

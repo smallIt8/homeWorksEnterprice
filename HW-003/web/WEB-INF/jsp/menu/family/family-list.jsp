@@ -11,7 +11,7 @@
             <div>
                 <c:forEach var="family" items="${families}">
                     <div class="family-box">
-                        <p>${family.name}</p>
+                        <p>${family.familyName}</p>
                         <form action="${pageContext.request.contextPath}/family" method="get" style="display:inline;">
                             <input type="hidden" name="action" value="update-family"/>
                             <input type="hidden" name="familyId" value="${family.familyId}"/>

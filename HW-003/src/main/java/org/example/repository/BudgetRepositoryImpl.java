@@ -5,7 +5,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.*;
+import org.example.model.Budget;
+import org.example.model.QBudget;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.UUID;
 
 import static org.example.model.QBudget.budget;
 import static org.example.model.QCategory.category;
-import static org.example.model.QTransaction.transaction;
 import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
@@ -24,12 +24,14 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public void create(Budget budget) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			session.persist(budget);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при создании бюджета '{}': {}",
-					  budget.getName(), e.getMessage(), e);
+					  budget.getBudgetName(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -37,7 +39,7 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public void createBatch(List<Budget> budgets) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			for (int i = 0; i < budgets.size(); i++) {
 				session.persist(budgets.get(i));
@@ -50,7 +52,9 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 			session.getTransaction().commit();
 			log.info("Добавлено бюджетов: {}", budgets.size());
 		} catch (Exception e) {
-			log.error("Ошибка при массовом добавлении бюджетов: {}", e.getMessage(), e);
+			log.error("Ошибка при массовом добавлении бюджетов: {}",
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -58,7 +62,7 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public Optional<Budget> findById(UUID budgetId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			Budget result = new JPAQuery<Budget>(session)
 					.select(budget)
@@ -71,7 +75,9 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных бюджета с ID {}: {}",
-					  budgetId, e.getMessage(), e);
+					  budgetId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -79,11 +85,11 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public void update(Budget budget) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPAUpdateClause(session, QBudget.budget)
 					.where(QBudget.budget.budgetId.eq(budget.getBudgetId()))
-					.set(QBudget.budget.name, budget.getName())
+					.set(QBudget.budget.budgetName, budget.getBudgetName())
 					.set(QBudget.budget.category, budget.getCategory())
 					.set(QBudget.budget.limit, budget.getLimit())
 					.set(QBudget.budget.period, budget.getPeriod())
@@ -92,7 +98,9 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при обновлении данных бюджета с ID {}: {}",
-					  budget.getBudgetId(), e.getMessage(), e);
+					  budget.getBudgetId(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -110,7 +118,9 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка бюджетов для пользователя с ID {}: {}",
-					  currentPersonId, e.getMessage(), e);
+					  currentPersonId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 
@@ -119,7 +129,7 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 	@Override
 	public void delete(UUID budgetId, UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPADeleteClause(session, budget)
 					.where(budget.budgetId.eq(budgetId)
@@ -129,7 +139,9 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при удалении данных бюджета с  ID {}: {}",
-					  budgetId, e.getMessage(), e);
+					  budgetId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

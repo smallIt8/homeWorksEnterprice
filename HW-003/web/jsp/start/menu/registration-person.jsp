@@ -35,7 +35,7 @@
                 </div>
                 <br/>
                 <div>
-                    <label for="email">Эмейл:
+                    <label for="email">Email:
                         <input type="email" name="email" id="email" required/>
                     </label>
                 </div>

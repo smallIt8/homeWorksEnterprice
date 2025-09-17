@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class JspStartHelper {
+
 	private final String PATTERN_PATH = "jsp/start/menu/%s.jsp";
 
 	public static String getPath(String jspName) {

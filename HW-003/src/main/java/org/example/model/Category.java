@@ -30,7 +30,7 @@ public class Category {
 	private UUID categoryId;
 
 	@Column(name = "category_name", nullable = false)
-	private String name;
+	private String categoryName;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
@@ -42,6 +42,6 @@ public class Category {
 
 	@Override
 	public String toString() {
-		return name;
+		return categoryName;
 	}
 }

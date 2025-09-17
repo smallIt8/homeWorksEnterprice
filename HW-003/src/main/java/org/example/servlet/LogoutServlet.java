@@ -20,7 +20,7 @@ public class LogoutServlet extends HttpServlet {
 		var currentPerson = presenceCurrentPersonDto(req, resp);
 
 		log.info("Пользователь '{}' с ID '{}' вышел из системы",
-				 currentPerson.toNameString(),
+				 currentPerson.getFullName(),
 				 currentPerson.getPersonId());
 
 		req.getSession().invalidate();

@@ -11,7 +11,7 @@
             <div>
                 <c:forEach var="category" items="${categories}">
                     <div class="category-box">
-                        <p>${category.name} | ${category.type.typeName}</p>
+                        <p>${category.categoryName} | ${category.type.typeName}</p>
                         <form action="${pageContext.request.contextPath}/category" method="get" style="display:inline;">
                             <input type="hidden" name="action" value="update-category"/>
                             <input type="hidden" name="categoryId" value="${category.categoryId}"/>

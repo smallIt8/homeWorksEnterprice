@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface FamilyRepository extends ComponentRepository<Family, UUID> {
 
 	List<Family> findAllByOwner(UUID currentPersonId);
-
 }

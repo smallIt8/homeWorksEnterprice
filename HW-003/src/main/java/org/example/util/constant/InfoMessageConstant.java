@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 public class InfoMessageConstant {
 
 	// ========== Сообщения о выполняемых действиях ==========
+
+	//TODO: Будет использовано на Spring
 	public static final String WELCOME_MESSAGE = "Добро пожаловать ";
 	public static final String REGISTRATION_PERSON_MESSAGE = "Регистрация:";
 	public static final String CREATION_FAMILY_MESSAGE = "Создание семейной группы:";
@@ -13,10 +15,6 @@ public class InfoMessageConstant {
 	public static final String FINISHING_MESSAGE = "Завершение программы.";
 
 	// ========== Информационные сообщения ==========
-	public static final String LIST_PERSON_MESSAGE = "Список сотрудников:";
-	public static final String LIST_FAMILY_BY_PERSON_MESSAGE = "Список семейных групп, созданных пользователем:";
-	public static final String LIST_PERSON_BY_CREATE_DATE_MESSAGE = "Список сотрудников отсортированный по дате приема:";
-	public static final String LIST_PERSON_LAST_NAME_SEARCH_MESSAGE = "Список сотрудников с фамилией:";
 	public static final String EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE = "Пользователь не состоит в семейных группах";
 	public static final String EMPTY_LIST_FAMILY_BY_OWNER_PERSON_MESSAGE = "Список семейных групп, созданных пользователем пуст";
 	public static final String EMPTY_LIST_TRANSACTION_BY_PERSON_MESSAGE = "Список транзакций, созданных пользователем пуст";
@@ -30,7 +28,6 @@ public class InfoMessageConstant {
 	public static final String NOT_FOUND_FINANCIAL_GOAL_MESSAGE = "ID долгосрочной финансовой цели не найден в БД";
 	public static final String NOT_FOUND_BUDGET_MESSAGE = "ID бюджета не найден в БД";
 	public static final String NOT_FOUND_CATEGORY_MESSAGE = "ID категории не найден в БД";
-	public static final String REDIRECT_CREATE_FAMILY_MESSAGE = "Перенаправление в меню создания семейной группы";
 
 	// ========== Предупреждающие сообщения ==========
 	public static final String WARNING_DELETE_PERSON_MESSAGE =
@@ -70,9 +67,10 @@ public class InfoMessageConstant {
 					""";
 
 	// ========== Сообщения о выполненных действиях ==========
+
+	//TODO: Будет использовано на Spring
 	public static final String REGISTERED_MESSAGE = "Вы зарегистрировались.";
 	public static final String CREATED_FAMILY_MESSAGE = "Вы создали семейную группу.";
-	public static final String SELECTED_DATA_MESSAGE = "Вы выбрали данные: ";
 	public static final String ADDED_PERSONS_MESSAGE = "Пакетный ввод сотрудников завершен.";
 	public static final String UPDATED_PERSON_MESSAGE = "Вы обновили данные пользователя.";
 	public static final String UPDATED_PERSON_PASSWORD_MESSAGE = "Вы обновили пароль пользователя.";
@@ -80,18 +78,13 @@ public class InfoMessageConstant {
 	public static final String DELETED_MESSAGE = "Вы удалили данные пользователя с ID: ";
 
 	// ========== Инструкции пользователю ==========
-	public static final String ENTER_USERNAME = "введите логин: ";
-	public static final String ENTER_PASSWORD = "введите пароль: ";
-	public static final String ENTER_FIRST_NAME = "введите имя: ";
-	public static final String ENTER_LAST_NAME = "введите фамилию: ";
-	public static final String ENTER_LAST_NAME_SEARCH = "введите фамилию для поиска сотрудника: ";
-	public static final String ENTER_EMAIL = "введите email: ";
-	public static final String ENTER_ID = "введите ID сотрудника: ";
-	public static final String ENTER_FAMILY_NAME = "введите имя семейной группы: ";
+
+	//TODO: Будет использовано на Spring
 	public static final String ADDING_PERSON = "добавить ещё одного сотрудника? Введите Y(Да) или N(Нет): ";
-	public static final String ENTER_NUMBER_IN_LIST = "введите номер в списке: ";
 
 	//  ========== Меню PERSON/TRANSACTION
+
+	//TODO: Будет использовано на Spring
 	public static final String PERSON_TRANSACTION_LIST_MENU = """
 			
 			Кабинет пользователя/Транзакции/Список транзакций
@@ -104,13 +97,11 @@ public class InfoMessageConstant {
 			5. Отфильтровать список по расходным транзакциям
 			6. Отфильтровать список по расходным транзакциям за выбранный период
 			7. Отфильтровать список по расходным транзакциям и категории
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
+			""";
 
 	//  ========== Меню PERSON/BUDGET ==========
+
+	//TODO: Будет использовано на Spring
 	public static final String PERSON_BUDGET_LIST_MENU = """
 			
 			Кабинет пользователя/Бюджет/Список бюджетов
@@ -120,9 +111,5 @@ public class InfoMessageConstant {
 			2. Отфильтровать список бюджетов за выбранный период
 			3. Отфильтровать список бюджетов по выбранной категории
 			4. Отфильтровать список бюджетов по выбранной категории за выбранный период
-			
-			<. Назад
-			0. Выход
-			
-			ввод:\s""";
+			""";
 }

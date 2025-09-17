@@ -7,5 +7,4 @@ import org.example.model.Category;
 import java.util.UUID;
 
 public interface CategoryService extends ComponentService<CategoryDto, Category, PersonDto, UUID> {
-
 }

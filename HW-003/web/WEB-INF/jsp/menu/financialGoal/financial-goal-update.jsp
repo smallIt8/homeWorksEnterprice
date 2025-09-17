@@ -13,7 +13,7 @@
                     <h3>Выберите долгосрочную финансовую цель для обновления:</h3>
                     <c:forEach var="financialGoal" items="${financialGoals}">
                         <div class="financialGoal-box">
-                            <p>${financialGoal.name} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
+                            <p>${financialGoal.financialGoalName} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
                             <form action="${pageContext.request.contextPath}/financial-goal" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="update-financial-goal"/>
                                 <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
@@ -40,33 +40,40 @@
 
             <div>
                 <c:if test="${action == 'update-financial-goal'}">
-                    <h3>Обновление долгосрочной финансовой цели: <span style="color: orange;">${financialGoal.name}</span></h3>
-                    <form action="${pageContext.request.contextPath}/financial-goal" method="get">
-                        <input type="hidden" name="action" value="update-financial-goal"/>
-                        <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
-                        <input type="hidden" name="name" value="${financialGoal.name}"/>
-                        <input type="hidden" name="targetAmount" value="${financialGoal.targetAmount}"/>
-                        <input type="hidden" name="endDate" value="${financialGoal.endDate}"/>
-                    </form>
-
+                    <h3>Обновление долгосрочной финансовой цели: <span style="color: orange;">${financialGoal.financialGoalName}</span></h3>
                     <form action="${pageContext.request.contextPath}/financial-goal" method="post">
                         <input type="hidden" name="action" value="updated-financial-goal"/>
                         <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
                         <div>
                             <label>Имя долгосрочной финансовой цели:
-                                <input type="text" name="name" value="${financialGoal.name}" required/>
+                                <input type="text" name="name" value="${financialGoal.financialGoalName}" required/>
                             </label>
+                            <c:if test="${not empty warn['financialGoalName']}">
+                                <c:forEach var="message" items="${warn['financialGoalName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <label>Цель:
                                 <input type="number" name="targetAmount" value="${financialGoal.targetAmount}" step="0.01" min="0.01" required/>
                             </label>
+                            <c:if test="${not empty warn['targetAmount']}">
+                                <c:forEach var="message" items="${warn['targetAmount']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <div>
                             <label>Конечная дата накопления:
                                 <input type="date" name="endDate" value="${financialGoal.endDate}" required/>
                             </label>
+                            <c:if test="${not empty warn['endDate']}">
+                                <c:forEach var="message" items="${warn['endDate']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Сохранить изменения</button>

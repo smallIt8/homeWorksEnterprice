@@ -13,7 +13,7 @@
                     <h3>Выберите бюджет для обновления:</h3>
                     <c:forEach var="budget" items="${budgets}">
                         <div class="budget-box">
-                            <p>${budget.name} | ${budget.categoryDto.name} | ${budget.limit} | ${budget.period}</p>
+                            <p>${budget.budgetName} | ${budget.categoryDto.categoryName} | ${budget.limit} | ${budget.period}</p>
                             <form action="${pageContext.request.contextPath}/budget" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="update-budget"/>
                                 <input type="hidden" name="budgetId" value="${budget.budgetId}"/>
@@ -40,34 +40,39 @@
 
             <div>
                 <c:if test="${action == 'update-budget'}">
-                    <h3>Обновление бюджета: <span style="color: orange;">${budget.name}</span></h3>
-                    <form action="${pageContext.request.contextPath}/budget" method="get">
-                        <input type="hidden" name="action" value="update-budget"/>
-                        <input type="hidden" name="budgetId" value="${budget.budgetId}"/>
-                        <input type="hidden" name="name" value="${budget.name}"/>
-                        <input type="hidden" name="limit" value="${budget.limit}"/>
-                        <input type="hidden" name="period" value="${budget.period}"/>
-                    </form>
-
+                    <h3>Обновление бюджета: <span style="color: orange;">${budget.budgetName}</span></h3>
                     <form action="${pageContext.request.contextPath}/budget" method="post">
                         <input type="hidden" name="action" value="updated-budget"/>
                         <input type="hidden" name="budgetId" value="${budget.budgetId}"/>
                         <div>
                             <label>Имя бюджета:
-                                <input type="text" name="name" value="${budget.name}" required/>
+                                <input type="text" name="name" value="${budget.budgetName}" />
                             </label>
+                            <c:if test="${not empty warn['budgetName']}">
+                                <c:forEach var="message" items="${warn['budgetName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <c:choose>
                                 <c:when test="${not empty categories}">
                                     <label for="category">Категория:
-                                        <select name="categoryId" id="category">
+                                        <select name="categoryId" id="category" required>
                                             <c:forEach var="category" items="${categories}">
-                                                <option value="${category.categoryId}" <c:if test="${category.categoryId == budget.categoryDto.categoryId}">selected</c:if>>${category.name}</option>
+                                                <option value="${category.categoryId}"
+                                                        <c:if test="${category.categoryId eq budget.categoryDto.categoryId}">selected</c:if>>
+                                                        ${category.categoryName}
+                                                </option>
                                             </c:forEach>
                                         </select>
                                     </label>
+                                    <c:if test="${not empty warn['categoryDto']}">
+                                        <c:forEach var="message" items="${warn['categoryDto']}">
+                                            <span style="color: red;">${message}</span><br/>
+                                        </c:forEach>
+                                    </c:if>
                                 </c:when>
                                 <c:otherwise>
                                     <div style="color: red;">${warningMessage}</div>
@@ -82,11 +87,21 @@
                             <label>Лимит:
                                 <input type="number" name="limit" value="${budget.limit}" step="0.01" min="0.01" required/>
                             </label>
+                            <c:if test="${not empty warn['limit']}">
+                                <c:forEach var="message" items="${warn['limit']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <div>
-                            <label>Период бюджета:
+                            <label>Период:
                                 <input type="month" name="period" value="${budget.period}" required/>
                             </label>
+                            <c:if test="${not empty warn['period']}">
+                                <c:forEach var="message" items="${warn['period']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Сохранить изменения</button>

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static org.example.util.ServletSessionUtil.*;
+import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 
 @Slf4j
 @UtilityClass
@@ -18,7 +18,7 @@ public class ServletHelper {
 		var action = req.getParameter("action");
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
-		req.setAttribute("personName", currentPersonDto.toNameString());
+		req.setAttribute("personName", currentPersonDto.getFullName());
 		req.setAttribute("person", currentPersonDto);
 		req.setAttribute("action", action);
 
@@ -26,7 +26,7 @@ public class ServletHelper {
 			action = defaultAction;
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPersonDto.toNameString(),
+				 currentPersonDto.getFullName(),
 				 req.getServletPath(),
 				 action
 		);

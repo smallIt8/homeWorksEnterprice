@@ -14,20 +14,35 @@
                         <input type="hidden" name="action" value="add-financial-goal"/>
                         <div>
                             <label for="name">Имя долгосрочной финансовой цели:
-                                <input type="text" name="name" id="name" required/>
+                                <input type="text" name="name" id="name" value="${financialGoal.financialGoalName}" required/>
                             </label>
+                            <c:if test="${not empty warn['financialGoalName']}">
+                                <c:forEach var="message" items="${warn['financialGoalName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <label for="targetAmount">Цель:
-                                <input type="number" name="targetAmount" id="targetAmount" step="0.01" min="0.01" required/>
+                                <input type="number" name="targetAmount" id="targetAmount"  value="${financialGoal.targetAmount}" required/>
                             </label>
+                            <c:if test="${not empty warn['targetAmount']}">
+                                <c:forEach var="message" items="${warn['targetAmount']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <label for="endDate">Конечная дата накопления:
-                                <input type="date" name="endDate" id="endDate" required/>
+                                <input type="date" name="endDate" id="endDate" value="${financialGoal.endDate}" required/>
                             </label>
+                            <c:if test="${not empty warn['endDate']}">
+                                <c:forEach var="message" items="${warn['endDate']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Создать</button>

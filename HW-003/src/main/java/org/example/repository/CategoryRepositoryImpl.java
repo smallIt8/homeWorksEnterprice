@@ -2,7 +2,9 @@ package org.example.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.*;
+import org.example.model.Category;
+import org.example.model.Category_;
+import org.example.model.Person_;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -18,12 +20,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public void create(Category category) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			session.persist(category);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при создании категории '{}': {}",
-					  category.getName(), e.getMessage(), e);
+					  category.getCategoryName(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -31,7 +35,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public void createBatch(List<Category> categories) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			for (int i = 0; i < categories.size(); i++) {
 				session.persist(categories.get(i));
@@ -44,7 +48,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 			session.getTransaction().commit();
 			log.info("Добавлено категорий: {}", categories.size());
 		} catch (Exception e) {
-			log.error("Ошибка при массовом добавлении категорий: {}", e.getMessage(), e);
+			log.error("Ошибка при массовом добавлении категорий: {}",
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -52,7 +58,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public Optional<Category> findById(UUID categoryId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			var cb = session.getCriteriaBuilder();
 			var criteria = cb.createQuery(Category.class);
 			var category = criteria.from(Category.class);
@@ -65,7 +71,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 					.uniqueResultOptional();
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных категории с ID {}: {}",
-					  categoryId, e.getMessage(), e);
+					  categoryId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -73,12 +81,12 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public void update(Category category) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			var cb = session.getCriteriaBuilder();
 			var criteria = cb.createCriteriaUpdate(Category.class);
 			var root = criteria.from(Category.class);
 
-			criteria.set(root.get(Category_.name), category.getName())
+			criteria.set(root.get(Category_.categoryName), category.getCategoryName())
 					.where(
 							cb.equal(root.get(Category_.categoryId), category.getCategoryId())
 					);
@@ -87,7 +95,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при обновлении данных категории с ID {}: {}",
-					  category.getCategoryId(), e.getMessage(), e);
+					  category.getCategoryId(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -101,13 +111,15 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
 			criteria.select(category)
 					.where(cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId))
-					.orderBy(cb.asc(category.get(Category_.name)));
+					.orderBy(cb.asc(category.get(Category_.categoryName)));
 
 			return session.createQuery(criteria)
 					.list();
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка категорий для пользователя '{}': {}",
-					  currentPersonId, e.getMessage(), e);
+					  currentPersonId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -131,7 +143,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при удалении данных категории с  ID {}: {}",
-					  categoryId, e.getMessage(), e);
+					  categoryId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

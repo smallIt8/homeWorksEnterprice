@@ -14,5 +14,4 @@ public interface FamilyService extends ComponentService<FamilyDto, Family, Perso
 	boolean addMember(String email, PersonDto currentPersonDto);
 
 	boolean exitFamily(PersonDto currentPersonDto);
-
 }

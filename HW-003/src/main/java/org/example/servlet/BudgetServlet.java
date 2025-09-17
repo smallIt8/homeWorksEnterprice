@@ -5,31 +5,34 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.BudgetDto;
 import org.example.dto.CategoryDto;
 import org.example.dto.PersonDto;
+import org.example.mapper.BudgetMapper;
 import org.example.model.Budget;
 import org.example.service.BudgetService;
 import org.example.util.MenuDependency;
+import org.example.util.ValidationDtoUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.YearMonth;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static org.example.mapper.BudgetMapper.modelToDto;
 import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 import static org.example.util.constant.InfoMessageConstant.WARNING_DELETE_BUDGET_MESSAGE;
 import static org.example.helper.jsp.JspHelper.getPath;
 import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
+@RequiredArgsConstructor
 @WebServlet("/budget")
 public class BudgetServlet extends HttpServlet {
 
 	private final BudgetService budgetService = MenuDependency.budgetService();
+	private final BudgetMapper budgetMapper = MenuDependency.budgetMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,7 +41,7 @@ public class BudgetServlet extends HttpServlet {
 
 		switch (action) {
 			case "add" -> {
-				String type = req.getParameter("type");
+				var type = req.getParameter("type");
 				req.setAttribute("includeFrom", "budget");
 
 				if (type == null) {
@@ -46,6 +49,20 @@ public class BudgetServlet extends HttpServlet {
 				}
 
 				req.setAttribute("type", type);
+
+				var budgetInput = req.getSession().getAttribute("budgetInput");
+				var budgetWarns = req.getSession().getAttribute("budgetWarns");
+
+				if (budgetInput != null) {
+					req.setAttribute("budget", budgetInput);
+					req.getSession().removeAttribute("budgetInput");
+				}
+
+				if (budgetWarns != null) {
+					req.setAttribute("warn", budgetWarns);
+					req.getSession().removeAttribute("budgetWarns");
+				}
+
 				req.getRequestDispatcher("/category?action=list&type=" + type)
 						.include(req, resp);
 				req.setAttribute("action", "add");
@@ -66,42 +83,55 @@ public class BudgetServlet extends HttpServlet {
 				}
 			}
 			case "update-budget" -> {
-				UUID budgetId = UUID.fromString(req.getParameter("budgetId"));
-				UUID currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
+				var budgetId = UUID.fromString(req.getParameter("budgetId"));
+				var currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
 
-				Optional<Budget> budgetOpt = budgetService.findById(budgetId, currentPersonId);
+				var budgetInput = req.getSession().getAttribute("budgetInput");
+				var budgetWarns = req.getSession().getAttribute("budgetWarns");
 
-				if (budgetOpt.isPresent()) {
-					BudgetDto budgetDto = modelToDto(budgetOpt.get());
-
-					String type = req.getParameter("type");
-					req.setAttribute("includeFrom", "budget");
-
-					if (type == null) {
-						type = "EXPENSE";
-					}
-
-					req.setAttribute("budget", budgetDto);
-					req.setAttribute("includeFrom", "budget");
-					req.setAttribute("type", type);
-					req.getRequestDispatcher("/category?action=list&type=" + type)
-							.include(req, resp);
-					req.setAttribute("action", "update-budget");
-					req.getRequestDispatcher(getPath("budget", "budget-update"))
-							.forward(req, resp);
+				if (budgetInput != null) {
+					req.setAttribute("budget", budgetInput);
+					req.getSession().removeAttribute("budgetInput");
 				} else {
-					log.warn("Бюджет для обновления с ID '{}' не найдена для пользователя '{}'", budgetId, currentPersonId);
-					resp.sendRedirect(req.getContextPath() + "/budget");
+					Optional<Budget> budgetOpt = budgetService.findById(budgetId, currentPersonId);
+					if (budgetOpt.isPresent()) {
+						req.setAttribute("budget", budgetMapper.mapModelToDto(budgetOpt.get()));
+					} else {
+						log.warn("Бюджет для обновления с ID '{}' не найдена для пользователя '{}'",
+								 budgetId,
+								 currentPersonId);
+						resp.sendRedirect(req.getContextPath() + "/budget");
+						return;
+					}
 				}
+
+				if (budgetWarns != null) {
+					req.setAttribute("warn", budgetWarns);
+					req.getSession().removeAttribute("budgetWarns");
+				}
+
+				var type = req.getParameter("type");
+
+				if (type == null) {
+					type = "EXPENSE";
+				}
+
+				req.setAttribute("includeFrom", "budget");
+				req.setAttribute("type", type);
+				req.getRequestDispatcher("/category?action=list&type=" + type)
+						.include(req, resp);
+				req.setAttribute("action", "update-budget");
+				req.getRequestDispatcher(getPath("budget", "budget-update"))
+						.forward(req, resp);
 			}
 			case "delete-budget" -> {
-				UUID budgetId = UUID.fromString(req.getParameter("budgetId"));
-				UUID currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
+				var budgetId = UUID.fromString(req.getParameter("budgetId"));
+				var currentPersonId = UUID.fromString(String.valueOf(currentPersonDto.getPersonId()));
 
 				Optional<Budget> budgetOpt = budgetService.findById(budgetId, currentPersonId);
 
 				if (budgetOpt.isPresent()) {
-					BudgetDto budgetDto = modelToDto(budgetOpt.get());
+					BudgetDto budgetDto = budgetMapper.mapModelToDto(budgetOpt.get());
 
 					req.setAttribute("budget", budgetDto);
 					req.setAttribute("action", "delete-budget");
@@ -109,7 +139,9 @@ public class BudgetServlet extends HttpServlet {
 					req.getRequestDispatcher(getPath("budget", "budget-delete"))
 							.forward(req, resp);
 				} else {
-					log.warn("Бюджет для удаления с ID '{}' не найдена для пользователя '{}'", budgetId, currentPersonId);
+					log.warn("Бюджет для удаления с ID '{}' не найдена для пользователя '{}'",
+							 budgetId,
+							 currentPersonId);
 					resp.sendRedirect(req.getContextPath() + "/budget");
 				}
 			}
@@ -125,7 +157,7 @@ public class BudgetServlet extends HttpServlet {
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPersonDto.toNameString(),
+				 currentPersonDto.getFullName(),
 				 req.getServletPath(),
 				 action
 		);
@@ -133,27 +165,63 @@ public class BudgetServlet extends HttpServlet {
 		try {
 			switch (action) {
 				case "add-budget" -> {
-					BudgetDto budgetAddDto = buildBudgetDto(req, true, false, currentPersonDto);
+					var budgetAddDto = buildBudgetDto(req, true, false, currentPersonDto);
+					var warns = ValidationDtoUtil.validateAnnotation(budgetAddDto);
+
+					if (!warns.isEmpty()) {
+						req.getSession().setAttribute("budgetInput", budgetAddDto);
+						req.getSession().setAttribute("budgetWarns", warns);
+
+						var type = req.getParameter("type");
+
+						if (type == null) {
+							type = "EXPENSE";
+						}
+
+						resp.sendRedirect(req.getContextPath() + "/budget?action=add&type=" + type);
+						return;
+					}
+
 					budgetService.create(budgetAddDto);
 					resp.sendRedirect(req.getContextPath() + "/budget");
 				}
 				case "updated-budget" -> {
-					BudgetDto budgetUpdateDto = buildBudgetDto(req, false, false, currentPersonDto);
+					var budgetUpdateDto = buildBudgetDto(req, false, false, currentPersonDto);
+					var warns = ValidationDtoUtil.validateAnnotation(budgetUpdateDto);
+
+					if (!warns.isEmpty()) {
+						req.getSession().setAttribute("budgetInput", budgetUpdateDto);
+						req.getSession().setAttribute("budgetWarns", warns);
+
+						var budgetId = req.getParameter("budgetId");
+						var type = req.getParameter("type");
+
+						if (type == null) {
+							type = "EXPENSE";
+						}
+
+						resp.sendRedirect(req.getContextPath() + "/budget?action=update-budget&budgetId=" + budgetId + "&type=" + type);
+						return;
+					}
+
 					budgetService.update(budgetUpdateDto, currentPersonDto);
 					resp.sendRedirect(req.getContextPath() + "/budget");
 				}
 				case "deleted-budget" -> {
-					BudgetDto budgetToDeleteDto = buildBudgetDto(req, false, true, currentPersonDto);
+					var budgetToDeleteDto = buildBudgetDto(req, false, true, currentPersonDto);
 					budgetService.delete(budgetToDeleteDto, currentPersonDto);
 					resp.sendRedirect(req.getContextPath() + "/budget");
 				}
 				default -> resp.sendRedirect(req.getContextPath() + "/budget");
 			}
 		} catch (Exception e) {
-			log.error("Ошибка при обработке действия '{}' для пользователя '{}'", action, currentPersonDto.getUserName(), e);
+			log.error("Ошибка при обработке действия '{}' для пользователя '{}'",
+					  action,
+					  currentPersonDto.getUserName(),
+					  e);
+			req.setAttribute("errorMessage", e.getMessage());
 			req.getRequestDispatcher(getPath("budget", "budget-menu"))
 					.forward(req, resp);
-			req.setAttribute("errorMessage", e.getMessage());
 		}
 	}
 
@@ -169,25 +237,35 @@ public class BudgetServlet extends HttpServlet {
 		var categoryDto = CategoryDto.builder()
 				.categoryId(UUID.fromString(req.getParameter("categoryId")))
 				.build();
-		var limit = new BigDecimal(req.getParameter("limit"));
-		var period = YearMonth.parse(req.getParameter("period"));
+
+		var limitStr = req.getParameter("limit");
+		BigDecimal limit = null;
+		if (limitStr != null && !limitStr.isBlank()) {
+			limit = new BigDecimal(limitStr);
+		}
+
+		var periodStr = req.getParameter("period");
+		YearMonth period = null;
+		if (periodStr != null && !periodStr.isBlank()) {
+			period = YearMonth.parse(periodStr);
+		}
 
 		if (isAdd) {
 			return BudgetDto.builder()
-					.name(name)
+					.budgetName(name)
 					.categoryDto(categoryDto)
 					.limit(limit)
-					.period(YearMonth.from(period))
+					.period(period)
 					.creatorDto(currentPersonDto)
 					.build();
 		} else {
 			var transactionId = UUID.fromString(req.getParameter("budgetId"));
 			return BudgetDto.builder()
 					.budgetId(transactionId)
-					.name(name)
+					.budgetName(name)
 					.categoryDto(categoryDto)
 					.limit(limit)
-					.period(YearMonth.from(period))
+					.period(period)
 					.creatorDto(currentPersonDto)
 					.build();
 		}

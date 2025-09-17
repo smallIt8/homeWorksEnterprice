@@ -19,7 +19,7 @@
                     <h3>Выберите бюджет для удаления:</h3>
                     <c:forEach var="budget" items="${budgets}">
                         <div class="budget-box">
-                            <p>${budget.name} | ${budget.categoryDto.name} | ${budget.limit} | ${budget.period}</p>
+                            <p>${budget.budgetName} | ${budget.categoryDto.categoryName} | ${budget.limit} | ${budget.period}</p>
                             <form action="${pageContext.request.contextPath}/budget" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="delete-budget"/>
                                 <input type="hidden" name="budgetId" value="${budget.budgetId}"/>
@@ -46,7 +46,7 @@
 
             <div style="text-align: center;">
                 <c:if test="${action == 'delete-budget'}">
-                    <h1>Удаление транзакции: <span style="color: orange;">${budget.name}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
+                    <h1>Удаление бюджета: <span style="color: orange;">${budget.budgetName}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
                     <c:if test="${not empty warningMessage}">
                         <p class="warningMessage">${warningMessage}</p>
                     </c:if>

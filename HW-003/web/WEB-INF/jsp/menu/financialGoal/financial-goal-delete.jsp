@@ -19,7 +19,7 @@
                 <h3>Выберите долгосрочную финансовую цель для удаления:</h3>
                 <c:forEach var="financialGoal" items="${financialGoals}">
                     <div class="financialGoal-box">
-                        <p>${financialGoal.name} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
+                        <p>${financialGoal.financialGoalName} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
                         <form action="${pageContext.request.contextPath}/financial-goal" method="get" style="display:inline;">
                             <input type="hidden" name="action" value="delete-financial-goal"/>
                             <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>
@@ -46,7 +46,7 @@
 
         <div style="text-align: center;">
             <c:if test="${action == 'delete-financial-goal'}">
-                <h1>Удаление долгосрочной финансовой цели: <span style="color: orange;">${financialGoal.name}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
+                <h1>Удаление долгосрочной финансовой цели: <span style="color: orange;">${financialGoal.financialGoalName}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
                 <c:if test="${not empty warningMessage}">
                     <p class="warningMessage">${warningMessage}</p>
                 </c:if>

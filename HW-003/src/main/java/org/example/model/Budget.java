@@ -34,7 +34,7 @@ public class Budget {
 	private UUID budgetId;
 
 	@Column(name = "budget_name", nullable = false)
-	private String name;
+	private String budgetName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false)

@@ -17,5 +17,4 @@ public interface ComponentService<D, E, P, ID> {
 	Optional<D> update(D entityDto, P currentPersonDto);
 
 	void delete(D entityDto, P currentPersonDto);
-
 }

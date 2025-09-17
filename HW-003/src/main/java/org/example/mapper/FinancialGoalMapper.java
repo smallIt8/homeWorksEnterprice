@@ -1,46 +1,51 @@
 package org.example.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.FinancialGoalDto;
 import org.example.model.FinancialGoal;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class FinancialGoalMapper {
-	public static List<FinancialGoalDto> modelToDtoList(List<FinancialGoal> financialGoals) {
+
+	private final PersonMapper personMapper;
+
+	public List<FinancialGoalDto> mapModelToDtoList(List<FinancialGoal> financialGoals) {
 		return financialGoals.stream()
-				.map(FinancialGoalMapper::modelToDto)
+				.map(this::mapModelToDto)
 				.toList();
 	}
 
-	public static FinancialGoalDto modelToDto(FinancialGoal financialGoal) {
+	public FinancialGoalDto mapModelToDto(FinancialGoal financialGoal) {
 		return FinancialGoalDto.builder()
 				.financialGoalId(financialGoal.getFinancialGoalId())
-				.name(financialGoal.getName())
+				.financialGoalName(financialGoal.getFinancialGoalName())
 				.targetAmount(financialGoal.getTargetAmount())
 				.endDate(financialGoal.getEndDate())
-				.creatorDto(PersonMapper.modelToDtoLight(financialGoal.getCreator()))
+				.creatorDto(personMapper.mapModelToDtoLight(financialGoal.getCreator()))
 				.createDate(financialGoal.getCreateDate())
 				.build();
 	}
 
-	public static List<FinancialGoal> dtoToModelList(List<FinancialGoalDto> financialGoalsDto) {
+	public List<FinancialGoal> mapDtoToModelList(List<FinancialGoalDto> financialGoalsDto) {
 		return financialGoalsDto.stream()
-				.map(FinancialGoalMapper::dtoToModel)
+				.map(this::mapDtoToModel)
 				.toList();
 	}
 
-	public static FinancialGoal dtoToModel(FinancialGoalDto financialGoalDto) {
+	public FinancialGoal mapDtoToModel(FinancialGoalDto financialGoalDto) {
 		return FinancialGoal.builder()
 				.financialGoalId(financialGoalDto.getFinancialGoalId())
-				.name(financialGoalDto.getName())
+				.financialGoalName(financialGoalDto.getFinancialGoalName())
 				.targetAmount(financialGoalDto.getTargetAmount())
 				.endDate(financialGoalDto.getEndDate())
-				.creator(PersonMapper.dtoToModelLight(financialGoalDto.getCreatorDto()))
+				.creator(personMapper.mapDtoToModelLight(financialGoalDto.getCreatorDto()))
 				.createDate(financialGoalDto.getCreateDate())
 				.build();
 	}
 
-	public static FinancialGoal dtoToModelLight(FinancialGoalDto financialGoalDto) {
+	public FinancialGoal mapDtoToModelLight(FinancialGoalDto financialGoalDto) {
 		return FinancialGoal.builder()
 				.financialGoalId(financialGoalDto.getFinancialGoalId())
 				.build();

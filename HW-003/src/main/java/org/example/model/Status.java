@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Status {
+
 	ACTIVE("Активная"),
 	COMPLETED("Завершенная"),
-	EXPIRED("Истекшая"),
-	;
+	EXPIRED("Истекшая");
 
 	private final String statusName;
 

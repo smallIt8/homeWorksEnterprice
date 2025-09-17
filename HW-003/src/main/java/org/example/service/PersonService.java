@@ -1,6 +1,5 @@
 package org.example.service;
 
-import org.example.dto.FamilyDto;
 import org.example.dto.PersonDto;
 import org.example.model.Person;
 
@@ -9,7 +8,7 @@ import java.util.UUID;
 
 public interface PersonService {
 
-	Optional<PersonDto> entry(PersonDto personDto);
+	Optional<PersonDto> getPersonByUserName(PersonDto personDto);
 
 	void create(PersonDto personDto);
 
@@ -19,8 +18,5 @@ public interface PersonService {
 
 	Optional<PersonDto> updatePassword(PersonDto currentPersonDto);
 
-	void updateFamily(PersonDto personOwnerDto, FamilyDto familyDto);
-
 	void delete(PersonDto currentPersonDto);
-
 }

@@ -5,7 +5,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.*;
+import org.example.model.FinancialGoal;
+import org.example.model.QFinancialGoal;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -22,12 +23,14 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public void create(FinancialGoal financialGoal) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			session.persist(financialGoal);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при создании долгосрочной финансовой цели '{}': {}",
-					  financialGoal.getName(), e.getMessage(), e);
+					  financialGoal.getFinancialGoalName(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -35,7 +38,7 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public void createBatch(List<FinancialGoal> financialGoals) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			for (int i = 0; i < financialGoals.size(); i++) {
 				session.persist(financialGoals.get(i));
@@ -48,7 +51,9 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 			session.getTransaction().commit();
 			log.info("Добавлено долгосрочных финансовых целей: {}", financialGoals.size());
 		} catch (Exception e) {
-			log.error("Ошибка при массовом добавлении долгосрочных финансовых целей: {}", e.getMessage(), e);
+			log.error("Ошибка при массовом добавлении долгосрочных финансовых целей: {}",
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -56,7 +61,7 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public Optional<FinancialGoal> findById(UUID financialGoalId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			FinancialGoal result = new JPAQuery<FinancialGoal>(session)
 					.select(financialGoal)
@@ -68,7 +73,9 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных долгосрочной финансовой цели с ID {}: {}",
-					  financialGoalId, e.getMessage(), e);
+					  financialGoalId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -76,11 +83,11 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public void update(FinancialGoal financialGoal) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPAUpdateClause(session, QFinancialGoal.financialGoal)
 					.where(QFinancialGoal.financialGoal.financialGoalId.eq(financialGoal.getFinancialGoalId()))
-					.set(QFinancialGoal.financialGoal.name, financialGoal.getName())
+					.set(QFinancialGoal.financialGoal.financialGoalName, financialGoal.getFinancialGoalName())
 					.set(QFinancialGoal.financialGoal.targetAmount, financialGoal.getTargetAmount())
 					.set(QFinancialGoal.financialGoal.endDate, financialGoal.getEndDate())
 					.execute();
@@ -88,7 +95,9 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при обновлении данных долгосрочной финансовой цели с ID {}: {}",
-					  financialGoal.getFinancialGoalId(), e.getMessage(), e);
+					  financialGoal.getFinancialGoalId(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -96,7 +105,7 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public List<FinancialGoal> findAll(UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			List<FinancialGoal> financialGoals = new JPAQuery<FinancialGoal>(session)
 					.select(financialGoal)
@@ -108,7 +117,9 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 			return financialGoals;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка долгосрочных финансовых целей для пользователя с ID {}: {}",
-					  currentPersonId, e.getMessage(), e);
+					  currentPersonId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -116,7 +127,7 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 	@Override
 	public void delete(UUID financialGoalId, UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPADeleteClause(session, financialGoal)
 					.where(financialGoal.financialGoalId.eq(financialGoalId)
@@ -126,7 +137,9 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при удалении данных транзакции с  ID {}: {}",
-					  financialGoalId, e.getMessage(), e);
+					  financialGoalId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

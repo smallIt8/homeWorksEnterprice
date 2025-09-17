@@ -13,7 +13,7 @@
                     <h3>Выберите семейную группу для обновления:</h3>
                     <c:forEach var="family" items="${families}">
                         <div class="family-box">
-                            <p>${family.name}</p>
+                            <p>${family.familyName}</p>
                             <form action="${pageContext.request.contextPath}/family" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="update-family"/>
                                 <input type="hidden" name="familyId" value="${family.familyId}"/>
@@ -40,11 +40,10 @@
 
             <div>
                 <c:if test="${action == 'update-family'}">
-                    <h3>Обновление семейной группы: <span style="color: orange;">${family.name}</span></h3>
-                    <form action="${pageContext.request.contextPath}/family" method="get">
+                    <h3>Обновление семейной группы: <span style="color: orange;">${family.familyName}</span></h3>
+                    <form action="${pageContext.request.contextPath}/family" method="post">
                         <input type="hidden" name="action" value="update-family"/>
                         <input type="hidden" name="familyId" value="${family.familyId}"/>
-                        <input type="hidden" name="name" value="${family.name}"/>
                     </form>
 
                     <form action="${pageContext.request.contextPath}/family" method="post">
@@ -52,8 +51,13 @@
                         <input type="hidden" name="familyId" value="${family.familyId}"/>
                         <div>
                             <label>Имя семейной группы:
-                                <input type="text" name="name" value="${family.name}" required/>
+                                <input type="text" name="name" value="${family.familyName}" required/>
                             </label>
+                            <c:if test="${not empty warn['familyName']}">
+                                <c:forEach var="message" items="${warn['familyName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Сохранить изменения</button>

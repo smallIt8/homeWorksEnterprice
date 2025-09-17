@@ -19,7 +19,7 @@
                     <h3>Выберите категорию для удаления:</h3>
                     <c:forEach var="category" items="${categories}">
                         <div class="category-box">
-                            <p>${category.name} | ${category.type.typeName}</p>
+                            <p>${category.categoryName} | ${category.type.typeName}</p>
                             <form action="${pageContext.request.contextPath}/category" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="delete-category"/>
                                 <input type="hidden" name="categoryId" value="${category.categoryId}"/>
@@ -46,7 +46,7 @@
 
             <div style="text-align: center;">
                 <c:if test="${action == 'delete-category'}">
-                    <h1>Удаление категории: <span style="color: orange;">${category.name}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
+                    <h1>Удаление категории: <span style="color: orange;">${category.categoryName}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
                     <c:if test="${not empty warningMessage}">
                         <p class="warningMessage">${warningMessage}</p>
                     </c:if>

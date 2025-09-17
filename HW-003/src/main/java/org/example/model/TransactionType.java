@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TransactionType {
+
 	INCOME("Приходная"),
 	EXPENSE("Расходная");
 

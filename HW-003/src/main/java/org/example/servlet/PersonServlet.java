@@ -13,10 +13,10 @@ import org.example.util.MenuDependency;
 import java.io.IOException;
 
 import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
-import static org.example.util.constant.ErrorMessageConstant.*;
-import static org.example.util.constant.InfoMessageConstant.*;
+import static org.example.util.constant.ErrorMessageConstant.ERROR_UPDATE_PERSON_PASSWORD_MESSAGE;
+import static org.example.util.constant.InfoMessageConstant.WARNING_DELETE_PERSON_MESSAGE;
 import static org.example.helper.jsp.JspHelper.getPath;
-import static org.example.helper.servlet.ServletHelper.*;
+import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
 @WebServlet("/main-person")
@@ -48,7 +48,7 @@ public class PersonServlet extends HttpServlet {
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
-				 currentPersonDto.toNameString(),
+				 currentPersonDto.getFullName(),
 				 req.getServletPath(),
 				 action
 		);
@@ -76,7 +76,10 @@ public class PersonServlet extends HttpServlet {
 				default -> resp.sendRedirect(req.getContextPath() + "/main-person");
 			}
 		} catch (Exception e) {
-			log.error("Ошибка при обработке действия '{}' для пользователя '{}'", action, currentPersonDto.getUserName(), e);
+			log.error("Ошибка при обработке действия '{}' для пользователя '{}'",
+					  action,
+					  currentPersonDto.getUserName(),
+					  e);
 			req.getRequestDispatcher(getPath("person", "person-update"))
 					.forward(req, resp);
 		}

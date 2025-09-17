@@ -1,49 +1,54 @@
 package org.example.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.CategoryDto;
 import org.example.model.Category;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class CategoryMapper {
-	public static List<CategoryDto> modelToDtoList(List<Category> categories) {
+
+	private final PersonMapper personMapper;
+
+	public List<CategoryDto> mapModelToDtoList(List<Category> categories) {
 		return categories.stream()
-				.map(CategoryMapper::modelToDto)
+				.map(this::mapModelToDto)
 				.toList();
 	}
 
-	public static CategoryDto modelToDto(Category category) {
+	public CategoryDto mapModelToDto(Category category) {
 		return CategoryDto.builder()
 				.categoryId(category.getCategoryId())
-				.name(category.getName())
+				.categoryName(category.getCategoryName())
 				.type(category.getType())
-				.creatorDto(PersonMapper.modelToDtoLight(category.getCreator()))
+				.creatorDto(personMapper.mapModelToDtoLight(category.getCreator()))
 				.build();
 	}
 
-	public static CategoryDto modelToDtoLight(Category category) {
+	public CategoryDto mapModelToDtoLight(Category category) {
 		return CategoryDto.builder()
 				.categoryId(category.getCategoryId())
-				.name(category.getName())
+				.categoryName(category.getCategoryName())
 				.build();
 	}
 
-	public static List<Category> dtoToModel(List<CategoryDto> categoriesDto) {
+	public List<Category> mapDtoToModelList(List<CategoryDto> categoriesDto) {
 		return categoriesDto.stream()
-				.map(CategoryMapper::dtoToModel)
+				.map(this::mapDtoToModel)
 				.toList();
 	}
 
-	public static Category dtoToModel(CategoryDto categoryDto) {
+	public Category mapDtoToModel(CategoryDto categoryDto) {
 		return Category.builder()
 				.categoryId(categoryDto.getCategoryId())
-				.name(categoryDto.getName())
+				.categoryName(categoryDto.getCategoryName())
 				.type(categoryDto.getType())
-				.creator(PersonMapper.dtoToModelLight(categoryDto.getCreatorDto()))
+				.creator(personMapper.mapDtoToModelLight(categoryDto.getCreatorDto()))
 				.build();
 	}
 
-	public static Category dtoToModelLight(CategoryDto categoryDto) {
+	public Category mapDtoToModelLight(CategoryDto categoryDto) {
 		return Category.builder()
 				.categoryId(categoryDto.getCategoryId())
 				.build();

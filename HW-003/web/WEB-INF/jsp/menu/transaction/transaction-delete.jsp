@@ -19,7 +19,7 @@
                     <h3>Выберите транзакцию для удаления:</h3>
                     <c:forEach var="transact" items="${transactions}">
                         <div class="transaction-box">
-                            <p>${transact.name} | ${transact.type.typeName} | ${transact.categoryDto.name} | ${transact.amount} | ${transact.transactionDate}</p>
+                            <p>${transact.transactionName} | ${transact.type.typeName} | ${transact.categoryDto.categoryName} | ${transact.amount} | ${transact.transactionDate}</p>
                             <form action="${pageContext.request.contextPath}/transact" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="delete-transact"/>
                                 <input type="hidden" name="transactionId" value="${transact.transactionId}"/>
@@ -46,7 +46,7 @@
 
             <div style="text-align: center;">
                 <c:if test="${action == 'delete-transact'}">
-                    <h1>Удаление транзакции: <span style="color: orange;">${transaction.name}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
+                    <h1>Удаление транзакции: <span style="color: orange;">${transaction.transactionName}</span> пользователя: <span style="color: blue;">${personName}</span></h1>
                     <c:if test="${not empty warningMessage}">
                         <p class="warningMessage">${warningMessage}</p>
                     </c:if>

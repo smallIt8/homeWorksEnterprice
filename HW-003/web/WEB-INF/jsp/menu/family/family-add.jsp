@@ -17,8 +17,13 @@
                         </c:if>
                         <div>
                             <label for="name">Имя семейной группы:
-                                <input type="text" name="name" id="name" required/>
+                                <input type="text" name="name" id="name" value="${family.familyName}" required/>
                             </label>
+                            <c:if test="${not empty warn['familyName']}">
+                                <c:forEach var="message" items="${warn['familyName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Создать</button>

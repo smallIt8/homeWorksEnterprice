@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.model.Family;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersonDto {
+
 	private UUID personId;
 	private String userName;
 	private String password;
@@ -23,7 +22,7 @@ public class PersonDto {
 	private String email;
 	private List<FamilyDto> familiesDto;
 
-	public String toNameString() {
+	public String getFullName() {
 		return firstName + " " + lastName + "\n";
 	}
 }

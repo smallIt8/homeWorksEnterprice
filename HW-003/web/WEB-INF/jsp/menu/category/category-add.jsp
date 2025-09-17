@@ -17,15 +17,20 @@
                         </c:if>
                         <div>
                             <label for="name">Имя категории:
-                                <input type="text" name="name" id="name" required/>
+                                <input type="text" name="name" id="name" value="${category.categoryName}" />
                             </label>
+                            <c:if test="${not empty warn['categoryName']}">
+                                <c:forEach var="message" items="${warn['categoryName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <label for="type">Тип категории:
-                                <select name="type" id="type" required>
-                                    <option value="EXPENSE">Расходная</option>
-                                    <option value="INCOME">Приходная</option>
+                                <select name="type" id="type" >
+                                    <option value="EXPENSE" ${category.type == 'EXPENSE' ? 'selected' : ''}>Расходная</option>
+                                    <option value="INCOME" ${category.type == 'INCOME' ? 'selected' : ''}>Приходная</option>
                                 </select>
                             </label>
                         </div>

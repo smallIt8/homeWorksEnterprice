@@ -44,19 +44,23 @@ public class StartServlet extends HttpServlet {
 			PersonDto personDto = buildPersonDto(req, false);
 			log.info("Попытка входа пользователя '{}'", personDto.getUserName());
 			try {
-				Optional<PersonDto> personOpt = personService.entry(personDto);
+				Optional<PersonDto> personOpt = personService.getPersonByUserName(personDto);
 				if (personOpt.isPresent()) {
 					req.getSession()
 							.setAttribute("currentPersonDto", personOpt.get());
 					resp.sendRedirect(req.getContextPath() + "/main-person");
 				}
 			} catch (IllegalArgumentException e) {
-				log.error("Ошибка при авторизации в сервлете'{}'", e.getMessage(), e);
+				log.error("Ошибка при авторизации в сервлете'{}'",
+						  e.getMessage(),
+						  e);
 				req.setAttribute("errorMessage", e.getMessage());
 				req.getRequestDispatcher(getPath("auth-person"))
 						.forward(req, resp);
 			} catch (Exception e) {
-				log.error("Ошибка при авторизации в сервлете'{}'", e.getMessage(), e);
+				log.error("Ошибка при авторизации в сервлете'{}'",
+						  e.getMessage(),
+						  e);
 				req.getRequestDispatcher(getPath("auth-person"))
 						.forward(req, resp);
 			}
@@ -67,7 +71,9 @@ public class StartServlet extends HttpServlet {
 				req.getRequestDispatcher(getPath("auth-person"))
 						.forward(req, resp);
 			} catch (Exception e) {
-				log.error("Ошибка при регистрации в сервлете'{}'", e.getMessage(), e);
+				log.error("Ошибка при регистрации в сервлете'{}'",
+						  e.getMessage(),
+						  e);
 				req.getRequestDispatcher(getPath("registration-person"))
 						.forward(req, resp);
 			}

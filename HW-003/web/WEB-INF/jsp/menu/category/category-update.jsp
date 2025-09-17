@@ -13,7 +13,7 @@
                     <h3>Выберите категорию для обновления:</h3>
                     <c:forEach var="category" items="${categories}">
                         <div class="category-box">
-                            <p>${category.name} | ${category.type.typeName}</p>
+                            <p>${category.categoryName} | ${category.type.typeName}</p>
                             <form action="${pageContext.request.contextPath}/category" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="update-category"/>
                                 <input type="hidden" name="categoryId" value="${category.categoryId}"/>
@@ -40,20 +40,19 @@
 
             <div>
                 <c:if test="${action == 'update-category'}">
-                    <h3>Обновление категории: <span style="color: orange;">${category.name}</span></h3>
-                    <form action="${pageContext.request.contextPath}/category" method="get">
-                        <input type="hidden" name="action" value="update-category"/>
-                        <input type="hidden" name="categoryId" value="${category.categoryId}"/>
-                        <input type="hidden" name="name" value="${category.name}"/>
-                    </form>
-
+                    <h3>Обновление категории: <span style="color: orange;">${category.categoryName}</span></h3>
                     <form action="${pageContext.request.contextPath}/category" method="post">
                         <input type="hidden" name="action" value="updated-category"/>
                         <input type="hidden" name="categoryId" value="${category.categoryId}"/>
                         <div>
                             <label>Имя категории:
-                                <input type="text" name="name" value="${category.name}" required/>
+                                <input type="text" name="name" value="${category.categoryName}" required/>
                             </label>
+                            <c:if test="${not empty warn['categoryName']}">
+                                <c:forEach var="message" items="${warn['categoryName']}">
+                                    <span style="color: red;">${message}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Сохранить изменения</button>

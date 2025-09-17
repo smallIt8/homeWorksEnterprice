@@ -13,7 +13,7 @@
                     <h3>Выберите транзакцию для обновления:</h3>
                     <c:forEach var="transact" items="${transactions}">
                         <div class="transaction-box">
-                            <p>${transact.name} | ${transact.type.typeName} | ${transact.categoryDto.name} | ${transact.amount} | ${transact.transactionDate}</p>
+                            <p>${transact.transactionName} | ${transact.type.typeName} | ${transact.categoryDto.categoryName} | ${transact.amount} | ${transact.transactionDate}</p>
                             <form action="${pageContext.request.contextPath}/transact" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="update-transact"/>
                                 <input type="hidden" name="transactionId" value="${transact.transactionId}"/>
@@ -41,22 +41,19 @@
             <div>
                 <c:if test="${action == 'update-transact'}">
                     <c:set var="transaction" value="${not empty transaction ? transaction : sessionScope.currentTransaction}" />
-                    <h3>Обновление транзакции: <span style="color: orange;">${transaction.name}</span></h3>
-                    <form action="${pageContext.request.contextPath}/transact" method="get">
-                        <input type="hidden" name="action" value="update-transact"/>
-                        <input type="hidden" name="transactionId" value="${transaction.transactionId}"/>
-                        <input type="hidden" name="name" value="${transaction.name}"/>
-                        <input type="hidden" name="amount" value="${transaction.amount}"/>
-                        <input type="hidden" name="transactionDate" value="${transaction.transactionDate}"/>
-                    </form>
-
+                    <h3>Обновление транзакции: <span style="color: orange;">${transaction.transactionName}</span></h3>
                     <form action="${pageContext.request.contextPath}/transact" method="post">
                         <input type="hidden" name="action" value="updated-transact"/>
                         <input type="hidden" name="transactionId" value="${transaction.transactionId}"/>
                         <div>
                             <label>Имя транзакции:
-                                <input type="text" name="name" value="${transaction.name}" required/>
+                                <input type="text" name="name" value="${transaction.transactionName}" required/>
                             </label>
+                            <c:if test="${not empty warn['transactionName']}">
+                                <c:forEach var="msg" items="${warn['transactionName']}">
+                                    <span style="color:red;">${msg}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
@@ -66,18 +63,28 @@
                                     <option value="INCOME" <c:if test="${type == 'INCOME'}">selected</c:if>>Приходная</option>
                                 </select>
                             </label>
+                            <c:if test="${not empty warn['type']}">
+                                <c:forEach var="msg" items="${warn['type']}">
+                                    <span style="color:red;">${msg}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <div>
                             <c:choose>
                                 <c:when test="${not empty categories}">
                                     <label for="category">Категория:
-                                        <select name="categoryId" id="category">
+                                        <select name="categoryId" id="category" required>
                                             <c:forEach var="category" items="${categories}">
-                                                <option value="${category.categoryId}" <c:if test="${category.categoryId == transaction.categoryDto.categoryId}">selected</c:if>>${category.name}</option>
+                                                <option value="${category.categoryId}" <c:if test="${category.categoryId == transaction.categoryDto.categoryId}">selected</c:if>>${category.categoryName}</option>
                                             </c:forEach>
                                         </select>
                                     </label>
+                                    <c:if test="${not empty warn['categoryDto']}">
+                                        <c:forEach var="msg" items="${warn['categoryDto']}">
+                                            <span style="color:red;">${msg}</span><br/>
+                                        </c:forEach>
+                                    </c:if>
                                 </c:when>
                                 <c:otherwise>
                                     <div style="color: red;">${warningMessage}</div>
@@ -92,11 +99,21 @@
                             <label>Стоимость:
                                 <input type="number" name="amount" value="${transaction.amount}" step="0.01" min="0.01" required/>
                             </label>
+                            <c:if test="${not empty warn['amount']}">
+                                <c:forEach var="msg" items="${warn['amount']}">
+                                    <span style="color:red;">${msg}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <div>
                             <label>Дата транзакции:
                                 <input type="date" name="transactionDate" value="${transaction.transactionDate}" required/>
                             </label>
+                            <c:if test="${not empty warn['transactionDate']}">
+                                <c:forEach var="msg" items="${warn['transactionDate']}">
+                                    <span style="color:red;">${msg}</span><br/>
+                                </c:forEach>
+                            </c:if>
                         </div>
                         <br/>
                         <button type="submit">Сохранить изменения</button>

@@ -5,7 +5,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.*;
+import org.example.model.Transaction;
+import org.example.model.QTransaction;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -23,12 +24,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public void create(Transaction transaction) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 			session.persist(transaction);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при создании транзакции '{}': {}",
-					  transaction.getName(), e.getMessage(), e);
+					  transaction.getTransactionName(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -36,7 +39,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public void createBatch(List<Transaction> transactions) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			for (int i = 0; i < transactions.size(); i++) {
 				session.persist(transactions.get(i));
@@ -49,7 +52,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 			session.getTransaction().commit();
 			log.info("Добавлено транзакций: {}", transactions.size());
 		} catch (Exception e) {
-			log.error("Ошибка при массовом добавлении транзакций: {}", e.getMessage(), e);
+			log.error("Ошибка при массовом добавлении транзакций: {}",
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -57,7 +62,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public Optional<Transaction> findById(UUID transactionId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			Transaction result = new JPAQuery<Transaction>(session)
 					.select(transaction)
@@ -70,7 +75,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных транзакции с ID {}: {}",
-					  transactionId, e.getMessage(), e);
+					  transactionId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -78,11 +85,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public void update(Transaction transaction) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPAUpdateClause(session, QTransaction.transaction)
 					.where(QTransaction.transaction.transactionId.eq(transaction.getTransactionId()))
-					.set(QTransaction.transaction.name, transaction.getName())
+					.set(QTransaction.transaction.transactionName, transaction.getTransactionName())
 					.set(QTransaction.transaction.type, transaction.getType())
 					.set(QTransaction.transaction.category, transaction.getCategory())
 					.set(QTransaction.transaction.amount, transaction.getAmount())
@@ -92,7 +99,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при обновлении данных транзакции с ID {}: {}",
-					  transaction.getTransactionId(), e.getMessage(), e);
+					  transaction.getTransactionId(),
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -110,7 +119,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка транзакций для пользователя с ID {}: {}",
-					  currentPersonId, e.getMessage(), e);
+					  currentPersonId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -118,7 +129,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	@Override
 	public void delete(UUID transactionId, UUID currentPersonId) {
 		try (Session session = openSession()) {
-			session.getTransaction().begin();
+			session.beginTransaction();
 
 			new JPADeleteClause(session, transaction)
 					.where(transaction.transactionId.eq(transactionId)
@@ -128,7 +139,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при удалении данных транзакции с  ID {}: {}",
-					  transactionId, e.getMessage(), e);
+					  transactionId,
+					  e.getMessage(),
+					  e);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

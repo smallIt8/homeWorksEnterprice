@@ -11,7 +11,7 @@
             <div>
                 <c:forEach var="financialGoal" items="${financialGoals}">
                     <div class="financialGoal-box">
-                        <p>${financialGoal.name} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
+                        <p>${financialGoal.financialGoalName} | ${financialGoal.targetAmount} | ${financialGoal.endDate}</p>
                         <form action="${pageContext.request.contextPath}/financial-goal" method="get" style="display:inline;">
                             <input type="hidden" name="action" value="update-financial-goal"/>
                             <input type="hidden" name="financialGoalId" value="${financialGoal.financialGoalId}"/>

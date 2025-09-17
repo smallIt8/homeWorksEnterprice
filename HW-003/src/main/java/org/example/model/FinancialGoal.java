@@ -34,7 +34,7 @@ public class FinancialGoal {
 	private UUID financialGoalId;
 
 	@Column(name = "financial_goal_name", nullable = false)
-	private String name;
+	private String financialGoalName;
 
 	@Column(name = "target_amount", nullable = false)
 	private BigDecimal targetAmount;

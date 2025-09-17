@@ -19,7 +19,9 @@ public class HibernateSessionFactoryUtil {
 			sessionFactory = configuration.buildSessionFactory();
 			log.info("SessionFactory успешно создана");
 		} catch (Exception e) {
-			log.error("Ошибка при инициализации SessionFactory: '{}'", e.getMessage(), e);
+			log.error("Ошибка при инициализации SessionFactory: '{}'",
+					  e.getMessage(),
+					  e);
 			throw new ExceptionInInitializerError(e);
 		}
 	}
@@ -35,7 +37,9 @@ public class HibernateSessionFactoryUtil {
 				sessionFactory.close();
 				log.info("SessionFactory успешно закрыта");
 			} catch (Exception e) {
-				log.error("Ошибка при закрытии SessionFactory: '{}'", e.getMessage(), e);
+				log.error("Ошибка при закрытии SessionFactory: '{}'",
+						  e.getMessage(),
+						  e);
 			}
 		}
 	}
