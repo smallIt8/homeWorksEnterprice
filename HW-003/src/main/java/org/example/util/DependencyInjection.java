@@ -7,7 +7,7 @@ import org.example.service.*;
 import org.example.validator.BudgetValidator;
 
 @UtilityClass
-public class MenuDependency {
+public class DependencyInjection {
 
 	public static FamilyRepository familyRepository() {
 		return new FamilyRepositoryImpl();

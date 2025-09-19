@@ -14,7 +14,7 @@ import org.example.mapper.TransactionMapper;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
 import org.example.service.TransactionService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
 
 import java.util.*;
@@ -33,8 +33,8 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/transact")
 public class TransactionServlet extends HttpServlet {
 
-	private final TransactionService transactionService = MenuDependency.transactionService();
-	private final TransactionMapper transactionMapper = MenuDependency.transactionMapper();
+	private final TransactionService transactionService = DependencyInjection.transactionService();
+	private final TransactionMapper transactionMapper = DependencyInjection.transactionMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

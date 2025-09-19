@@ -13,7 +13,7 @@ import org.example.dto.PersonDto;
 import org.example.mapper.BudgetMapper;
 import org.example.model.Budget;
 import org.example.service.BudgetService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
 
 import java.io.IOException;
@@ -31,8 +31,8 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/budget")
 public class BudgetServlet extends HttpServlet {
 
-	private final BudgetService budgetService = MenuDependency.budgetService();
-	private final BudgetMapper budgetMapper = MenuDependency.budgetMapper();
+	private final BudgetService budgetService = DependencyInjection.budgetService();
+	private final BudgetMapper budgetMapper = DependencyInjection.budgetMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

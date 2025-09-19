@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.PersonDto;
 import org.example.service.PersonService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/main-person")
 public class PersonServlet extends HttpServlet {
 
-	private final PersonService personService = MenuDependency.personService();
+	private final PersonService personService = DependencyInjection.personService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

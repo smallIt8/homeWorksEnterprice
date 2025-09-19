@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.PersonDto;
 import org.example.service.PersonService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,7 +19,7 @@ import static org.example.helper.jsp.JspStartHelper.getPath;
 @WebServlet("/start")
 public class StartServlet extends HttpServlet {
 
-	private final PersonService personService = MenuDependency.personService();
+	private final PersonService personService = DependencyInjection.personService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

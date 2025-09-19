@@ -12,7 +12,7 @@ import org.example.dto.FamilyDto;
 import org.example.mapper.FamilyMapper;
 import org.example.model.Family;
 import org.example.service.FamilyService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
 
 import java.util.*;
@@ -29,8 +29,8 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/family")
 public class FamilyServlet extends HttpServlet {
 
-	private final FamilyService familyService = MenuDependency.familyService();
-	private final FamilyMapper familyMapper = MenuDependency.familyMapper();
+	private final FamilyService familyService = DependencyInjection.familyService();
+	private final FamilyMapper familyMapper = DependencyInjection.familyMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

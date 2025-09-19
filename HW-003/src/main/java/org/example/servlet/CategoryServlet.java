@@ -13,7 +13,7 @@ import org.example.mapper.CategoryMapper;
 import org.example.model.Category;
 import org.example.model.CategoryType;
 import org.example.service.CategoryService;
-import org.example.util.MenuDependency;
+import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
 
 import java.util.*;
@@ -31,8 +31,8 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 @WebServlet("/category")
 public class CategoryServlet extends HttpServlet {
 
-	private final CategoryService categoryService = MenuDependency.categoryService();
-	private final CategoryMapper categoryMapper = MenuDependency.categoryMapper();
+	private final CategoryService categoryService = DependencyInjection.categoryService();
+	private final CategoryMapper categoryMapper = DependencyInjection.categoryMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
