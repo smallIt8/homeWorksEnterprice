@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="familyRepositoryImpl" class="org.example.repository.FamilyRepositoryImpl">
+    </bean>
+
+    <bean id="personRepositoryImpl" class="org.example.repository.PersonRepositoryImpl">
+    </bean>
+
+    <bean id="transactionRepositoryImpl" class="org.example.repository.TransactionRepositoryImpl">
+    </bean>
+
+    <bean id="categoryRepositoryImpl" class="org.example.repository.CategoryRepositoryImpl">
+    </bean>
+
+    <bean id="budgetRepositoryImpl" class="org.example.repository.BudgetRepositoryImpl">
+    </bean>
+
+    <bean id="financialGoalRepositoryImpl" class="org.example.repository.FinancialGoalRepositoryImpl">
+    </bean>
+
+    <bean id="personMapper" class="org.example.mapper.PersonMapper">
+    </bean>
+
+    <bean id="categoryMapper" class="org.example.mapper.CategoryMapper">
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="familyMapper" class="org.example.mapper.FamilyMapper">
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="transactionMapper" class="org.example.mapper.TransactionMapper">
+        <constructor-arg ref="categoryMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="budgetMapper" class="org.example.mapper.BudgetMapper">
+        <constructor-arg ref="categoryMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="financialGoalMapper" class="org.example.mapper.FinancialGoalMapper">
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="budgetValidator" class="org.example.validator.BudgetValidator">
+    </bean>
+
+    <bean id="personServiceImpl" class="org.example.service.PersonServiceImpl">
+        <constructor-arg ref="personRepositoryImpl"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="familyServiceImpl" class="org.example.service.FamilyServiceImpl">
+        <constructor-arg ref="familyRepositoryImpl"/>
+        <constructor-arg ref="familyMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="transactionServiceImpl" class="org.example.service.TransactionServiceImpl">
+        <constructor-arg ref="transactionRepositoryImpl"/>
+        <constructor-arg ref="transactionMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="categoryServiceImpl" class="org.example.service.CategoryServiceImpl">
+        <constructor-arg ref="categoryRepositoryImpl"/>
+        <constructor-arg ref="categoryMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+    <bean id="budgetServiceImpl" class="org.example.service.BudgetServiceImpl">
+        <constructor-arg ref="budgetRepositoryImpl"/>
+        <constructor-arg ref="budgetMapper"/>
+        <constructor-arg ref="personMapper"/>
+        <constructor-arg ref="budgetValidator"/>
+    </bean>
+
+    <bean id="financialGoalServiceImpl" class="org.example.service.FinancialGoalServiceImpl">
+        <constructor-arg ref="financialGoalRepositoryImpl"/>
+        <constructor-arg ref="financialGoalMapper"/>
+        <constructor-arg ref="personMapper"/>
+    </bean>
+
+</beans>
