@@ -5,9 +5,9 @@ spring:
     password: admin
     driver-class-name: org.postgresql.Driver
 
-  mvc:
-   view:
-    prefix: /WEB-INF/jsp/
+#  mvc:
+#   view:
+#    prefix: /WEB-INF/jsp/
 
 
   jpa:
@@ -25,4 +25,4 @@ spring:
 server:
   port: 9090
   servlet:
-    context-path: /Financial_Manager
+    context-path: /financial-manager
