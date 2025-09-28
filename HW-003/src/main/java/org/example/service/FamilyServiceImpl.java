@@ -2,145 +2,233 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mapper.PersonMapper;
+import org.example.dto.FamilyDto;
 import org.example.dto.PersonDto;
+import org.example.mapper.FamilyMapper;
+import org.example.mapper.PersonMapper;
 import org.example.model.Family;
 import org.example.model.Person;
 import org.example.repository.FamilyRepository;
-import org.example.util.AppUtil;
-import org.example.util.constant.RegexConstant;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
-import static org.example.util.constant.ErrorMessageConstant.ERROR_ENTER_FIRST_NAME_MESSAGE;
-import static org.example.util.constant.MenuConstant.*;
+import static org.example.util.ValidationDtoUtil.validateAnnotation;
+import static org.example.util.constant.ErrorMessageConstant.*;
+import static org.example.util.constant.InfoMessageConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
 public class FamilyServiceImpl implements FamilyService {
 
 	private final FamilyRepository familyRepository;
-	private static final Scanner SCANNER = new Scanner(System.in);
-	private String familyName;
+	private final FamilyMapper familyMapper;
+	private final PersonMapper personMapper;
 
 	@Override
-	public void create(PersonDto personDto) {
-	}
+	public void create(FamilyDto familyDto) {
+		log.info("Создание новой семейной группы пользователя с ID: '{}'", familyDto.getCreatorDto().getPersonId());
+		FamilyDto inputFamily = buildFamily(familyDto);
 
-	@Override
-	public void create(Person currentPerson) {
-		log.info("Создание новой семейной группы");
-		System.out.println(CREATION_FAMILY_MESSAGE);
-		createFamilyName();
-		Family family = new Family(
-				UUID.randomUUID(),
-				familyName.toUpperCase(),
-				currentPerson
-		);
+		Family family = familyMapper.mapDtoToModel(inputFamily);
+		log.info("Создана подготовленная модель создаваемой семейной группы '{}' пользователя: '{}'",
+				 family.getFamilyName(),
+				 family.getCreator().getPersonId());
+
 		try {
 			familyRepository.create(family);
-			log.info("Семейная группа с ID: '{}' успешно создана", family.getFamilyId());
-			System.out.println(CREATED_FAMILY_MESSAGE);
+			log.info("Семейная группа с ID: '{}' успешно создана для пользователя с ID: '{}'",
+					 family.getFamilyId(),
+					 family.getCreator().getPersonId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при создании семейной группы: '{}'", e.getMessage(), e);
+			log.error("Ошибка при создании семейной группы: '{}'",
+					  e.getMessage(),
+					  e);
 			throw e;
 		}
 	}
 
-	private void createFamilyName() {
-		AppUtil.loopIterationAndExit(count -> {
-			log.info("Создание имени семейной группы");
-			System.out.print(ENTER_FAMILY_NAME);
-			familyName = SCANNER.nextLine();
-			if (familyName.matches(RegexConstant.FAMILY_NAME_REGEX)) {
-				log.info("Имя семейной группы успешно создано");
-				return true;
-			} else {
-				if (count < AppUtil.MAX_ITERATION_LOOP_TO_MESSAGE) {
-					System.out.println(ERROR_ENTER_FIRST_NAME_MESSAGE);
-				} else {
-					log.error("Ошибка при создании имени семейной группы: '{}'", familyName);
-				}
-				return false;
-			}
-		}, AppUtil.MAX_ITERATION_LOOP);
-	}
-
 	@Override
-	public void createBatch() {
+	public Map<FamilyDto, String> createBatch(List<FamilyDto> familiesDto) {
+		log.info("Добавление пакета семейных групп: количество = '{}'", familiesDto.size());
+		Map<FamilyDto, String> errors = new LinkedHashMap<>();
+		List<Family> familiesSuccess = new ArrayList<>();
 
-	}
-
-	@Override
-	public Optional<Family> joinFamily(Person person, Family family) {
-		return Optional.empty();
-	}
-
-	@Override
-	public boolean addMember(String email, UUID person) {
-		return false;
-	}
-
-	@Override
-	public List<Family> getAll() {
-		return List.of();
-	}
-
-	@Override
-	public List<Family> getAllByOwner(PersonDto currentPersonDto) {
-		Person currentPerson = PersonMapper.dtoToModel(currentPersonDto);
-		List<Family> families = familyRepository.getAllByOwner(currentPerson);
-		if (families.isEmpty()) {
-			log.warn("Список семейных групп, созданных текущим пользователем пуст");
-			System.out.println(EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE);
-		} else {
-			log.info("Получено семейных групп, созданных текущим пользователем: '{}' ", families.size());
-
-		}
-		return families;
-	}
-
-	@Override
-	public Optional<Family> update(PersonDto currentPerson) {
-		log.info("Обновление имени семейных групп созданных текущим пользователем");
-		List<Family> families = getAllByOwner(currentPerson);
-		if (families.isEmpty()) {
-			log.warn("Не удалось найти ни одной семейной группы, созданной текущим пользователем");
-			System.out.println("Создать");
-			log.info("Перенаправление в меню создания семейной группы");
-			create(currentPerson);
-			return Optional.empty();
-		}
-		Optional<Family> selectFamily = AppUtil.selectFromList(
-				families,
-				LIST_FAMILY_BY_PERSON_MESSAGE
-		);
-		selectFamily.ifPresent(familyUpdate -> {
-			log.info("Выбранная семейная группа: '{}'", familyUpdate.getFamilyName());
-			createFamilyName();
-			familyUpdate.setFamilyName(familyName.toUpperCase());
+		for (FamilyDto familyDto : familiesDto) {
 			try {
-				familyRepository.update(familyUpdate);
-				log.info("Имя выбранной семейной группы '{}' успешно обновлено", familyUpdate.getFamilyName());
-				System.out.println(UPDATED_FAMILY_MESSAGE);
+				FamilyDto validDto = buildFamily(familyDto);
+				familiesSuccess.add(familyMapper.mapDtoToModel(validDto));
+				log.info("Семейная группа с ID: '{}' успешно подготовлена для добавления", validDto.getFamilyId());
 			} catch (RuntimeException e) {
-				log.error("Ошибка при обновлении имени выбранной семейной группы'{}': '{}'", familyUpdate.getFamilyName(), e.getMessage(), e);
-				throw e;
+				log.warn("Ошибка при создании семейной группы '{}' в пакете: '{}'",
+						 familyDto.getFamilyName(),
+						 e.getMessage());
+				errors.put(familyDto, e.getMessage());
 			}
-		});
-		return selectFamily;
+		}
+		if (!familiesSuccess.isEmpty()) {
+			familyRepository.createBatch(familiesSuccess);
+			log.info("Успешно добавленные семейные группы: '{}'", familiesSuccess.size());
+		}
+		log.info("Пакет семейных групп обработан, успешно: '{}',  количество ошибок: '{}'",
+				 familiesSuccess.size(),
+				 errors.size());
+		return errors;
 	}
 
+	private FamilyDto buildFamily(FamilyDto familyDto) {
+		validateAnnotation(familyDto);
+
+		return FamilyDto.builder()
+				.familyId(UUID.randomUUID())
+				.familyName(familyDto.getFamilyName())
+				.creatorDto(familyDto.getCreatorDto())
+				.build();
+	}
+
+	//TODO: Будет реализовано в следующем ДЗ
 	@Override
-	public boolean exitFamily(Person person) {
+	public boolean addMember(String email, PersonDto ownerPersonDto) {
 		return false;
 	}
 
 	@Override
-	public void delete(UUID value) {
+	public Optional<Family> findById(UUID familyId, UUID currentPersonId) {
+		log.info("Получение данных семейной группы по ID: '{}'", familyId);
+		try {
+			Optional<Family> familyOpt = familyRepository.findById(familyId);
+			if (familyOpt.isEmpty()) {
+				log.warn("Семейная группа с ID: '{}' не найдена", familyId);
+				throw new IllegalArgumentException(NOT_FOUND_FAMILY_MESSAGE);
+			}
+			if (!familyOpt.get().getCreator().getPersonId().equals(currentPersonId)) {
+				log.warn("Семейная группа с ID: '{}' не принадлежит пользователю с ID: '{}'",
+						 familyId,
+						 currentPersonId);
+				throw new SecurityException(ERROR_ACCESS_FAMILY_MESSAGE);
+			}
+			return familyOpt;
+		} catch (RuntimeException e) {
+			log.error("Ошибка при получении данных семейной группы по ID '{}': '{}'",
+					  familyId,
+					  e.getMessage(),
+					  e);
+			throw e;
+		}
+	}
 
+	@Override
+	public List<FamilyDto> findAll(PersonDto currentPersonDto) {
+		log.info("Получение списка семейных групп в которые вступил пользователь с ID: '{}'", currentPersonDto.getPersonId());
+		try {
+			List<Family> families = familyRepository.findAll(currentPersonDto.getPersonId());
+			if (families.isEmpty()) {
+				log.warn("Пользователь с ID '{}' не состоит в семейных группах", currentPersonDto.getPersonId());
+				throw new IllegalArgumentException(EMPTY_LIST_FAMILY_BY_PERSON_MESSAGE);
+			}
+			log.info("Получено '{}' семейных групп в которые вступил пользователь с ID '{}':",
+					 families.size(),
+					 currentPersonDto.getPersonId());
+			return familyMapper.mapModelToDtoList(families);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при получении списка семейных групп в которые вступил пользователь с ID '{}': '{}'",
+					  currentPersonDto.getPersonId(),
+					  e.getMessage(),
+					  e);
+			throw e;
+		}
+	}
+
+	@Override
+	public List<FamilyDto> findAllOwnerFamily(PersonDto currentPersonDto) {
+		log.info("Получение списка семейных групп пользователя с ID: '{}'", currentPersonDto.getPersonId());
+		try {
+			List<Family> families = familyRepository.findAllByOwner(currentPersonDto.getPersonId());
+			if (families.isEmpty()) {
+				log.warn("Список семейных групп пользователя с ID '{}' пуст", currentPersonDto.getPersonId());
+				throw new IllegalArgumentException(EMPTY_LIST_FAMILY_BY_OWNER_PERSON_MESSAGE);
+			}
+			log.info("Получено '{}' семейных групп пользователя с ID '{}':",
+					 families.size(),
+					 currentPersonDto.getPersonId());
+			return familyMapper.mapModelToDtoList(families);
+		} catch (RuntimeException e) {
+			log.error("Ошибка при получении списка семейных групп пользователя с ID '{}': '{}'",
+					  currentPersonDto.getPersonId(),
+					  e.getMessage(),
+					  e);
+			throw e;
+		}
+	}
+
+	@Override
+	public Optional<FamilyDto> update(FamilyDto familyDto, PersonDto currentPersonDto) {
+		Family family = familyMapper.mapDtoToModel(familyDto);
+		Person person = personMapper.mapDtoToModel(currentPersonDto);
+
+		log.info("Обновление семейной группы с ID: '{}' пользователя с ID: '{}'",
+				 family.getFamilyId(),
+				 person.getPersonId());
+
+		Family familyUpdate = findById(
+				family.getFamilyId(),
+				person.getPersonId()).orElseThrow(() -> {
+			log.warn("Не удалось обновить семейную группу с ID '{}' - семейная группа не найдена", family.getFamilyId());
+			return new IllegalArgumentException(NOT_FOUND_FAMILY_MESSAGE);
+		});
+
+		log.info("Обновление данных семейной группы с ID: '{}' пользователя с ID: '{}'",
+				 familyUpdate.getFamilyId(),
+				 person.getPersonId());
+
+		validateAnnotation(familyDto);
+
+		familyUpdate.setFamilyName(familyDto.getFamilyName());
+
+		log.info("Создана подготовленная модель обновляемой семейной группы с ID: '{}'", familyUpdate.getFamilyId());
+		try {
+			familyRepository.update(familyUpdate);
+			log.info("Семейная группа с ID '{}' успешно обновлена", familyUpdate.getFamilyId());
+			return Optional.of(familyMapper.mapModelToDto(familyUpdate));
+		} catch (RuntimeException e) {
+			log.error("Ошибка при обновлении семейной группы по ID '{}': '{}'",
+					  familyUpdate.getFamilyId(),
+					  e.getMessage(),
+					  e);
+			throw e;
+		}
+	}
+
+	//TODO: Будет реализовано в следующем ДЗ
+	@Override
+	public boolean exitFamily(PersonDto currentPersonDto) {
+		return false;
+	}
+
+	@Override
+	public void delete(FamilyDto familyDto, PersonDto currentPersonDto) {
+		Family family = familyMapper.mapDtoToModelLight(familyDto);
+		Person person = personMapper.mapDtoToModel(currentPersonDto);
+
+		log.info("Удаление семейной группы с ID: '{}' пользователя с ID: '{}'",
+				 family.getFamilyId(),
+				 person.getPersonId());
+
+		Family familyToDelete = findById(
+				family.getFamilyId(),
+				person.getPersonId()).orElseThrow(() -> {
+			log.warn("Не удалось удалить семейную группу с ID '{}' - семейная группа не найдена", family.getFamilyId());
+			return new IllegalArgumentException(NOT_FOUND_FAMILY_MESSAGE);
+		});
+
+		try {
+			familyRepository.delete(familyToDelete.getFamilyId(), person.getPersonId());
+			log.info("Данные семейной группы с ID '{}' удалены", familyToDelete.getFamilyId());
+		} catch (RuntimeException e) {
+			log.error("Ошибка при удалении данных семейной группы с ID '{}': '{}'",
+					  familyToDelete.getFamilyId(),
+					  e.getMessage(),
+					  e);
+			throw e;
+		}
 	}
 }

@@ -26,8 +26,18 @@
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <jakarta.servlet.jsp.jstl-api.version>3.0.2</jakarta.servlet.jsp.jstl-api.version>
         <jakarta.servlet.jsp.jstl.version>3.0.1</jakarta.servlet.jsp.jstl.version>
-        <junit.version>4.13.1</junit.version>
-        <tomcat-catalina.version>11.0.9</tomcat-catalina.version>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+        <jakarta.el-api.version>6.0.1</jakarta.el-api.version>
+        <junit-jupiter-api.version>5.13.4</junit-jupiter-api.version>
+        <tomcat-catalina.version>11.0.10</tomcat-catalina.version>
+        <hibernate-core.version>7.0.10.Final</hibernate-core.version>
+        <hibernate-jpamodelgen.version>7.0.10.Final</hibernate-jpamodelgen.version>
+        <querydsl-jpa.version>5.1.0</querydsl-jpa.version>
+        <querydsl-apt.version>5.1.0</querydsl-apt.version>
+        <querydsl-maven-plugin.version>5.1.0</querydsl-maven-plugin.version>
+        <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
+
     </properties>
 
     <dependencies>
@@ -81,9 +91,22 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+            <version>${jakarta.el-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter-api.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -93,6 +116,67 @@
             <version>${tomcat-catalina.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-core.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>${hibernate-jpamodelgen.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>${querydsl-jpa.version}</version>
+            <classifier>jakarta</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl-apt.version}</version>
+            <classifier>jakarta</classifier>
+            <scope>provided</scope>
+        </dependency>
         
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-maven-plugin</artifactId>
+                <version>${querydsl-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>jpa-export</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>jakarta.persistence</groupId>
+                        <artifactId>jakarta.persistence-api</artifactId>
+                        <version>${jakarta.persistence-api.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

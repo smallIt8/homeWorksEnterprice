@@ -4,5 +4,5 @@ import org.example.model.Category;
 
 import java.util.UUID;
 
-public interface CategoryRepository extends Repository<Category, UUID> {
+public interface CategoryRepository extends ComponentRepository<Category, UUID> {
 }

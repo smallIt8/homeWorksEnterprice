@@ -33,6 +33,10 @@
         </encoder>
     </appender>
 
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.SQL" level="INFO" />
+    <logger name="org.hibernate.tool.hbm2ddl" level="INFO" />
+
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE_INFO"/>

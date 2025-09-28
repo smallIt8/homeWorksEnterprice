@@ -1,19 +1,17 @@
 package org.example.service;
 
+import org.example.dto.FamilyDto;
 import org.example.dto.PersonDto;
 import org.example.model.Family;
-import org.example.model.Person;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
-public interface FamilyService extends ComponentService<Family, PersonDto, UUID> {
+public interface FamilyService extends ComponentService<FamilyDto, Family, PersonDto, UUID> {
 
-	void create(Person currentPerson);
+	List<FamilyDto> findAllOwnerFamily(PersonDto currentPersonDto);
 
-	Optional<Family> joinFamily(Person person, Family family);
+	boolean addMember(String email, PersonDto currentPersonDto);
 
-	boolean addMember(String email, UUID person);
-
-	boolean exitFamily(Person person);
+	boolean exitFamily(PersonDto currentPersonDto);
 }
