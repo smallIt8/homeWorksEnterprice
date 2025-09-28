@@ -6,12 +6,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 import static org.example.util.ServletSessionUtil.presenceCurrentPersonDto;
 
 @Slf4j
+@Component
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
 

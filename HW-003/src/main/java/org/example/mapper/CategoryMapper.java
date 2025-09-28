@@ -3,10 +3,12 @@ package org.example.mapper;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.CategoryDto;
 import org.example.model.Category;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
 public class CategoryMapper {
 
 	private final PersonMapper personMapper;

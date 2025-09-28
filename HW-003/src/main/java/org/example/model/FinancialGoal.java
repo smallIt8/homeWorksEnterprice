@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,22 +34,28 @@ import java.util.UUID;
 public class FinancialGoal {
 
 	@Id
-	@Column(name = "financial_goal_id")
+	@Column(name = "financial_goal_id", nullable = false, updatable = false)
 	private UUID financialGoalId;
 
-	@Column(name = "financial_goal_name", nullable = false)
+	@Column(name = "financial_goal_name", nullable = false, length = 100)
 	private String financialGoalName;
 
-	@Column(name = "target_amount", nullable = false)
+	@Column(name = "target_amount", nullable = false, precision = 10, scale = 2)
 	private BigDecimal targetAmount;
 
 	@Column(name = "end_date", nullable = false)
 	private LocalDate endDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "person_id", nullable = false)
+	@JoinColumn(
+			name = "person_id",
+			nullable = false,
+			foreignKey = @ForeignKey(name = "financial_goal_person_person_id_fk")
+	)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Person creator;
 
-	@Column(name = "create_date", insertable = false)
+	@Column(name = "create_date", insertable = false, updatable = false)
+	@Generated(GenerationTime.INSERT)
 	private LocalDateTime createDate;
 }

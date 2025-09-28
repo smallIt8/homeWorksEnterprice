@@ -6,6 +6,7 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class ValidationDtoUtil {
 	}
 
 	public static <T> Map<String, List<String>> validateAnnotation(T dto) {
-		Set<ConstraintViolation<T>> violations = validator.validate(dto);
+		var violations = validator.validate(dto);
 		if (!violations.isEmpty()) {
 			Map<String, List<String>> warns = new LinkedHashMap<>();
 			for (ConstraintViolation<T> violation : violations) {
@@ -41,7 +42,7 @@ public class ValidationDtoUtil {
 						 violation.getInvalidValue(),
 						 violation.getMessage());
 			}
-			String warnMessage = warns.toString();
+			var warnMessage = warns.toString();
 			log.error("Валидация объекта класса '{}' завершилась с ошибкой: {}",
 					  dto.getClass().getSimpleName(),
 					  warnMessage);

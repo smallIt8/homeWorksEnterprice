@@ -27,6 +27,8 @@ public class CategoryDto {
 			message = WARNING_ENTER_CATEGORY_NAME_MESSAGE
 	)
 	private String categoryName;
+
 	private CategoryType type;
+
 	private PersonDto creatorDto;
 }

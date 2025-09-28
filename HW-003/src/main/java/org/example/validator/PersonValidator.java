@@ -2,9 +2,8 @@ package org.example.validator;
 
 import org.example.dto.PersonDto;
 
-public class PersonValidator implements Validator<PersonDto>{
+public class PersonValidator {
 
-	@Override
 	public void validate(PersonDto target) {
 	}
 }

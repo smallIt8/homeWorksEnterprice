@@ -24,22 +24,29 @@ public class TransactionDto {
 	private UUID transactionId;
 
 	@NotBlank(message = WARNING_TRANSACTION_NAME_NOT_NULL_MESSAGE)
-	@Pattern(regexp = TRANSACTION_NAME_REGEX,
+	@Pattern(
+			regexp = TRANSACTION_NAME_REGEX,
 			message = WARNING_ENTER_TRANSACTION_NAME_MESSAGE
 	)
 	private String transactionName;
+
 	private TransactionType type;
 
 	@NotNull(message = WARNING_SELECT_TRANSACTION_CATEGORY_NOT_NULL_MESSAGE)
 	private CategoryDto categoryDto;
 
 	@NotNull(message = WARNING_TRANSACTION_AMOUNT_NOT_NULL_MESSAGE)
-	@DecimalMin(value = "0.01", message = WARNING_ENTER_TRANSACTION_AMOUNT_MESSAGE)
+	@DecimalMin(
+			value = "0.01",
+			message = WARNING_ENTER_TRANSACTION_AMOUNT_MESSAGE
+	)
 	private BigDecimal amount;
+
 	private PersonDto creatorDto;
 
 	@NotNull(message = WARNING_TRANSACTION_DATE_NOT_NULL_MESSAGE)
 	@PastOrPresent(message = WARNING_TRANSACTION_DATE_NOT_CURRENT_OR_PAST_MESSAGE)
 	private LocalDate transactionDate;
+
 	private LocalDateTime createDate;
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.util.DateConverterUtil;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -30,17 +32,21 @@ import java.util.UUID;
 public class Budget {
 
 	@Id
-	@Column(name = "budget_id")
+	@Column(name = "budget_id", nullable = false, updatable = false)
 	private UUID budgetId;
 
-	@Column(name = "budget_name", nullable = false)
+	@Column(name = "budget_name", nullable = false, length = 100)
 	private String budgetName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id", nullable = false)
+	@JoinColumn(
+			name = "category_id",
+			nullable = false,
+			foreignKey = @ForeignKey(name = "budget_category_category_id_fk")
+	)
 	private Category category;
 
-	@Column(name = "budget_limit", nullable = false)
+	@Column(name = "budget_limit", nullable = false, precision = 10, scale = 2)
 	private BigDecimal limit;
 
 	@Convert(converter = DateConverterUtil.class)
@@ -48,6 +54,11 @@ public class Budget {
 	private YearMonth period;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "person_id", nullable = false)
+	@JoinColumn(
+			name = "person_id",
+			nullable = false,
+			foreignKey = @ForeignKey(name = "budget_person_person_id_fk")
+	)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Person creator;
 }

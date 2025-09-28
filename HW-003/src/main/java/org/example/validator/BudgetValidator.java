@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.dto.BudgetDto;
 import org.example.dto.CategoryDto;
 import org.example.model.CategoryType;
+import org.springframework.stereotype.Component;
 
 import static org.example.util.constant.ErrorMessageConstant.*;
 
 @Slf4j
+@Component
 public class BudgetValidator implements Validator<BudgetDto> {
 
 	@Override

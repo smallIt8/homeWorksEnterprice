@@ -3,10 +3,12 @@ package org.example.mapper;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.BudgetDto;
 import org.example.model.Budget;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
 public class BudgetMapper {
 
 	private final CategoryMapper categoryMapper;
@@ -27,12 +29,6 @@ public class BudgetMapper {
 				.period(budget.getPeriod())
 				.creatorDto(personMapper.mapModelToDtoLight(budget.getCreator()))
 				.build();
-	}
-
-	public List<Budget> mapDtoToModelList(List<BudgetDto> budgetsDto) {
-		return budgetsDto.stream()
-				.map(this::mapDtoToModel)
-				.toList();
 	}
 
 	public Budget mapDtoToModel(BudgetDto budgetDto) {

@@ -6,6 +6,7 @@ import org.example.dto.PersonDto;
 import org.example.mapper.PersonMapper;
 import org.example.model.Person;
 import org.example.repository.PersonRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -16,6 +17,7 @@ import static org.example.util.PasswordHashUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class PersonServiceImpl implements PersonService {
 
 	private final PersonRepository personRepository;
@@ -23,14 +25,13 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public Optional<PersonDto> getPersonByUserName(PersonDto personDto) {
-		log.info("Авторизация пользователя");
-
-		Person personModel = personMapper.mapDtoToModel(personDto);
+		log.debug("Авторизация пользователя");
+		final var personModel = personMapper.mapDtoToModel(personDto);
 
 		Optional<Person> personOpt = personRepository.getPersonByUserName(personModel.getUserName().toLowerCase());
 
 		if (personOpt.isPresent()) {
-			Person person = personOpt.get();
+			var person = personOpt.get();
 			if (checkPassword(personModel.getPassword(), person.getPassword())) {
 				log.info("Пользователь '{}' успешно вошёл в систему", personModel.getUserName());
 				return Optional.of(personMapper.mapModelToDto(person));
@@ -42,17 +43,17 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public void create(PersonDto personDto) {
-		Person person = personMapper.mapDtoToModel(personDto);
+		final var person = personMapper.mapDtoToModel(personDto);
 
-		log.info("Регистрация нового пользователя");
+		log.debug("Регистрация нового пользователя");
 
-		String userName = validateUserName(person.getUserName());
-		String password = validatePassword(person.getPassword());
-		String firstName = validateFirstName(person.getFirstName());
-		String lastName = validateLastName(person.getLastName());
-		String email = validateEmail(person.getEmail());
+		var userName = validateUserName(person.getUserName());
+		var password = validatePassword(person.getPassword());
+		var firstName = validateFirstName(person.getFirstName());
+		var lastName = validateLastName(person.getLastName());
+		var email = validateEmail(person.getEmail());
 
-		Person inputPerson = Person.builder()
+		var inputPerson = Person.builder()
 				.personId(UUID.randomUUID())
 				.userName(userName.toLowerCase())
 				.password(password)
@@ -61,20 +62,18 @@ public class PersonServiceImpl implements PersonService {
 				.email(email.toLowerCase())
 				.build();
 
-		log.info("Создана подготовленная модель создаваемого пользователя: '{}'", inputPerson);
+		log.debug("Создана подготовленная модель создаваемого пользователя: '{}'", inputPerson);
 		try {
 			personRepository.create(inputPerson);
 			log.info("Пользователь с ID: '{}' успешно создан", inputPerson.getPersonId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при создании пользователя: '{}'",
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при создании пользователя: '{}'", e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	private String validateUserName(String userName) {
-		log.info("Создание логина пользователя");
+		log.debug("Создание логина пользователя");
 		if (userName.matches(USERNAME_REGEX)) {
 			if (!personRepository.existsByUserName(userName)) {
 				log.info("Логин пользователя '{}' успешно создан", userName);
@@ -84,47 +83,47 @@ public class PersonServiceImpl implements PersonService {
 				throw new IllegalArgumentException(ERROR_CREATION_USER_NAME_MESSAGE);
 			}
 		} else {
-			log.error("Неверный формат логина: '{}'", userName);
+			log.warn("Неверный формат логина: '{}'", userName);
 			throw new IllegalArgumentException(WARNING_ENTER_USER_NAME_MESSAGE);
 		}
 	}
 
 	private String validatePassword(String password) {
-		log.info("Создание пароля пользователя");
+		log.debug("Создание пароля пользователя");
 		if (password.matches(PASSWORD_REGEX)) {
 			password = hashPassword(password);
 			log.info("Пароль пользователя успешно создан и хэширован");
 			return password;
 		} else {
-			log.error("Неверный формат пароля");
+			log.warn("Неверный формат пароля");
 			throw new IllegalArgumentException(WARNING_ENTER_PASSWORD_MESSAGE);
 		}
 	}
 
 	private String validateFirstName(String firstName) {
-		log.info("Создание имени пользователя");
+		log.debug("Создание имени пользователя");
 		if (firstName.matches(FIRST_AND_LAST_NAME_REGEX)) {
 			log.info("Имя пользователя успешно создано: '{}'", firstName);
 			return firstName;
 		} else {
-			log.error("Неверный формат имени: '{}'", firstName);
+			log.warn("Неверный формат имени: '{}'", firstName);
 			throw new IllegalArgumentException(WARNING_ENTER_FIRST_NAME_MESSAGE);
 		}
 	}
 
 	private String validateLastName(String lastName) {
-		log.info("Создание фамилии пользователя");
+		log.debug("Создание фамилии пользователя");
 		if (lastName.matches(FIRST_AND_LAST_NAME_REGEX)) {
 			log.info("Фамилия пользователя успешно создана: '{}'", lastName);
 			return lastName;
 		} else {
-			log.error("Неверный формат фамилии: '{}'", lastName);
+			log.warn("Неверный формат фамилии: '{}'", lastName);
 			throw new IllegalArgumentException(WARNING_ENTER_LAST_NAME_MESSAGE);
 		}
 	}
 
 	private String validateEmail(String email) {
-		log.info("Создание эмейл пользователя");
+		log.debug("Создание эмейл пользователя");
 		if (email.matches(EMAIL_REGEX)) {
 			if (!personRepository.existsByEmail(email)) {
 				log.info("Эмейл '{}' пользователя успешно создан", email);
@@ -134,53 +133,49 @@ public class PersonServiceImpl implements PersonService {
 				throw new IllegalArgumentException(ERROR_CREATION_EMAIL_MESSAGE);
 			}
 		} else {
-			log.error("Неверный формат эмейл: '{}'", email);
+			log.warn("Неверный формат эмейл: '{}'", email);
 			throw new IllegalArgumentException(WARNING_ENTER_EMAIL_MESSAGE);
 		}
 	}
 
 	@Override
 	public Optional<Person> findById(UUID personId) {
-		log.info("Получение данных пользователя по ID: '{}'", personId);
+		log.debug("Получение данных пользователя по ID: '{}'", personId);
 		try {
 			Optional<Person> personOpt = personRepository.findById(personId);
 			if (personOpt.isEmpty()) {
 				log.warn("Пользователь с ID: '{}' не найден", personId);
 				throw new IllegalArgumentException(NOT_FOUND_PERSON_MESSAGE);
 			}
+			log.info("Данные пользователя по ID: '{}' успешно получены", personId);
 			return personOpt;
 		} catch (RuntimeException e) {
-			log.error("Ошибка при получении данных пользователя по ID '{}': '{}'",
-					  personId,
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при получении данных пользователя по ID '{}': '{}'", personId, e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Optional<PersonDto> update(PersonDto currentPersonDto) {
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Обновление данных текущего пользователя по ID: '{}'", person.getPersonId());
-
-		Person personUpdate = findById(
+		log.debug("Обновление данных текущего пользователя по ID: '{}'", person.getPersonId());
+		var personUpdate = findById(
 				person.getPersonId()).orElseThrow(() -> {
 					log.warn("Не удалось обновить данные — пользователь с ID: '{}' не найден", person.getPersonId());
 					return new IllegalArgumentException(NOT_FOUND_PERSON_MESSAGE);
 		});
 
-		log.info("Обновление данных текущего пользователя с ID: '{}'", person.getPersonId());
-
-		String firstName = validateFirstName(person.getFirstName());
-		String lastName = validateLastName(person.getLastName());
-		String email = updateEmail(person.getEmail(), personUpdate.getPersonId());
+		log.debug("Обновление данных текущего пользователя с ID: '{}'", person.getPersonId());
+		var firstName = validateFirstName(person.getFirstName());
+		var lastName = validateLastName(person.getLastName());
+		var email = updateEmail(person.getEmail(), personUpdate.getPersonId());
 
 		personUpdate.setFirstName(firstName);
 		personUpdate.setLastName(lastName);
 		personUpdate.setEmail(email.toLowerCase());
 
-		log.info("Создана подготовленная модель обновляемого пользователя с ID: '{}'", personUpdate.getPersonId());
+		log.debug("Создана подготовленная модель обновляемого пользователя с ID: '{}'", personUpdate.getPersonId());
 		try {
 			personRepository.update(personUpdate);
 			log.info("Данные текущего пользователя по ID '{}' успешно обновлены", personUpdate.getPersonId());
@@ -188,23 +183,18 @@ public class PersonServiceImpl implements PersonService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при обновлении данных текущего пользователя по ID '{}': '{}'",
 					  personUpdate.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	public String updateEmail(String email, UUID personId) {
-		log.info("Обновление email '{}' текущего пользователя по ID: '{}'",
-				 email,
-				 personId);
-
-		Person personUpdateEmail = findById(personId).orElseThrow(() -> {
+		log.debug("Обновление email '{}' текущего пользователя по ID: '{}'", email, personId);
+		var personUpdateEmail = findById(personId).orElseThrow(() -> {
 			log.warn("Не удалось обновить email, пользователь с ID: '{}' не найден", personId);
 			return new IllegalArgumentException(NOT_FOUND_PERSON_MESSAGE);
 		});
 
-		log.info("Обновление email текущего пользователя");
 		try {
 			if (email.matches(EMAIL_REGEX)) {
 				if (!personRepository.updateEmailExistsByExclude(email, personUpdateEmail.getPersonId())) {
@@ -215,36 +205,30 @@ public class PersonServiceImpl implements PersonService {
 					throw new IllegalArgumentException(ERROR_CREATION_EMAIL_MESSAGE);
 				}
 			} else {
-				log.error("Неверный формат обновляемого email: '{}'", email);
+				log.warn("Неверный формат обновляемого email: '{}'", email);
 				throw new IllegalArgumentException(WARNING_ENTER_EMAIL_MESSAGE);
 			}
 		} catch (Exception e) {
-			log.error("Ошибка при обновлении email: '{}' '{}'",
-					  email,
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при обновлении email: '{}' '{}'", email, e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Optional<PersonDto> updatePassword(PersonDto currentPersonDto) {
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Обновление пароля текущего пользователя по ID: '{}'", person.getPersonId());
-
-		log.info("Обновление пароля текущего пользователя");
-
-		Person personUpdatePassword = findById(person.getPersonId()).orElseThrow(() -> {
+		log.debug("Обновление пароля текущего пользователя по ID: '{}'", person.getPersonId());
+		var personUpdatePassword = findById(person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось обновить пароль — пользователь с ID: '{}' не найден", person.getPersonId());
 			return new IllegalArgumentException(NOT_FOUND_PERSON_MESSAGE);
 		});
 
-		String password = validatePassword(person.getPassword());
+		var password = validatePassword(person.getPassword());
 
 		personUpdatePassword.setPassword(password);
 
-		log.info("Создана подготовленная модель обновляемого password пользователя с ID: '{}'", personUpdatePassword.getPersonId());
+		log.debug("Создана подготовленная модель обновляемого password пользователя с ID: '{}'", personUpdatePassword.getPersonId());
 		try {
 			personRepository.updatePassword(personUpdatePassword);
 			log.info("Пароль текущего пользователя по ID '{}' успешно обновлен", personUpdatePassword.getPersonId());
@@ -252,19 +236,17 @@ public class PersonServiceImpl implements PersonService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при обновлении пароля текущего пользователя по ID '{}': '{}'",
 					  personUpdatePassword.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public void delete(PersonDto currentPersonDto) {
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Удаление текущего пользователя с ID: '{}'", person.getPersonId());
-
-		Person personToDelete = findById(person.getPersonId()).orElseThrow(() -> {
+		log.debug("Удаление текущего пользователя с ID: '{}'", person.getPersonId());
+		var personToDelete = findById(person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось удалить данные — пользователь с ID: '{}' не найден", person.getPersonId());
 			return new IllegalArgumentException(NOT_FOUND_PERSON_MESSAGE);
 		});
@@ -275,8 +257,7 @@ public class PersonServiceImpl implements PersonService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при удалении данных пользователя с ID '{}': '{}'",
 					  personToDelete.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}

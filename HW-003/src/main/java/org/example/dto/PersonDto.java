@@ -15,11 +15,17 @@ import java.util.UUID;
 public class PersonDto {
 
 	private UUID personId;
+
 	private String userName;
+
 	private String password;
+
 	private String firstName;
+
 	private String lastName;
+
 	private String email;
+
 	private List<FamilyDto> familiesDto;
 
 	public String getFullName() {

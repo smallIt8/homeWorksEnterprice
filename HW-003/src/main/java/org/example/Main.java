@@ -1,10 +1,14 @@
 package org.example;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
+@SpringBootApplication
+@ServletComponentScan
 public class Main {
 
 	public static void main(String[] args) {
-		var context = new ClassPathXmlApplicationContext("application.xml");
+		SpringApplication.run(Main.class, args);
 	}
 }

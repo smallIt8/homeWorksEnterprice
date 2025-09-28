@@ -1,19 +1,26 @@
 package org.example.repository;
 
+import com.querydsl.jpa.impl.JPADeleteClause;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.Family;
+import org.example.model.QFamily;
+import org.example.model.QPerson;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.example.util.constant.HqlConstant.*;
+import static org.example.model.QFamily.family;
 import static org.example.util.HibernateSessionFactoryUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class FamilyRepositoryImpl implements FamilyRepository {
 
 	@Override
@@ -59,12 +66,14 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Family family = session.createQuery(FIND_BY_ID_FAMILY, Family.class)
-					.setParameter("familyId", familyId)
-					.uniqueResult();
+			var result = new JPAQuery<Family>(session)
+					.select(family)
+					.from(family)
+					.where(family.familyId.eq(familyId))
+					.fetchOne();
 
 			session.getTransaction().commit();
-			return Optional.ofNullable(family);
+			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных семейной группы с ID {}: {}",
 					  familyId,
@@ -79,10 +88,10 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			session.createQuery(UPDATE_BY_ID_FAMILY)
-					.setParameter("name", family.getFamilyName())
-					.setParameter("id", family.getFamilyId())
-					.executeUpdate();
+			new JPAUpdateClause(session, QFamily.family)
+					.where(QFamily.family.familyId.eq(family.getFamilyId()))
+					.set(QFamily.family.familyName, family.getFamilyName())
+					.execute();
 
 			session.getTransaction().commit();
 		} catch (Exception e) {
@@ -99,12 +108,16 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			List<Family> families = session.createQuery(FIND_BY_CREATOR_ALL_FAMILY, Family.class)
-					.setParameter("personId", currentPersonId)
-					.list();
+			return new JPAQuery<Family>(session)
+					.select(QFamily.family)
+					.distinct()
+					.from(QFamily.family)
+					.leftJoin(QFamily.family.members, QPerson.person).fetchJoin()
+					.where(QFamily.family.creator.personId.eq(currentPersonId)
+								   .or(QPerson.person.personId.eq(currentPersonId)))
+					.orderBy(QFamily.family.familyName.asc())
+					.fetch();
 
-			session.getTransaction().commit();
-			return families;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка всех семейных групп пользователя с ID {}: {}",
 					  currentPersonId,
@@ -119,12 +132,13 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			List<Family> families = session.createQuery(FIND_BY_CREATOR_ALL_FAMILY, Family.class)
-					.setParameter("personId", currentPersonId)
-					.list();
+			return new JPAQuery<Family>(session)
+					.select(family)
+					.from(family)
+					.where(family.creator.personId.eq(currentPersonId))
+					.orderBy(family.familyName.asc())
+					.fetch();
 
-			session.getTransaction().commit();
-			return families;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка семейных групп, где пользователя с ID {} владелец: {}",
 					  currentPersonId,
@@ -139,10 +153,10 @@ public class FamilyRepositoryImpl implements FamilyRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			session.createQuery(DELETE_BY_ID_FAMILY)
-					.setParameter("familyId", familyId)
-					.setParameter("personId", currentPersonId)
-					.executeUpdate();
+			new JPADeleteClause(session, QFamily.family)
+					.where(QFamily.family.familyId.eq(familyId)
+								   .and(QFamily.family.creator.personId.eq(currentPersonId)))
+					.execute();
 
 			session.getTransaction().commit();
 		} catch (Exception e) {

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.model.Transaction;
 import org.example.model.QTransaction;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
 
 	@Override
@@ -64,7 +66,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Transaction result = new JPAQuery<Transaction>(session)
+			var result = new JPAQuery<Transaction>(session)
 					.select(transaction)
 					.from(transaction)
 					.join(transaction.category, category).fetchJoin()

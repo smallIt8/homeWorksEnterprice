@@ -13,7 +13,7 @@ import static org.example.util.constant.InfoMessageConstant.NOT_FOUND_PERSON_SES
 public class ServletSessionUtil {
 
 	public static PersonDto presenceCurrentPersonDto(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		PersonDto currentPersonDto = getCurrentPersonDto(req);
+		var currentPersonDto = getCurrentPersonDto(req);
 		if (currentPersonDto == null) {
 			resp.sendRedirect(req.getContextPath() + "/start");
 			throw new IllegalStateException(NOT_FOUND_PERSON_SESSION_MESSAGE);
@@ -22,7 +22,7 @@ public class ServletSessionUtil {
 	}
 
 	public static PersonDto getCurrentPersonDto(HttpServletRequest req) {
-		Object personDtoSession = req.getSession().getAttribute("currentPersonDto");
+		var personDtoSession = req.getSession().getAttribute("currentPersonDto");
 		if (personDtoSession instanceof PersonDto currentPersonDto) {
 			return currentPersonDto;
 		}

@@ -14,8 +14,8 @@ public class HibernateSessionFactoryUtil {
 
 	static {
 		try {
-			var configuration = new Configuration()
-					.configure();
+			var configuration = buildConfiguration();
+			configuration.configure();
 			sessionFactory = configuration.buildSessionFactory();
 			log.info("SessionFactory успешно создана");
 		} catch (Exception e) {
@@ -24,6 +24,10 @@ public class HibernateSessionFactoryUtil {
 					  e);
 			throw new ExceptionInInitializerError(e);
 		}
+	}
+
+	private static Configuration buildConfiguration() {
+		return new Configuration();
 	}
 
 	public static Session openSession() {

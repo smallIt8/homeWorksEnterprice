@@ -35,6 +35,8 @@ public class FinancialGoalDto {
 	@NotNull(message = WARNING_FINANCIAL_GOAL_END_DATE_NOT_NULL_MESSAGE)
 	@FutureOrPresent(message = WARNING_FINANCIAL_GOAL_END_DATE_NOT_CURRENT_OR_FUTURE_MESSAGE)
 	private LocalDate endDate;
+
 	private PersonDto creatorDto;
+
 	private LocalDateTime createDate;
 }

@@ -13,8 +13,8 @@ import org.example.dto.PersonDto;
 import org.example.mapper.BudgetMapper;
 import org.example.model.Budget;
 import org.example.service.BudgetService;
-import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,11 +28,12 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 @WebServlet("/budget")
 public class BudgetServlet extends HttpServlet {
 
-	private final BudgetService budgetService = DependencyInjection.budgetService();
-	private final BudgetMapper budgetMapper = DependencyInjection.budgetMapper();
+	private final BudgetService budgetService;
+	private final BudgetMapper budgetMapper;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

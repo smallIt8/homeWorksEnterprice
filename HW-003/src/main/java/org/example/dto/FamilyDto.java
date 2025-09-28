@@ -26,6 +26,8 @@ public class FamilyDto {
 			message = WARNING_ENTER_FAMILY_NAME_MESSAGE
 	)
 	private String familyName;
+
 	private PersonDto creatorDto;
+
 	private List<PersonDto> membersDto;
 }

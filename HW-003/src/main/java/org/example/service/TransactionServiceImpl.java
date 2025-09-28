@@ -6,9 +6,9 @@ import org.example.dto.PersonDto;
 import org.example.dto.TransactionDto;
 import org.example.mapper.PersonMapper;
 import org.example.mapper.TransactionMapper;
-import org.example.model.Person;
 import org.example.model.Transaction;
 import org.example.repository.TransactionRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -18,6 +18,7 @@ import static org.example.util.constant.InfoMessageConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class TransactionServiceImpl implements TransactionService {
 
 	private final TransactionRepository transactionRepository;
@@ -26,39 +27,37 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public void create(TransactionDto transactionDto) {
-		log.info("Добавление новой транзакции пользователя с ID: '{}'", transactionDto.getCreatorDto().getPersonId());
-		TransactionDto inputTransaction = buildTransaction(transactionDto);
+		log.debug("Добавление новой транзакции пользователя с ID: '{}'", transactionDto.getCreatorDto().getPersonId());
+		var inputTransaction = buildTransaction(transactionDto);
 
-		Transaction transaction = transactionMapper.mapDtoToModel(inputTransaction);
+		final var transaction = transactionMapper.mapDtoToModel(inputTransaction);
 		log.info("Создана подготовленная модель добавляемой транзакции '{}' пользователя: '{}'",
 				 transaction.getTransactionName(),
 				 transaction.getCreator().getPersonId());
 		try {
 			transactionRepository.create(transaction);
-			log.info("Транзакция с ID: '{}' успешно создана для пользователя c ID: '{}'",
+			log.debug("Транзакция с ID: '{}' успешно создана для пользователя c ID: '{}'",
 					 transaction.getTransactionId(),
 					 transaction.getCreator().getPersonId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при создании транзакции: '{}'",
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при создании транзакции: '{}'", e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Map<TransactionDto, String> createBatch(List<TransactionDto> transactionsDto) {
-		log.info("Добавление пакета транзакций: количество = '{}'", transactionsDto.size());
+		log.debug("Добавление пакета транзакций: количество = '{}'", transactionsDto.size());
 		Map<TransactionDto, String> errors = new LinkedHashMap<>();
 		List<Transaction> transactionsSuccess = new ArrayList<>();
 
-		for (TransactionDto transactionDto : transactionsDto) {
+		for (var transactionDto : transactionsDto) {
 			try {
-				TransactionDto validTransaction = buildTransaction(transactionDto);
+				var validTransaction = buildTransaction(transactionDto);
 				transactionsSuccess.add(transactionMapper.mapDtoToModel(validTransaction));
-				log.info("Транзакция с ID: '{}' успешно подготовлена для добавления", validTransaction.getTransactionId());
+				log.debug("Транзакция с ID: '{}' успешно подготовлена для добавления", validTransaction.getTransactionId());
 			} catch (RuntimeException e) {
-				log.warn("Ошибка при создании транзакции '{}' в пакете: '{}'",
+				log.error("Ошибка при создании транзакции '{}' в пакете: '{}'",
 						 transactionDto.getTransactionName(),
 						 e.getMessage());
 				errors.put(transactionDto, e.getMessage());
@@ -90,7 +89,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public Optional<Transaction> findById(UUID transactionId, UUID currentPersonId) {
-		log.info("Получение данных транзакции по ID: '{}'", transactionId);
+		log.debug("Получение данных транзакции по ID: '{}'", transactionId);
 		try {
 			Optional<Transaction> transactionOpt = transactionRepository.findById(transactionId);
 			if (transactionOpt.isEmpty()) {
@@ -98,60 +97,52 @@ public class TransactionServiceImpl implements TransactionService {
 				throw new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
 			}
 			if (!transactionOpt.get().getCreator().getPersonId().equals(currentPersonId)) {
-				log.warn("Транзакция с ID: '{}' не принадлежит пользователю с ID: '{}'",
-						 transactionId,
-						 currentPersonId);
+				log.warn("Транзакция с ID: '{}' не принадлежит пользователю с ID: '{}'", transactionId, currentPersonId);
 				throw new SecurityException(ERROR_ACCESS_TRANSACTION_MESSAGE);
 			}
 			return transactionOpt;
 		} catch (RuntimeException e) {
-			log.error("Ошибка при получении данных транзакции по ID '{}': '{}'",
-					  transactionId,
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при получении данных транзакции по ID '{}': '{}'", transactionId, e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public List<TransactionDto> findAll(PersonDto currentPersonDto) {
-		log.info("Получение списка транзакций пользователя с ID: '{}'", currentPersonDto.getPersonId());
+		log.debug("Получение списка транзакций пользователя с ID: '{}'", currentPersonDto.getPersonId());
 		try {
 			List<Transaction> transactions = transactionRepository.findAll(currentPersonDto.getPersonId());
 			if (transactions.isEmpty()) {
-				log.info("Список транзакций пользователя с ID '{}' пуст", currentPersonDto.getPersonId());
+				log.warn("Список транзакций пользователя с ID '{}' пуст", currentPersonDto.getPersonId());
 				throw new IllegalArgumentException(EMPTY_LIST_TRANSACTION_BY_PERSON_MESSAGE);
 			}
-			log.info("Получено '{}' транзакций пользователя с ID '{}':",
-					 transactions.size(),
-					 currentPersonDto.getPersonId());
+			log.info("Получено '{}' транзакций пользователя с ID '{}':", transactions.size(), currentPersonDto.getPersonId());
 			return transactionMapper.mapModelToDtoList(transactions);
 		} catch (RuntimeException e) {
 			log.error("Ошибка при получении списка транзакций пользователя '{}': '{}'",
 					  currentPersonDto.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Optional<TransactionDto> update(TransactionDto transactionDto, PersonDto currentPersonDto) {
-		Transaction transaction = transactionMapper.mapDtoToModel(transactionDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var transaction = transactionMapper.mapDtoToModel(transactionDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Обновление транзакции с ID: '{}' пользователя с ID: '{}'",
+		log.debug("Обновление транзакции с ID: '{}' пользователя с ID: '{}'",
 				 transaction.getTransactionId(),
 				 person.getPersonId());
 
-		Transaction transactionUpdate = findById(
+		var transactionUpdate = findById(
 				transaction.getTransactionId(),
 				person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось обновить транзакцию с ID '{}' - транзакция не найдена", transaction.getTransactionId());
 			return new IllegalArgumentException(NOT_FOUND_TRANSACTION_MESSAGE);
 		});
 
-		log.info("Обновление данных транзакции с ID: '{}' пользователя с ID: '{}'",
+		log.debug("Обновление данных транзакции с ID: '{}' пользователя с ID: '{}'",
 				 transactionUpdate.getTransactionId(),
 				 person.getPersonId());
 
@@ -163,7 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
 		transactionUpdate.setAmount(transaction.getAmount());
 		transactionUpdate.setTransactionDate(transaction.getTransactionDate());
 
-		log.info("Создана подготовленная модель обновляемой транзакции с ID: '{}'", transactionUpdate.getTransactionId());
+		log.debug("Создана подготовленная модель обновляемой транзакции с ID: '{}'", transactionUpdate.getTransactionId());
 		try {
 			transactionRepository.update(transactionUpdate);
 			log.info("Транзакция с ID '{}' успешно обновлена", transactionUpdate.getTransactionId());
@@ -171,22 +162,20 @@ public class TransactionServiceImpl implements TransactionService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при обновлении транзакции по ID '{}': '{}'",
 					  transactionUpdate.getTransactionId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public void delete(TransactionDto transactionDto, PersonDto currentPersonDto) {
-		Transaction transaction = transactionMapper.mapDtoToModelLight(transactionDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var transaction = transactionMapper.mapDtoToModelLight(transactionDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Удаление транзакции с ID: '{}' пользователя с ID: '{}'",
-				 transaction.getTransactionId(),
-				 person.getPersonId());
+		log.debug("Удаление транзакции с ID: '{}' пользователя с ID: '{}'",
+				 transaction.getTransactionId(), person.getPersonId());
 
-		Transaction transactionToDelete = findById(
+		var transactionToDelete = findById(
 				transaction.getTransactionId(),
 				person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось удалить транзакцию с ID '{}' - транзакция не найдена", transaction.getTransactionId());
@@ -199,8 +188,7 @@ public class TransactionServiceImpl implements TransactionService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при удалении данных транзакции с ID '{}': '{}'",
 					  transactionToDelete.getTransactionId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}

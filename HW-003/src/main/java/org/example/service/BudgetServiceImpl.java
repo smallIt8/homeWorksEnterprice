@@ -7,9 +7,9 @@ import org.example.dto.PersonDto;
 import org.example.mapper.BudgetMapper;
 import org.example.mapper.PersonMapper;
 import org.example.model.Budget;
-import org.example.model.Person;
 import org.example.repository.BudgetRepository;
 import org.example.validator.Validator;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -19,6 +19,7 @@ import static org.example.util.constant.InfoMessageConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class BudgetServiceImpl implements BudgetService {
 
 	private final BudgetRepository budgetRepository;
@@ -28,11 +29,11 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public void create(BudgetDto budgetDto) {
-		log.info("Установление нового бюджета пользователя с ID: '{}'", budgetDto.getCreatorDto().getPersonId());
-		BudgetDto inputBudget = buildBudget(budgetDto);
+		log.debug("Установление нового бюджета пользователя с ID: '{}'", budgetDto.getCreatorDto().getPersonId());
+		var inputBudget = buildBudget(budgetDto);
 
-		Budget budget = budgetMapper.mapDtoToModel(inputBudget);
-		log.info("Создана подготовленная модель устанавливаемого бюджета '{}' пользователя: '{}' на категорию '{}'",
+		final var budget = budgetMapper.mapDtoToModel(inputBudget);
+		log.debug("Создана подготовленная модель устанавливаемого бюджета '{}' пользователя: '{}' на категорию '{}'",
 				 budget.getBudgetName(),
 				 budget.getCreator().getPersonId(),
 				 budget.getCategory().getCategoryName());
@@ -43,28 +44,24 @@ public class BudgetServiceImpl implements BudgetService {
 					 budget.getCategory().getCategoryName(),
 					 budget.getCreator().getPersonId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при установке бюджета: '{}'",
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при установке бюджета: '{}'", e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Map<BudgetDto, String> createBatch(List<BudgetDto> budgetsDto) {
-		log.info("Добавление пакета бюджетов: количество = '{}'", budgetsDto.size());
+		log.debug("Добавление пакета бюджетов: количество = '{}'", budgetsDto.size());
 		Map<BudgetDto, String> errors = new LinkedHashMap<>();
 		List<Budget> budgetsSuccess = new ArrayList<>();
 
-		for (BudgetDto budgetDto : budgetsDto) {
+		for (var budgetDto : budgetsDto) {
 			try {
-				BudgetDto validDto = buildBudget(budgetDto);
+				var validDto = buildBudget(budgetDto);
 				budgetsSuccess.add(budgetMapper.mapDtoToModel(validDto));
-				log.info("Бюджет с ID: '{}' успешно подготовлен для добавления", validDto.getBudgetId());
+				log.debug("Бюджет с ID: '{}' успешно подготовлен для добавления", validDto.getBudgetId());
 			} catch (RuntimeException e) {
-				log.warn("Ошибка при создании бюджета '{}' в пакете: '{}'",
-						 budgetDto.getBudgetName(),
-						 e.getMessage());
+				log.error("Ошибка при создании бюджета '{}' в пакете: '{}'", budgetDto.getBudgetName(), e.getMessage());
 				errors.put(budgetDto, e.getMessage());
 			}
 		}
@@ -72,9 +69,7 @@ public class BudgetServiceImpl implements BudgetService {
 			budgetRepository.createBatch(budgetsSuccess);
 			log.info("Успешно добавленные бюджеты: '{}'", budgetsSuccess.size());
 		}
-		log.info("Пакет бюджетов обработан, успешно: '{}',  количество ошибок: '{}'",
-				 budgetsSuccess.size(),
-				 errors.size());
+		log.info("Пакет бюджетов обработан, успешно: '{}',  количество ошибок: '{}'", budgetsSuccess.size(), errors.size());
 		return errors;
 	}
 
@@ -95,7 +90,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public Optional<Budget> findById(UUID budgetId, UUID currentPersonId) {
-		log.info("Получение данных бюджета по ID: '{}'", budgetId);
+		log.debug("Получение данных бюджета по ID: '{}'", budgetId);
 		try {
 			Optional<Budget> budgetOpt = budgetRepository.findById(budgetId);
 			if (budgetOpt.isEmpty()) {
@@ -103,65 +98,54 @@ public class BudgetServiceImpl implements BudgetService {
 				throw new IllegalArgumentException(NOT_FOUND_BUDGET_MESSAGE);
 			}
 			if (!budgetOpt.get().getCreator().getPersonId().equals(currentPersonId)) {
-				log.warn("Бюджет с ID: '{}' не принадлежит пользователю с ID: '{}'",
-						 budgetId,
-						 currentPersonId);
+				log.warn("Бюджет с ID: '{}' не принадлежит пользователю с ID: '{}'", budgetId, currentPersonId);
 				throw new SecurityException(ERROR_ACCESS_BUDGET_MESSAGE);
 			}
+			log.info("Данные бюджета с ID: '{}' успешно получены", budgetId);
 			return budgetOpt;
 		} catch (RuntimeException e) {
-			log.error("Ошибка при получении данных бюджета по ID '{}': '{}'",
-					  budgetId,
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при получении данных бюджета по ID '{}': '{}'", budgetId, e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public List<BudgetDto> findAll(PersonDto currentPersonDto) {
-		log.info("Получение списка бюджетов пользователя с ID: '{}'", currentPersonDto.getPersonId());
+		log.debug("Получение списка бюджетов пользователя с ID: '{}'", currentPersonDto.getPersonId());
 		try {
 			List<Budget> budgets = budgetRepository.findAll(currentPersonDto.getPersonId());
 			if (budgets.isEmpty()) {
-				log.info("Список бюджетов пользователя с ID '{}' пуст", currentPersonDto.getPersonId());
+				log.warn("Список бюджетов пользователя с ID '{}' пуст", currentPersonDto.getPersonId());
 				throw new IllegalArgumentException(EMPTY_LIST_BUDGET_BY_PERSON_MESSAGE);
 			}
-			log.info("Получено '{}' бюджетов пользователя с ID '{}':",
-					 budgets.size(),
-					 currentPersonDto.getPersonId());
+			log.info("Получено '{}' бюджетов пользователя с ID '{}':", budgets.size(), currentPersonDto.getPersonId());
 			return budgetMapper.mapModelToDtoList(budgets);
 		} catch (RuntimeException e) {
 			log.error("Ошибка при получении списка бюджетов пользователя '{}': '{}'",
 					  currentPersonDto.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Optional<BudgetDto> update(BudgetDto budgetDto, PersonDto currentPersonDto) {
-		Budget budget = budgetMapper.mapDtoToModel(budgetDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var budget = budgetMapper.mapDtoToModel(budgetDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Обновление бюджета с ID: '{}' пользователя с ID: '{}'",
-				 budget.getBudgetId(),
-				 person.getPersonId());
-
-		Budget budgetUpdate = findById(
+		log.debug("Обновление бюджета с ID: '{}' пользователя с ID: '{}'", budget.getBudgetId(), person.getPersonId());
+		var budgetUpdate = findById(
 				budget.getBudgetId(),
 				person.getPersonId()).orElseThrow(() -> {
 					log.warn("Не удалось обновить бюджет с ID '{}' - бюджет не найдена", budget.getBudgetId());
 					return new IllegalArgumentException(NOT_FOUND_BUDGET_MESSAGE);
 		});
 
-		log.info("Обновление данных бюджета с ID: '{}' пользователя с ID: '{}'",
+		log.debug("Обновление данных бюджета с ID: '{}' пользователя с ID: '{}'",
 				 budgetUpdate.getBudgetId(),
 				 person.getPersonId());
 
 		validateAnnotation(budgetDto);
-
 		validator.validate(budgetDto);
 
 		budgetUpdate.setBudgetName(budget.getBudgetName());
@@ -169,30 +153,24 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetUpdate.setLimit(budget.getLimit());
 		budgetUpdate.setPeriod(budget.getPeriod());
 
-		log.info("Создана подготовленная модель обновляемого бюджета с ID: '{}'", budgetUpdate.getBudgetId());
+		log.debug("Создана подготовленная модель обновляемого бюджета с ID: '{}'", budgetUpdate.getBudgetId());
 		try {
 			budgetRepository.update(budgetUpdate);
 			log.info("Бюджет с ID '{}' успешно обновлен", budgetUpdate.getBudgetId());
 			return Optional.of(budgetMapper.mapModelToDto(budgetUpdate));
 		} catch (RuntimeException e) {
-			log.error("Ошибка при обновлении бюджета по ID '{}': '{}'",
-					  budgetUpdate.getBudgetId(),
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при обновлении бюджета по ID '{}': '{}'", budgetUpdate.getBudgetId(), e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public void delete(BudgetDto budgetDto, PersonDto currentPersonDto) {
-		Budget budget = budgetMapper.mapDtoToModelLight(budgetDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var budget = budgetMapper.mapDtoToModelLight(budgetDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Удаление бюджета с ID: '{}' пользователя с ID: '{}'",
-				 budget.getBudgetId(),
-				 person.getPersonId());
-
-		Budget budgetToDelete = findById(
+		log.debug("Удаление бюджета с ID: '{}' пользователя с ID: '{}'", budget.getBudgetId(), person.getPersonId());
+		var budgetToDelete = findById(
 				budget.getBudgetId(),
 				person.getPersonId()).orElseThrow(() -> {
 					log.warn("Не удалось удалить бюджет с ID '{}' - бюджет не найден", budget.getBudgetId());
@@ -203,10 +181,7 @@ public class BudgetServiceImpl implements BudgetService {
 			budgetRepository.delete(budgetToDelete.getBudgetId(), person.getPersonId());
 			log.info("Данные бюджета с ID '{}' удалены", budgetToDelete.getBudgetId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при удалении данных бюджета с ID '{}': '{}'",
-					  budgetToDelete.getBudgetId(),
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при удалении данных бюджета с ID '{}': '{}'", budgetToDelete.getBudgetId(), e.getMessage(), e);
 			throw e;
 		}
 	}

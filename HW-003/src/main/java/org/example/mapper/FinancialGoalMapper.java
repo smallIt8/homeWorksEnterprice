@@ -3,10 +3,12 @@ package org.example.mapper;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.FinancialGoalDto;
 import org.example.model.FinancialGoal;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
 public class FinancialGoalMapper {
 
 	private final PersonMapper personMapper;

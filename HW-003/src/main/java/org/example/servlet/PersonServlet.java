@@ -5,10 +5,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.PersonDto;
 import org.example.service.PersonService;
-import org.example.util.DependencyInjection;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -19,10 +20,12 @@ import static org.example.helper.jsp.JspHelper.getPath;
 import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
+@RequiredArgsConstructor
+@Component
 @WebServlet("/main-person")
 public class PersonServlet extends HttpServlet {
 
-	private final PersonService personService = DependencyInjection.personService();
+	private final PersonService personService;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

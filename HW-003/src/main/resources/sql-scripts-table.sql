@@ -13,7 +13,7 @@ CREATE TABLE person (
 CREATE TABLE transaction(
     transaction_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
     transaction_name VARCHAR(100) NOT NULL,
-    type VARCHAR(100) NOT NULL
+    type VARCHAR(20) NOT NULL
         CONSTRAINT chk_transaction_type
         CHECK ((type)::text = ANY ((ARRAY ['INCOME'::character varying, 'EXPENSE'::character varying])::text[])),
     category_id UUID NOT NULL CONSTRAINT transaction_category_category_id_fk REFERENCES category,

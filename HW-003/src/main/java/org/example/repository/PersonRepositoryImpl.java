@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.Person;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class PersonRepositoryImpl implements PersonRepository {
 
 	@Override
@@ -23,7 +25,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Person result = new JPAQuery<Person>(session)
+			var result = new JPAQuery<Person>(session)
 					.select(person)
 					.from(person)
 					.where(person.userName.eq(userName))
@@ -60,7 +62,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			boolean exists = Optional.ofNullable(
+			var exists = Optional.ofNullable(
 					new JPAQuery<Long>(session)
 							.select(person.personId)
 							.from(person)
@@ -84,7 +86,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			boolean exists = Optional.ofNullable(
+			var exists = Optional.ofNullable(
 					new JPAQuery<Long>(session)
 							.select(person.personId)
 							.from(person)
@@ -108,7 +110,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Person result = new JPAQuery<Person>(session)
+			var result = new JPAQuery<Person>(session)
 					.select(person)
 					.from(person)
 					.where(person.personId.eq(personId))
@@ -152,7 +154,7 @@ public class PersonRepositoryImpl implements PersonRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Long result = new JPAQuery<Long>(session)
+			var result = new JPAQuery<Long>(session)
 					.select(person.count())
 					.from(person)
 					.where(person.email.eq(email.toLowerCase())

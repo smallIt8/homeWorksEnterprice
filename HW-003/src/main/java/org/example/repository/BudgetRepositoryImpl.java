@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.model.Budget;
 import org.example.model.QBudget;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class BudgetRepositoryImpl implements BudgetRepository {
 
 	@Override
@@ -64,7 +66,7 @@ public class BudgetRepositoryImpl implements BudgetRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			Budget result = new JPAQuery<Budget>(session)
+			var result = new JPAQuery<Budget>(session)
 					.select(budget)
 					.from(budget)
 					.join(budget.category, category).fetchJoin()

@@ -1,20 +1,25 @@
 package org.example.repository;
 
+import com.querydsl.jpa.impl.JPADeleteClause;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.Category;
-import org.example.model.Category_;
-import org.example.model.Person_;
+import org.example.model.QCategory;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.example.model.QCategory.category;
 import static org.example.util.HibernateSessionFactoryUtil.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
 
 	@Override
@@ -59,16 +64,15 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	public Optional<Category> findById(UUID categoryId) {
 		try (Session session = openSession()) {
 			session.beginTransaction();
-			var cb = session.getCriteriaBuilder();
-			var criteria = cb.createQuery(Category.class);
-			var category = criteria.from(Category.class);
 
-			criteria.select(category).where(
-					cb.equal(category.get(Category_.categoryId), categoryId)
-			);
+			var result = new JPAQuery<Category>(session)
+					.select(category)
+					.from(category)
+					.where(category.categoryId.eq(categoryId))
+					.fetchOne();
+
 			session.getTransaction().commit();
-			return session.createQuery(criteria)
-					.uniqueResultOptional();
+			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			log.error("Ошибка при получении данных категории с ID {}: {}",
 					  categoryId,
@@ -82,16 +86,12 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	public void update(Category category) {
 		try (Session session = openSession()) {
 			session.beginTransaction();
-			var cb = session.getCriteriaBuilder();
-			var criteria = cb.createCriteriaUpdate(Category.class);
-			var root = criteria.from(Category.class);
 
-			criteria.set(root.get(Category_.categoryName), category.getCategoryName())
-					.where(
-							cb.equal(root.get(Category_.categoryId), category.getCategoryId())
-					);
+			new JPAUpdateClause(session, QCategory.category)
+					.where(QCategory.category.categoryId.eq(category.getCategoryId()))
+					.set(QCategory.category.categoryName, category.getCategoryName())
+					.execute();
 
-			session.createMutationQuery(criteria).executeUpdate();
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при обновлении данных категории с ID {}: {}",
@@ -105,16 +105,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public List<Category> findAll(UUID currentPersonId) {
 		try (Session session = openSession()) {
-			var cb = session.getCriteriaBuilder();
-			var criteria = cb.createQuery(Category.class);
-			var category = criteria.from(Category.class);
 
-			criteria.select(category)
-					.where(cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId))
-					.orderBy(cb.asc(category.get(Category_.categoryName)));
+			return new JPAQuery<Category>(session)
+					.select(category)
+					.from(category)
+					.where(category.creator.personId.eq(currentPersonId))
+					.orderBy(category.categoryName.asc())
+					.fetch();
 
-			return session.createQuery(criteria)
-					.list();
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка категорий для пользователя '{}': {}",
 					  currentPersonId,
@@ -128,18 +126,12 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	public void delete(UUID categoryId, UUID currentPersonId) {
 		try (Session session = openSession()) {
 			session.beginTransaction();
-			var cb = session.getCriteriaBuilder();
-			var criteria = cb.createCriteriaDelete(Category.class);
-			var category = criteria.from(Category.class);
 
-			criteria.where(
-					cb.and(
-							cb.equal(category.get(Category_.categoryId), categoryId),
-							cb.equal(category.get(Category_.creator).get(Person_.personId), currentPersonId)
-					)
-			);
+			new JPADeleteClause(session, category)
+					.where(category.categoryId.eq(categoryId)
+								   .and(category.creator.personId.eq(currentPersonId)))
+					.execute();
 
-			session.createMutationQuery(criteria).executeUpdate();
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Ошибка при удалении данных категории с  ID {}: {}",

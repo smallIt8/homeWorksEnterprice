@@ -3,10 +3,12 @@ package org.example.mapper;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.TransactionDto;
 import org.example.model.Transaction;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
 public class TransactionMapper {
 
 	private final CategoryMapper categoryMapper;
@@ -28,12 +30,6 @@ public class TransactionMapper {
 				.creatorDto(personMapper.mapModelToDtoLight(transaction.getCreator()))
 				.transactionDate(transaction.getTransactionDate())
 				.build();
-	}
-
-	public List<Transaction> mapDtoToModelList(List<TransactionDto> transactionsDto) {
-		return transactionsDto.stream()
-				.map(this::mapDtoToModel)
-				.toList();
 	}
 
 	public Transaction mapDtoToModel(TransactionDto transactionDto) {

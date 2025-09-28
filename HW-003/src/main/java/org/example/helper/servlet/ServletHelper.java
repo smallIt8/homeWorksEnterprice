@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.dto.PersonDto;
 
 import java.io.IOException;
 
@@ -18,12 +19,11 @@ public class ServletHelper {
 		var action = req.getParameter("action");
 		var currentPersonDto = presenceCurrentPersonDto(req, resp);
 
-		req.setAttribute("personName", currentPersonDto.getFullName());
-		req.setAttribute("person", currentPersonDto);
-		req.setAttribute("action", action);
+		setAttribute(req, currentPersonDto, action);
 
-		if (action == null)
+		if (action == null) {
 			action = defaultAction;
+		}
 
 		log.info("Пользователь '{}' в меню '{}' выбирает действие '{}'",
 				 currentPersonDto.getFullName(),
@@ -31,5 +31,11 @@ public class ServletHelper {
 				 action
 		);
 		return action;
+	}
+
+	private static void setAttribute(HttpServletRequest req, PersonDto currentPersonDto, String action) {
+		req.setAttribute("personName", currentPersonDto.getFullName());
+		req.setAttribute("person", currentPersonDto);
+		req.setAttribute("action", action);
 	}
 }

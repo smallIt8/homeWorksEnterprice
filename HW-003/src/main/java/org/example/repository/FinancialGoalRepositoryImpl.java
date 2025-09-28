@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.model.FinancialGoal;
 import org.example.model.QFinancialGoal;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import static org.example.util.HibernateSessionFactoryUtil.openSession;
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 
 	@Override
@@ -63,7 +65,7 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			FinancialGoal result = new JPAQuery<FinancialGoal>(session)
+			var result = new JPAQuery<FinancialGoal>(session)
 					.select(financialGoal)
 					.from(financialGoal)
 					.where(financialGoal.financialGoalId.eq(financialGoalId))
@@ -107,14 +109,12 @@ public class FinancialGoalRepositoryImpl implements FinancialGoalRepository {
 		try (Session session = openSession()) {
 			session.beginTransaction();
 
-			List<FinancialGoal> financialGoals = new JPAQuery<FinancialGoal>(session)
+			return new JPAQuery<FinancialGoal>(session)
 					.select(financialGoal)
 					.from(financialGoal)
 					.where(financialGoal.creator.personId.eq(currentPersonId))
 					.fetch();
 
-			session.getTransaction().commit();
-			return financialGoals;
 		} catch (Exception e) {
 			log.error("Ошибка при получении списка долгосрочных финансовых целей для пользователя с ID {}: {}",
 					  currentPersonId,

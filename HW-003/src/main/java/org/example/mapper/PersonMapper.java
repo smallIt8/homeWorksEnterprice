@@ -1,8 +1,12 @@
 package org.example.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.PersonDto;
 import org.example.model.Person;
+import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
+@Component
 public class PersonMapper {
 
 	public PersonDto mapModelToDto(Person person) {

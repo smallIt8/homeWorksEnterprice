@@ -12,8 +12,8 @@ import org.example.dto.FinancialGoalDto;
 import org.example.mapper.FinancialGoalMapper;
 import org.example.model.FinancialGoal;
 import org.example.service.FinancialGoalService;
-import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -28,11 +28,12 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 @WebServlet("/financial-goal")
 public class FinancialGoalServlet extends HttpServlet {
 
-	private final FinancialGoalService financialGoalService = DependencyInjection.financialGoalService();
-	private final FinancialGoalMapper financialGoalMapper = DependencyInjection.financialGoalMapper();
+	private final FinancialGoalService financialGoalService;
+	private final FinancialGoalMapper financialGoalMapper;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

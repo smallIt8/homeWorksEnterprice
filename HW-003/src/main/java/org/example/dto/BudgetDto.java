@@ -24,7 +24,8 @@ public class BudgetDto {
 	private UUID budgetId;
 
 	@NotBlank(message = WARNING_BUDGET_NAME_NOT_NULL_MESSAGE)
-	@Pattern(regexp = BUDGET_NAME_REGEX,
+	@Pattern(
+			regexp = BUDGET_NAME_REGEX,
 			message = WARNING_ENTER_BUDGET_NAME_MESSAGE
 	)
 	private String budgetName;
@@ -33,12 +34,16 @@ public class BudgetDto {
 	private CategoryDto categoryDto;
 
 	@NotNull(message = WARNING_BUDGET_LIMIT_NOT_NULL_MESSAGE)
-	@DecimalMin(value = "0.01", message = WARNING_ENTER_BUDGET_LIMIT_MESSAGE)
+	@DecimalMin(
+			value = "0.01",
+			message = WARNING_ENTER_BUDGET_LIMIT_MESSAGE
+	)
 	private BigDecimal limit;
 
 	@NotNull(message = WARNING_BUDGET_PERIOD_NOT_NULL_MESSAGE)
 	@FutureOrPresent(message = WARNING_BUDGET_PERIOD_NOT_CURRENT_OR_FUTURE_MESSAGE)
 	@Convert(converter = DateConverterUtil.class)
 	private YearMonth period;
+
 	private PersonDto creatorDto;
 }

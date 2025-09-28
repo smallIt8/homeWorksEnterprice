@@ -1,4 +1,4 @@
 package org.example.controller;
 
-public class PersonControllerImpl  implements PersonController {
+public class PersonControllerImpl {
 }

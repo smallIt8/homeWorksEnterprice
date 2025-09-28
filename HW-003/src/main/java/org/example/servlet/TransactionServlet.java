@@ -14,8 +14,8 @@ import org.example.mapper.TransactionMapper;
 import org.example.model.Transaction;
 import org.example.model.TransactionType;
 import org.example.service.TransactionService;
-import org.example.util.DependencyInjection;
 import org.example.util.ValidationDtoUtil;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -30,11 +30,12 @@ import static org.example.helper.servlet.ServletHelper.actionGet;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 @WebServlet("/transact")
 public class TransactionServlet extends HttpServlet {
 
-	private final TransactionService transactionService = DependencyInjection.transactionService();
-	private final TransactionMapper transactionMapper = DependencyInjection.transactionMapper();
+	private final TransactionService transactionService;
+	private final TransactionMapper transactionMapper;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -180,7 +181,6 @@ public class TransactionServlet extends HttpServlet {
 
 						if (type == null) {
 							type = transactionAddDto.getType() != null ? transactionAddDto.getType().name() : "EXPENSE";
-//							type = "EXPENSE";
 						}
 
 						resp.sendRedirect(req.getContextPath() + "/transact?action=add&type=" + type);

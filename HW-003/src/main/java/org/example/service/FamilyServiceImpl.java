@@ -7,8 +7,8 @@ import org.example.dto.PersonDto;
 import org.example.mapper.FamilyMapper;
 import org.example.mapper.PersonMapper;
 import org.example.model.Family;
-import org.example.model.Person;
 import org.example.repository.FamilyRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -18,6 +18,7 @@ import static org.example.util.constant.InfoMessageConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class FamilyServiceImpl implements FamilyService {
 
 	private final FamilyRepository familyRepository;
@@ -26,11 +27,11 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public void create(FamilyDto familyDto) {
-		log.info("Создание новой семейной группы пользователя с ID: '{}'", familyDto.getCreatorDto().getPersonId());
-		FamilyDto inputFamily = buildFamily(familyDto);
+		log.debug("Создание новой семейной группы пользователя с ID: '{}'", familyDto.getCreatorDto().getPersonId());
+		var inputFamily = buildFamily(familyDto);
 
-		Family family = familyMapper.mapDtoToModel(inputFamily);
-		log.info("Создана подготовленная модель создаваемой семейной группы '{}' пользователя: '{}'",
+		final var family = familyMapper.mapDtoToModel(inputFamily);
+		log.debug("Создана подготовленная модель создаваемой семейной группы '{}' пользователя: '{}'",
 				 family.getFamilyName(),
 				 family.getCreator().getPersonId());
 
@@ -40,28 +41,24 @@ public class FamilyServiceImpl implements FamilyService {
 					 family.getFamilyId(),
 					 family.getCreator().getPersonId());
 		} catch (RuntimeException e) {
-			log.error("Ошибка при создании семейной группы: '{}'",
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при создании семейной группы: '{}'", e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Map<FamilyDto, String> createBatch(List<FamilyDto> familiesDto) {
-		log.info("Добавление пакета семейных групп: количество = '{}'", familiesDto.size());
+		log.debug("Добавление пакета семейных групп: количество = '{}'", familiesDto.size());
 		Map<FamilyDto, String> errors = new LinkedHashMap<>();
 		List<Family> familiesSuccess = new ArrayList<>();
 
-		for (FamilyDto familyDto : familiesDto) {
+		for (var familyDto : familiesDto) {
 			try {
-				FamilyDto validDto = buildFamily(familyDto);
+				var validDto = buildFamily(familyDto);
 				familiesSuccess.add(familyMapper.mapDtoToModel(validDto));
-				log.info("Семейная группа с ID: '{}' успешно подготовлена для добавления", validDto.getFamilyId());
+				log.debug("Семейная группа с ID: '{}' успешно подготовлена для добавления", validDto.getFamilyId());
 			} catch (RuntimeException e) {
-				log.warn("Ошибка при создании семейной группы '{}' в пакете: '{}'",
-						 familyDto.getFamilyName(),
-						 e.getMessage());
+				log.warn("Ошибка при создании семейной группы '{}' в пакете: '{}'", familyDto.getFamilyName(), e.getMessage());
 				errors.put(familyDto, e.getMessage());
 			}
 		}
@@ -69,7 +66,7 @@ public class FamilyServiceImpl implements FamilyService {
 			familyRepository.createBatch(familiesSuccess);
 			log.info("Успешно добавленные семейные группы: '{}'", familiesSuccess.size());
 		}
-		log.info("Пакет семейных групп обработан, успешно: '{}',  количество ошибок: '{}'",
+		log.info("Пакет семейных групп обработан, успешно: '{}', количество ошибок: '{}'",
 				 familiesSuccess.size(),
 				 errors.size());
 		return errors;
@@ -93,7 +90,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public Optional<Family> findById(UUID familyId, UUID currentPersonId) {
-		log.info("Получение данных семейной группы по ID: '{}'", familyId);
+		log.debug("Получение данных семейной группы по ID: '{}'", familyId);
 		try {
 			Optional<Family> familyOpt = familyRepository.findById(familyId);
 			if (familyOpt.isEmpty()) {
@@ -106,19 +103,17 @@ public class FamilyServiceImpl implements FamilyService {
 						 currentPersonId);
 				throw new SecurityException(ERROR_ACCESS_FAMILY_MESSAGE);
 			}
+			log.info("Данные семейной группы с ID: '{}' успешно получены", familyId);
 			return familyOpt;
 		} catch (RuntimeException e) {
-			log.error("Ошибка при получении данных семейной группы по ID '{}': '{}'",
-					  familyId,
-					  e.getMessage(),
-					  e);
+			log.error("Ошибка при получении данных семейной группы по ID '{}': '{}'", familyId, e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public List<FamilyDto> findAll(PersonDto currentPersonDto) {
-		log.info("Получение списка семейных групп в которые вступил пользователь с ID: '{}'", currentPersonDto.getPersonId());
+		log.debug("Получение списка семейных групп в которые вступил пользователь с ID: '{}'", currentPersonDto.getPersonId());
 		try {
 			List<Family> families = familyRepository.findAll(currentPersonDto.getPersonId());
 			if (families.isEmpty()) {
@@ -132,15 +127,14 @@ public class FamilyServiceImpl implements FamilyService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при получении списка семейных групп в которые вступил пользователь с ID '{}': '{}'",
 					  currentPersonDto.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public List<FamilyDto> findAllOwnerFamily(PersonDto currentPersonDto) {
-		log.info("Получение списка семейных групп пользователя с ID: '{}'", currentPersonDto.getPersonId());
+		log.debug("Получение списка семейных групп пользователя с ID: '{}'", currentPersonDto.getPersonId());
 		try {
 			List<Family> families = familyRepository.findAllByOwner(currentPersonDto.getPersonId());
 			if (families.isEmpty()) {
@@ -154,29 +148,25 @@ public class FamilyServiceImpl implements FamilyService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при получении списка семейных групп пользователя с ID '{}': '{}'",
 					  currentPersonDto.getPersonId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
 
 	@Override
 	public Optional<FamilyDto> update(FamilyDto familyDto, PersonDto currentPersonDto) {
-		Family family = familyMapper.mapDtoToModel(familyDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var family = familyMapper.mapDtoToModel(familyDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Обновление семейной группы с ID: '{}' пользователя с ID: '{}'",
-				 family.getFamilyId(),
-				 person.getPersonId());
-
-		Family familyUpdate = findById(
+		log.debug("Обновление семейной группы с ID: '{}' пользователя с ID: '{}'", family.getFamilyId(), person.getPersonId());
+		var familyUpdate = findById(
 				family.getFamilyId(),
 				person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось обновить семейную группу с ID '{}' - семейная группа не найдена", family.getFamilyId());
 			return new IllegalArgumentException(NOT_FOUND_FAMILY_MESSAGE);
 		});
 
-		log.info("Обновление данных семейной группы с ID: '{}' пользователя с ID: '{}'",
+		log.debug("Обновление данных семейной группы с ID: '{}' пользователя с ID: '{}'",
 				 familyUpdate.getFamilyId(),
 				 person.getPersonId());
 
@@ -184,7 +174,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 		familyUpdate.setFamilyName(familyDto.getFamilyName());
 
-		log.info("Создана подготовленная модель обновляемой семейной группы с ID: '{}'", familyUpdate.getFamilyId());
+		log.debug("Создана подготовленная модель обновляемой семейной группы с ID: '{}'", familyUpdate.getFamilyId());
 		try {
 			familyRepository.update(familyUpdate);
 			log.info("Семейная группа с ID '{}' успешно обновлена", familyUpdate.getFamilyId());
@@ -192,8 +182,7 @@ public class FamilyServiceImpl implements FamilyService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при обновлении семейной группы по ID '{}': '{}'",
 					  familyUpdate.getFamilyId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
@@ -206,14 +195,14 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public void delete(FamilyDto familyDto, PersonDto currentPersonDto) {
-		Family family = familyMapper.mapDtoToModelLight(familyDto);
-		Person person = personMapper.mapDtoToModel(currentPersonDto);
+		final var family = familyMapper.mapDtoToModelLight(familyDto);
+		final var person = personMapper.mapDtoToModel(currentPersonDto);
 
-		log.info("Удаление семейной группы с ID: '{}' пользователя с ID: '{}'",
+		log.debug("Удаление семейной группы с ID: '{}' пользователя с ID: '{}'",
 				 family.getFamilyId(),
 				 person.getPersonId());
 
-		Family familyToDelete = findById(
+		var familyToDelete = findById(
 				family.getFamilyId(),
 				person.getPersonId()).orElseThrow(() -> {
 			log.warn("Не удалось удалить семейную группу с ID '{}' - семейная группа не найдена", family.getFamilyId());
@@ -226,8 +215,7 @@ public class FamilyServiceImpl implements FamilyService {
 		} catch (RuntimeException e) {
 			log.error("Ошибка при удалении данных семейной группы с ID '{}': '{}'",
 					  familyToDelete.getFamilyId(),
-					  e.getMessage(),
-					  e);
+					  e.getMessage(), e);
 			throw e;
 		}
 	}
